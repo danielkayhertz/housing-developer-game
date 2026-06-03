@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { track } from './analytics';
 import {
   GameState,
   Phase,
@@ -77,6 +78,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
   advancePhase: () => {
     const next = Math.min(6, get().phase + 1) as Phase;
     set({ phase: next });
+    track('phase_advanced', { to: next });
   },
 
   selectNeighborhood: (id) => set((s) => ({ project: { ...s.project, neighborhood: id } })),
