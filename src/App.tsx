@@ -1,14 +1,22 @@
+import { useGameStore } from './game/state';
+import { IntroScreen } from './screens/IntroScreen';
+import { SiteAndConcept } from './screens/SiteAndConcept';
+import { ProForma } from './screens/ProForma';
+import { CapitalStack } from './screens/CapitalStack';
+import { Entitlement } from './screens/Entitlement';
+import { Close } from './screens/Close';
+
 export default function App() {
+  const phase = useGameStore((s) => s.phase);
+
   return (
-    <div className="min-h-screen p-8">
-      <h1 className="text-4xl mb-4">Chicago Affordable Housing Developer</h1>
-      <div className="flex gap-2 flex-wrap">
-        <div className="px-3 py-2 rounded bg-accent text-white">accent</div>
-        <div className="px-3 py-2 rounded bg-debt text-white">debt</div>
-        <div className="px-3 py-2 rounded bg-equity text-white">equity</div>
-        <div className="px-3 py-2 rounded bg-gap text-white">gap</div>
-        <div className="px-3 py-2 rounded bg-caution text-white">caution</div>
-      </div>
+    <div className="min-h-screen bg-bg text-ink">
+      {phase === 1 && <IntroScreen />}
+      {phase === 2 && <SiteAndConcept />}
+      {phase === 3 && <ProForma />}
+      {phase === 4 && <CapitalStack />}
+      {phase === 5 && <Entitlement />}
+      {phase === 6 && <Close />}
     </div>
   );
 }
