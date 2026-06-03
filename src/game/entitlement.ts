@@ -8,7 +8,8 @@ export function resolveEntitlementPath(input: {
 }): EntitlementPath {
   if (input.buildingType === 'larger') return 'pd';
   if (input.buildingType === 'walkup' && input.units >= 40) return 'pd';
-  return 'zma';
+  if (input.buildingType === 'midrise') return 'zma';
+  return 'by-right'; // walkup < 40 units
 }
 
 export interface ChoiceConsequence {
