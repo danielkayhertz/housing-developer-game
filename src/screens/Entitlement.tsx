@@ -55,6 +55,7 @@ export function Entitlement() {
   const takeStep = useGameStore((s) => s.takeEntitlementStep);
   const tickMonths = useGameStore((s) => s.tickMonths);
   const advancePhase = useGameStore((s) => s.advancePhase);
+  const retreatPhase = useGameStore((s) => s.retreatPhase);
   const setOutcome = useGameStore((s) => s.setOutcome);
 
   if (!project.neighborhood) return null;
@@ -86,6 +87,12 @@ export function Entitlement() {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
+      <button
+        onClick={retreatPhase}
+        className="text-muted text-sm mb-4 hover:text-ink inline-block"
+      >
+        ← Back
+      </button>
       <Header />
       <h2 className="text-2xl mt-6 mb-4">Entitlement</h2>
 

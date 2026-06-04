@@ -15,6 +15,7 @@ export function ProForma() {
   const setAmiUnit = useGameStore((s) => s.setAmiUnit);
   const setFinishLevel = useGameStore((s) => s.setFinishLevel);
   const advancePhase = useGameStore((s) => s.advancePhase);
+  const retreatPhase = useGameStore((s) => s.retreatPhase);
   const tickMonths = useGameStore((s) => s.tickMonths);
 
   if (!project.neighborhood) return null;
@@ -76,6 +77,12 @@ export function ProForma() {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
+      <button
+        onClick={retreatPhase}
+        className="text-muted text-sm mb-4 hover:text-ink inline-block"
+      >
+        ← Back
+      </button>
       <Header />
       <h2 className="text-2xl mt-6 mb-4">Pro Forma</h2>
       <div className="grid grid-cols-2 gap-4">

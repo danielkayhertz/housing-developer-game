@@ -24,6 +24,7 @@ export function CapitalStack() {
   const reviseLihtc = useGameStore((s) => s.reviseLihtc);
   const tickMonths = useGameStore((s) => s.tickMonths);
   const advancePhase = useGameStore((s) => s.advancePhase);
+  const retreatPhase = useGameStore((s) => s.retreatPhase);
   const [showLihtcDecision, setShowLihtcDecision] = useState(true);
   const [reviseMode, setReviseMode] = useState<'none' | 'cut-costs' | 'qap-odds'>('none');
 
@@ -149,6 +150,12 @@ export function CapitalStack() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
+      <button
+        onClick={retreatPhase}
+        className="text-muted text-sm mb-4 hover:text-ink inline-block"
+      >
+        ← Back
+      </button>
       <Header />
       <h2 className="text-2xl mt-6 mb-4">Capital Stack</h2>
 

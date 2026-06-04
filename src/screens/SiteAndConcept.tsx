@@ -15,6 +15,7 @@ export function SiteAndConcept() {
   const setIntent = useGameStore((s) => s.setIntent);
   const setCboPartner = useGameStore((s) => s.setCboPartner);
   const advancePhase = useGameStore((s) => s.advancePhase);
+  const retreatPhase = useGameStore((s) => s.retreatPhase);
 
   const n = project.neighborhood ? getNeighborhood(project.neighborhood) : null;
   const tdcEstimate = project.neighborhood
@@ -34,6 +35,12 @@ export function SiteAndConcept() {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
+      <button
+        onClick={retreatPhase}
+        className="text-muted text-sm mb-4 hover:text-ink inline-block"
+      >
+        ← Back
+      </button>
       <Header />
       <h2 className="text-2xl mt-6 mb-4">Site &amp; Concept</h2>
       <div className="grid grid-cols-[1.2fr_1fr] gap-4">
