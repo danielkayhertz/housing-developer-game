@@ -6,6 +6,7 @@ import { computeImpactScore } from '../game/scoring';
 import { getNeighborhood } from '../data/neighborhoods';
 import { StackBar } from '../components/StackBar';
 import { AmiBand } from '../game/types';
+import { getReactions } from '../data/closeReactions';
 
 export function Close() {
   const project = useGameStore((s) => s.project);
@@ -99,6 +100,8 @@ export function Close() {
         </div>
       )}
 
+      <StakeholderPanel />
+
       <div className="grid grid-cols-2 gap-2">
         <button onClick={reset} className="bg-accent text-white py-3 rounded-lg font-bold">
           ↻ Try a different choice
@@ -111,6 +114,28 @@ export function Close() {
         >
           📖 Read about Chicago housing
         </a>
+      </div>
+    </div>
+  );
+}
+
+function StakeholderPanel() {
+  const state = useGameStore((s) => s);
+  const reactions = getReactions(state);
+  if (reactions.length === 0) return null;
+
+  return (
+    <div className="bg-panel border border-line rounded-xl p-4 mb-4">
+      <div className="text-xs uppercase tracking-wider text-accent font-bold mb-3">Reactions</div>
+      <div className="space-y-2">
+        {reactions.map((r, i) => (
+          <div key={i} className="bg-bg p-3 rounded-lg text-sm">
+            <b>{r.emoji} {r.voice}</b>
+            <span className="text-muted"> · {r.affiliation}</span>
+            <br />
+            <i className="text-muted">{r.line}</i>
+          </div>
+        ))}
       </div>
     </div>
   );
