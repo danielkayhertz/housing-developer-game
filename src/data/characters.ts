@@ -8,10 +8,10 @@ export interface Character {
 }
 
 export const characters: Record<CharacterId, Character> = {
-  marcus: { id: 'marcus', name: 'Marcus', emoji: '🏦', role: 'Banker' },
+  marcus: { id: 'marcus', name: 'Marcus Bell', emoji: '🏦', role: 'Construction Lender, Loop Federal Bank' },
   asha:   { id: 'asha', name: 'Asha Tran', emoji: '🧑‍💼', role: 'Your alderperson' },
   janelle:{ id: 'janelle', name: 'Janelle', emoji: '🏛️', role: 'IHDA reviewer' },
-  david:  { id: 'david', name: 'David', emoji: '🏛️', role: 'DOH analyst' },
+  david:  { id: 'david', name: 'David Park', emoji: '🏛️', role: 'Senior Analyst, Chicago Department of Housing' },
   powell: { id: 'powell', name: 'Ald. Powell', emoji: '⚖️', role: 'Fiscal hawk' },
   reyes:  { id: 'reyes', name: 'Ald. Reyes', emoji: '📣', role: 'TIF reformer' },
   chen:   { id: 'chen', name: 'Ald. Chen', emoji: '🏢', role: 'Other-ward alder' },
@@ -21,6 +21,9 @@ export const marcusLines = {
   dscrLimited: 'Honestly, my loan barely matters here. At 60% AMI rents the income only supports a small piece — and that\'s most of what any bank will give you on this deal. The real work is in front of you: IHDA, DOH, TIF, and credits.',
   ltvLimited: 'Your value\'s healthy enough that I could lend more on paper, but the income still has to service it. We\'re LTV-limited, not DSCR — that\'s a rare position for affordable.',
   generic: 'Your project pencils on the income side. Let me know when you\'re ready to close the construction loan.',
+  intro: 'I\'ll size your loan against the income. The bank rule is Debt Service Coverage Ratio (DSCR) ≥ 1.20 — you have to generate at least 20% more rent than the loan needs each year.',
+  walkthroughClosing: (loan: number, tdc: number) =>
+    `Translation: I can lend you about $${(loan / 1_000_000).toFixed(1)}M against a $${(tdc / 1_000_000).toFixed(0)}M project. The other $${((tdc - loan) / 1_000_000).toFixed(0)}M is where the work gets real.`,
 };
 
 export const ashaLines = {
@@ -47,6 +50,7 @@ export const janelleLines = {
 
 export const davidLines = {
   dohWelcome: 'DOH is on board with your profile. We\'ll need a coherent stack before final commitment — show me what else you\'re lining up.',
+  capitalStackIntro: 'Putting this together is what we call assembling the capital stack — soft loans, grants, tax credits, and equity stacked to your TDC. Three rules: every source closes more of the gap; every source takes time, and time is money (hard costs escalate ~5%/year); past 5 sources, complexity penalty kicks in at ~$20k/unit per extra source. The art is closing the gap with the smallest, fastest set of sources you can.',
 };
 
 export const financeAttackLines = {
