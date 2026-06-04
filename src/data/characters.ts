@@ -24,6 +24,8 @@ export const marcusLines = {
   intro: 'I\'ll size your loan against the income. The bank rule is Debt Service Coverage Ratio (DSCR) ≥ 1.20 — you have to generate at least 20% more rent than the loan needs each year.',
   walkthroughClosing: (loan: number, tdc: number) =>
     `Translation: I can lend you about $${(loan / 1_000_000).toFixed(1)}M against a $${(tdc / 1_000_000).toFixed(0)}M project. The other $${((tdc - loan) / 1_000_000).toFixed(0)}M is where the work gets real.`,
+  capitalStackBubble: 'Each source you add closes more gap — but also adds complexity and time. Past 5 sources, you hit a $20k/unit soft-cost penalty per extra source. My rule: close the gap with the fewest, fastest sources you can.',
+  shelvedStack: 'I tried to hold the loan terms as long as I could. Cost escalation just outran what any lender would underwrite.',
 };
 
 export const ashaLines = {
@@ -41,6 +43,13 @@ export const ashaLines = {
   financeStakeholders: 'Coalition testimony works but burns the goodwill you\'ll want at lease-up and beyond.',
   gapResolutionIntro: "It doesn't go to Council with an open gap. Three ways out — pick what you can stomach.",
   gapResolutionShelve: "I'm sorry. Sometimes the math just doesn't work in this neighborhood. We'll come back to this site.",
+  closingHigh: "I'm proud of this one. {units} units deep in Englewood — this is why I ran.",
+  closingMid: "Good work getting this over the finish line. Not perfect, but real affordable homes.",
+  closingLow: "It's done. I'm glad for the units. Our relationship will need some rebuilding.",
+  closingShelvedStack: "I'm sorry. The stack just never came together. Sometimes the numbers win.",
+  closingShelvedFinance: "I lost the room. Powell and Reyes made their play and I couldn't hold the coalition. I'm so sorry.",
+  closingShelvedAlder: "I couldn't make this work in my ward. I know that's not what you wanted to hear.",
+  closingShelvedCommunity: "The community engagement fell apart. Without the block club, I couldn't keep moving forward.",
 };
 
 export const janelleLines = {
