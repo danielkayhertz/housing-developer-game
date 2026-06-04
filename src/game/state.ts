@@ -79,6 +79,8 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
   reset: () => set({ ...initialState }),
 
   advancePhase: () => {
+    // Ceiling stays at 6 until Phase 2 ships the GapResolution screen at phase 5.
+    // Update to Math.min(7, ...) and add phaseNames[7] in Header when that lands.
     const next = Math.min(6, get().phase + 1) as Phase;
     set({ phase: next });
     track('phase_advanced', { to: next });
@@ -120,6 +122,8 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
           }
         : s.entitlement,
     });
+    // tickMonths is a second set() call — two-step by design so communitySupport
+    // and cboTimePaid are committed before the month counter advances.
     if (firstTimeOn) {
       get().tickMonths(6);
     }
