@@ -35,17 +35,17 @@ export function ProForma() {
     vacancyRatio: 0.07,
   });
   const stabilizedValue = noi / 0.06;
-  const debt = computeSupportableDebt({
-    noi,
-    dscr: 1.20,
-    annualRate: 0.065,
-    amortYears: 30,
-    ltv: 0.80,
-    stabilizedValue,
-  });
   const dscrRequired = 1.20;
   const annualRate = 0.065;
   const amortYears = 30;
+  const debt = computeSupportableDebt({
+    noi,
+    dscr: dscrRequired,
+    annualRate,
+    amortYears,
+    ltv: 0.80,
+    stabilizedValue,
+  });
   const cashForDebtService = noi / dscrRequired;
   const k = (() => {
     const i = annualRate / 12;
@@ -133,9 +133,9 @@ export function ProForma() {
         {/* RIGHT — math */}
         <div className="space-y-3">
           <CharacterIntroCard
-            avatar="🏦"
-            name="Marcus Bell"
-            role="Construction Lender, Loop Federal Bank"
+            avatar={characters.marcus.emoji}
+            name={characters.marcus.name}
+            role={characters.marcus.role}
             body={<p>{marcusLines.intro}</p>}
             footer={
               <div className="bg-panel border border-line rounded p-2 text-xs tabular">
