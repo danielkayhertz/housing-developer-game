@@ -87,7 +87,7 @@ export type Outcome =
 
 export interface GameState {
   phase: Phase;
-  yearsElapsed: number;
+  monthsElapsed: number;
   costEscalation: number; // accrued dollars added to TDC
 
   project: {

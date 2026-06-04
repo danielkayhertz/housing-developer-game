@@ -38,7 +38,7 @@ export function Entitlement() {
   const stack = useGameStore((s) => s.stack);
   const entitlement = useGameStore((s) => s.entitlement);
   const takeStep = useGameStore((s) => s.takeEntitlementStep);
-  const tickYear = useGameStore((s) => s.tickYear);
+  const tickMonths = useGameStore((s) => s.tickMonths);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const setOutcome = useGameStore((s) => s.setOutcome);
 
@@ -51,7 +51,7 @@ export function Entitlement() {
 
   function onChoose(choice: StepChoiceKey) {
     takeStep(choice);
-    tickYear();
+    tickMonths(12);
   }
 
   function onComplete() {

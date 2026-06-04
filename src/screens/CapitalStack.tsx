@@ -18,7 +18,7 @@ export function CapitalStack() {
   const stack = useGameStore((s) => s.stack);
   const awardSource = useGameStore((s) => s.awardSource);
   const submitLihtc = useGameStore((s) => s.submitLihtc);
-  const tickYear = useGameStore((s) => s.tickYear);
+  const tickMonths = useGameStore((s) => s.tickMonths);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const [showLihtcDecision, setShowLihtcDecision] = useState(true);
 
@@ -72,7 +72,7 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: equity, daysSpent: 280 });
     }
     submitLihtc(win);
-    tickYear();
+    tickMonths(12);
   }
 
   function getSourceStatus(id: SourceId): 'available' | 'awarded' | 'locked' | 'secured' {

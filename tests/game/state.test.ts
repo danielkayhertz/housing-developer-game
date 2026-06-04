@@ -33,13 +33,24 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().project.units).toBe(80);
   });
 
-  it('tickYear adds 1 year + cost escalation', () => {
+  it('tickMonths(12) adds 12 months + ~5% annual cost escalation', () => {
     useGameStore.getState().selectNeighborhood('englewood');
     useGameStore.getState().setUnits(60);
-    useGameStore.getState().tickYear();
+    useGameStore.getState().tickMonths(12);
     const s = useGameStore.getState();
-    expect(s.yearsElapsed).toBe(1);
-    expect(s.costEscalation).toBeGreaterThan(0);
+    expect(s.monthsElapsed).toBe(12);
+    // hard = 60 * 560k * 1.0 = 33.6M
+    // annual escalation = 33.6M * 0.05 * (1 + 0.27 + 0.05) = 33.6M * 0.05 * 1.32 = 2,217,600
+    expect(s.costEscalation).toBeCloseTo(2_217_600, -3);
+  });
+
+  it('tickMonths(3) adds 3 months + 1/4 of annual escalation', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.getState().tickMonths(3);
+    const s = useGameStore.getState();
+    expect(s.monthsElapsed).toBe(3);
+    expect(s.costEscalation).toBeCloseTo(2_217_600 / 4, -3);
   });
 
   it('reset returns to initial state', () => {

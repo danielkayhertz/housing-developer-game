@@ -14,7 +14,7 @@ export function ProForma() {
   const setAmiUnit = useGameStore((s) => s.setAmiUnit);
   const setFinishLevel = useGameStore((s) => s.setFinishLevel);
   const advancePhase = useGameStore((s) => s.advancePhase);
-  const tickYear = useGameStore((s) => s.tickYear);
+  const tickMonths = useGameStore((s) => s.tickMonths);
 
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
@@ -49,7 +49,7 @@ export function ProForma() {
   const totalAffordable = Object.values(proForma.amiBreakdown).reduce((a, b) => a + b, 0);
 
   function onAdvance() {
-    tickYear();
+    tickMonths(12);
     advancePhase();
   }
 

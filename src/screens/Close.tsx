@@ -1,5 +1,6 @@
 import { useGameStore } from '../game/state';
 import { computeTdc, weightedAvgAmi } from '../game/proForma';
+import { formatElapsed } from '../util/formatElapsed';
 import { totalCommitted } from '../game/capitalStack';
 import { computeImpactScore } from '../game/scoring';
 import { getNeighborhood } from '../data/neighborhoods';
@@ -12,7 +13,7 @@ export function Close() {
   const stack = useGameStore((s) => s.stack);
   const entitlement = useGameStore((s) => s.entitlement);
   const outcome = useGameStore((s) => s.outcome);
-  const yearsElapsed = useGameStore((s) => s.yearsElapsed);
+  const monthsElapsed = useGameStore((s) => s.monthsElapsed);
   const costEscalation = useGameStore((s) => s.costEscalation);
   const reset = useGameStore((s) => s.reset);
 
@@ -48,7 +49,7 @@ export function Close() {
         <h2 className="text-2xl mt-2 mb-1">{closed ? 'You closed.' : 'The project was shelved.'}</h2>
         <p className="text-muted">
           {closed
-            ? `${n.name} ${project.buildingType} broke ground in Year ${yearsElapsed.toFixed(0)}. ${finalUnits} homes on the way.`
+            ? `${n.name} ${project.buildingType} broke ground after ${formatElapsed(monthsElapsed)}. ${finalUnits} homes on the way.`
             : failureMessage}
         </p>
         {closed && (
@@ -90,10 +91,10 @@ export function Close() {
 
           <div className="text-xs uppercase tracking-wider text-accent font-bold mt-4 mb-1">Journey</div>
           <ul className="list-disc pl-5 text-sm space-y-1 text-muted">
-            <li>Year 1 — Site &amp; Pro Forma. {n.name} at {project.units} units, {proForma.finishLevel} finish.</li>
-            <li>Year {Math.max(1, yearsElapsed - 2).toFixed(0)} — 9% LIHTC {stack.lihtcAwarded ? 'awarded' : 'denied'}.</li>
-            <li>Year {Math.max(2, yearsElapsed - 1).toFixed(0)} — Community engagement, alder relationship, financing assembled.</li>
-            <li>Year {yearsElapsed.toFixed(0)} — Closed at ${totalCommitted(stack.awarded).toLocaleString()} stack composition.</li>
+            <li>Month 1 — Site &amp; Pro Forma. {n.name} at {project.units} units, {proForma.finishLevel} finish.</li>
+            <li>Month {Math.max(1, monthsElapsed - 24)} — 9% LIHTC {stack.lihtcAwarded ? 'awarded' : 'denied'}.</li>
+            <li>Month {Math.max(2, monthsElapsed - 12)} — Community engagement, alder relationship, financing assembled.</li>
+            <li>Month {monthsElapsed} — Closed at ${totalCommitted(stack.awarded).toLocaleString()} stack composition.</li>
           </ul>
         </div>
       )}

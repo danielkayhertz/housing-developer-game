@@ -8,7 +8,7 @@ export function Header() {
   const project = useGameStore((s) => s.project);
   const proForma = useGameStore((s) => s.proForma);
   const stack = useGameStore((s) => s.stack);
-  const yearsElapsed = useGameStore((s) => s.yearsElapsed);
+  const monthsElapsed = useGameStore((s) => s.monthsElapsed);
   const costEscalation = useGameStore((s) => s.costEscalation);
 
   if (!project.neighborhood) return null;
@@ -43,7 +43,7 @@ export function Header() {
         Gap <b className={gap > 0 ? 'text-gap tabular' : 'text-equity tabular'}>${(gap / 1_000_000).toFixed(1)}M</b>
       </span>
       <span className="ml-auto">
-        Year <b className="text-ink tabular">{(yearsElapsed + phase * 0.2).toFixed(1)}</b> · Phase <b className="text-ink">{phase} / 6 — {phaseNames[phase]}</b>
+        Months <b className="text-ink tabular">{monthsElapsed}</b> · Phase <b className="text-ink">{phase} / 6 — {phaseNames[phase]}</b>
       </span>
     </div>
   );

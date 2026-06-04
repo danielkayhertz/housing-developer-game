@@ -21,7 +21,7 @@ import { applyChoice } from './entitlement';
 
 const initialState: GameState = {
   phase: 1,
-  yearsElapsed: 0,
+  monthsElapsed: 0,
   costEscalation: 0,
   project: {
     neighborhood: null,
@@ -65,7 +65,7 @@ interface StoreActions {
   awardSource: (award: SourceAward) => void;
   removeSource: (sourceId: string) => void;
   submitLihtc: (awarded: boolean) => void;
-  tickYear: () => void;
+  tickMonths: (n: number) => void;
   takeEntitlementStep: (choice: StepChoiceKey, ctx?: { shrinkBy?: number }) => void;
   setOutcome: (o: GameState['outcome']) => void;
 }
@@ -124,14 +124,14 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     stack: { ...s.stack, lihtcSubmitted: true, lihtcAwarded: awarded },
   })),
 
-  tickYear: () => set((s) => {
+  tickMonths: (n: number) => set((s) => {
     if (!s.project.neighborhood) return {};
     const hardPerU = HARD_COST_PER_UNIT[s.project.buildingType] * FINISH_MULTIPLIER[s.proForma.finishLevel];
     const hard = hardPerU * s.project.units;
-    const escalationThisYear = hard * COST_ESCALATION_PER_YEAR * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
+    const escalationPerMonth = hard * (COST_ESCALATION_PER_YEAR / 12) * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
     return {
-      yearsElapsed: s.yearsElapsed + 1,
-      costEscalation: s.costEscalation + escalationThisYear,
+      monthsElapsed: s.monthsElapsed + n,
+      costEscalation: s.costEscalation + escalationPerMonth * n,
     };
   }),
 
