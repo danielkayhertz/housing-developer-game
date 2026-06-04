@@ -51,7 +51,7 @@ export function CapitalStack() {
 
   const lihtcScore = computeLihtcScore({
     weightedAvgAmi: weightedAvgAmi(proForma.amiBreakdown),
-    hasCboPartner: true,
+    hasCboPartner: project.hasCboPartner,
     hasLeverageCommitments: stack.awarded.length >= 2,
     neighborhood: project.neighborhood,
   });
