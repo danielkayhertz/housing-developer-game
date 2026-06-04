@@ -62,6 +62,7 @@ const initialState: GameState = {
     conditionsImposed: [],
   },
   outcome: 'in-progress',
+  lastRecap: null,
 };
 
 interface StoreActions {
@@ -85,6 +86,8 @@ interface StoreActions {
   takeEntitlementStep: (choice: StepChoiceKey, ctx?: { shrinkBy?: number }) => void;
   setOutcome: (o: GameState['outcome']) => void;
   shelveProject: () => void;
+  clearRecap: () => void;
+  retreatPhase: () => void;
 }
 
 export const useGameStore = create<GameState & StoreActions>((set, get) => ({
@@ -241,9 +244,11 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     const hardPerU = HARD_COST_PER_UNIT[s.project.buildingType] * FINISH_MULTIPLIER[s.proForma.finishLevel] * qualityMul;
     const hard = hardPerU * effectiveUnits;
     const escalationPerMonth = hard * (COST_ESCALATION_PER_YEAR / 12) * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
+    const escalationAdded = escalationPerMonth * n;
     return {
       monthsElapsed: s.monthsElapsed + n,
-      costEscalation: s.costEscalation + escalationPerMonth * n,
+      costEscalation: s.costEscalation + escalationAdded,
+      ...(n >= 3 ? { lastRecap: { months: n, escalationAdded } } : {}),
     };
   }),
 
@@ -274,4 +279,10 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
   setOutcome: (o) => set({ outcome: o }),
 
   shelveProject: () => set({ outcome: 'shelved-stack', phase: 7 }),
+
+  clearRecap: () => set({ lastRecap: null }),
+
+  retreatPhase: () => set((s) => ({
+    phase: Math.max(1, s.phase - 1) as Phase,
+  })),
 }));

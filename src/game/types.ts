@@ -131,6 +131,10 @@ export interface GameState {
   };
 
   outcome: Outcome;
+  lastRecap: {
+    months: number;
+    escalationAdded: number;
+  } | null;
 }
 
 // Constants

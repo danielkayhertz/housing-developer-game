@@ -8,6 +8,7 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
     phase: 7,
     monthsElapsed: 24,
     costEscalation: 0,
+    lastRecap: null,
     project: {
       neighborhood: 'englewood',
       units: 60,

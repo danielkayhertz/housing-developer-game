@@ -241,4 +241,60 @@ describe('useGameStore', () => {
     useGameStore.getState().advancePhase();
     expect(useGameStore.getState().phase).toBe(7);
   });
+
+  describe('lastRecap', () => {
+    it('starts as null', () => {
+      expect(useGameStore.getState().lastRecap).toBeNull();
+    });
+
+    it('tickMonths(3) sets lastRecap with correct month count and escalationAdded', () => {
+      useGameStore.getState().selectNeighborhood('englewood');
+      useGameStore.getState().setUnits(60);
+      useGameStore.getState().tickMonths(3);
+      const recap = useGameStore.getState().lastRecap;
+      expect(recap).not.toBeNull();
+      expect(recap!.months).toBe(3);
+      // escalationAdded = (60 * 560k * 1.0 * 1.32 * 0.05 / 12) * 3 ≈ 554,400
+      expect(recap!.escalationAdded).toBeCloseTo(554_400, -2);
+    });
+
+    it('tickMonths(2) does NOT set lastRecap', () => {
+      useGameStore.getState().selectNeighborhood('englewood');
+      useGameStore.getState().setUnits(60);
+      useGameStore.getState().tickMonths(2);
+      expect(useGameStore.getState().lastRecap).toBeNull();
+    });
+
+    it('clearRecap sets lastRecap to null', () => {
+      useGameStore.getState().selectNeighborhood('englewood');
+      useGameStore.getState().setUnits(60);
+      useGameStore.getState().tickMonths(6);
+      expect(useGameStore.getState().lastRecap).not.toBeNull();
+      useGameStore.getState().clearRecap();
+      expect(useGameStore.getState().lastRecap).toBeNull();
+    });
+
+    it('reset clears lastRecap', () => {
+      useGameStore.getState().selectNeighborhood('englewood');
+      useGameStore.getState().setUnits(60);
+      useGameStore.getState().tickMonths(12);
+      useGameStore.getState().reset();
+      expect(useGameStore.getState().lastRecap).toBeNull();
+    });
+  });
+
+  describe('retreatPhase', () => {
+    it('decrements phase by 1', () => {
+      useGameStore.getState().advancePhase(); // → 2
+      useGameStore.getState().advancePhase(); // → 3
+      useGameStore.getState().retreatPhase(); // → 2
+      expect(useGameStore.getState().phase).toBe(2);
+    });
+
+    it('does not go below phase 1', () => {
+      expect(useGameStore.getState().phase).toBe(1);
+      useGameStore.getState().retreatPhase();
+      expect(useGameStore.getState().phase).toBe(1);
+    });
+  });
 });
