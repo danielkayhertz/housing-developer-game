@@ -6,6 +6,7 @@ import { CapitalStack } from './screens/CapitalStack';
 import { GapResolution } from './screens/GapResolution';
 import { Entitlement } from './screens/Entitlement';
 import { Close } from './screens/Close';
+import { RecapCard } from './components/RecapCard';
 
 export default function App() {
   const phase = useGameStore((s) => s.phase);
@@ -19,6 +20,7 @@ export default function App() {
       {phase === 5 && <GapResolution />}
       {phase === 6 && <Entitlement />}
       {phase === 7 && <Close />}
+      <RecapCard />
     </div>
   );
 }
