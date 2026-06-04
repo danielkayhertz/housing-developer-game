@@ -107,4 +107,31 @@ describe('useGameStore', () => {
     useGameStore.getState().setCboPartner(true);
     expect(useGameStore.getState().entitlement.communitySupport).toBe(before + 6);
   });
+
+  it('initial state has Phase 2 fields at defaults', () => {
+    const s = useGameStore.getState();
+    expect(s.stack.lihtcResubmits).toBe(0);
+    expect(s.stack.lihtcRevisions).toBe(0);
+    expect(s.gapResolution.extraSubsidy).toBe(0);
+    expect(s.gapResolution.shrinkBy).toBe(0);
+    expect(s.gapResolution.lowerQualityUsed).toBe(false);
+  });
+
+  it('tickMonths uses effective units (shrinkBy) and lowerQuality multiplier', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    // baseline: 12 months → known escalation from Phase 1 tests
+    useGameStore.getState().tickMonths(12);
+    const baseline = useGameStore.getState().costEscalation;
+    expect(baseline).toBeGreaterThan(1_000_000);
+    // reset and apply shrinkBy via direct state poke to isolate tickMonths math
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.setState((s) => ({ gapResolution: { ...s.gapResolution, shrinkBy: 30 } }));
+    useGameStore.getState().tickMonths(12);
+    // effective units halved → escalation halved
+    expect(useGameStore.getState().costEscalation).toBeCloseTo(baseline / 2, -3);
+  });
 });

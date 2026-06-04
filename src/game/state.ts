@@ -16,6 +16,7 @@ import {
   FINISH_MULTIPLIER,
   SOFT_COST_RATIO,
   CONTINGENCY_RATIO,
+  LOWER_QUALITY_HARD_MULTIPLIER,
 } from './types';
 import { applyChoice } from './entitlement';
 
@@ -42,6 +43,13 @@ const initialState: GameState = {
     applied: [],
     lihtcSubmitted: false,
     lihtcAwarded: false,
+    lihtcResubmits: 0,
+    lihtcRevisions: 0,
+  },
+  gapResolution: {
+    extraSubsidy: 0,
+    shrinkBy: 0,
+    lowerQualityUsed: false,
   },
   entitlement: {
     currentStep: 1,
@@ -153,8 +161,10 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
 
   tickMonths: (n: number) => set((s) => {
     if (!s.project.neighborhood) return {};
-    const hardPerU = HARD_COST_PER_UNIT[s.project.buildingType] * FINISH_MULTIPLIER[s.proForma.finishLevel];
-    const hard = hardPerU * s.project.units;
+    const qualityMul = s.gapResolution.lowerQualityUsed ? LOWER_QUALITY_HARD_MULTIPLIER : 1;
+    const effectiveUnits = Math.max(0, s.project.units - s.gapResolution.shrinkBy);
+    const hardPerU = HARD_COST_PER_UNIT[s.project.buildingType] * FINISH_MULTIPLIER[s.proForma.finishLevel] * qualityMul;
+    const hard = hardPerU * effectiveUnits;
     const escalationPerMonth = hard * (COST_ESCALATION_PER_YEAR / 12) * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
     return {
       monthsElapsed: s.monthsElapsed + n,

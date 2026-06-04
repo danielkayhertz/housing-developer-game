@@ -111,6 +111,8 @@ export interface GameState {
     applied: SourceApplication[];
     lihtcSubmitted: boolean;
     lihtcAwarded: boolean;
+    lihtcResubmits: number;   // count of "Submit again" presses after a denial
+    lihtcRevisions: number;   // count of "Revise + resubmit" presses; each adds REVISION_SOFT_PENALTY to TDC
   };
 
   entitlement: {
@@ -120,6 +122,12 @@ export interface GameState {
     communitySupport: number;
     projectShrinkBy: number;
     conditionsImposed: string[];
+  };
+
+  gapResolution: {
+    extraSubsidy: number;       // cumulative $ added by "Ask for more subsidy"
+    shrinkBy: number;           // cumulative units removed by "Redesign smaller"
+    lowerQualityUsed: boolean;  // one-shot flag; multiplies hard cost by LOWER_QUALITY_HARD_MULTIPLIER
   };
 
   outcome: Outcome;
@@ -151,3 +159,8 @@ export const FINISH_MULTIPLIER: Record<FinishLevel, number> = {
 
 export const SOFT_COST_RATIO = 0.27; // 27% of hard
 export const CONTINGENCY_RATIO = 0.05; // 5% of hard
+
+export const LOWER_QUALITY_HARD_MULTIPLIER = 0.9;  // 10% hard-cost reduction when lower-quality used
+export const REVISION_SOFT_PENALTY = 150_000;       // $ added to TDC per LIHTC revise+resubmit
+export const GAP_ADVANCE_THRESHOLD = 100_000;       // gap ≤ this means stack/resolution is "closed"
+export const MIN_UNITS_FLOOR = 20;                  // GapResolution redesign-smaller floor
