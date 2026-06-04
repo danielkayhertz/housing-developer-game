@@ -3,6 +3,7 @@ import { getNeighborhood } from '../data/neighborhoods';
 import { computeTdc } from '../game/proForma';
 import { totalCommitted } from '../game/capitalStack';
 import { TimelinePill } from './TimelinePill';
+import { REVISION_SOFT_PENALTY } from '../game/types';
 
 export function Header() {
   const phase = useGameStore((s) => s.phase);
@@ -21,11 +22,12 @@ export function Header() {
     buildingType: project.buildingType,
     finishLevel: proForma.finishLevel,
   });
-  const tdcWithEscalation = tdcParts.total + costEscalation;
+  const revisionPenalty = stack.lihtcRevisions * REVISION_SOFT_PENALTY;
+  const tdcWithEscalation = tdcParts.total + costEscalation + revisionPenalty;
   const committed = totalCommitted(stack.awarded);
   const gap = Math.max(0, tdcWithEscalation - committed);
 
-  const phaseNames = ['', 'Intro', 'Site & Concept', 'Pro Forma', 'Capital Stack', 'Entitlement', 'Close'];
+  const phaseNames = ['', 'Intro', 'Site & Concept', 'Pro Forma', 'Capital Stack', 'Gap Resolution', 'Entitlement', 'Close'];
 
   return (
     <div className="bg-panel border border-line rounded-lg px-3 py-2 text-sm text-muted flex flex-wrap gap-3 items-center">
@@ -45,7 +47,7 @@ export function Header() {
       </span>
       <span className="ml-auto flex items-center gap-2">
         <TimelinePill months={monthsElapsed} />
-        <span>Phase <b className="text-ink">{phase} / 6 — {phaseNames[phase]}</b></span>
+        <span>Phase <b className="text-ink">{phase} / 7 — {phaseNames[phase]}</b></span>
       </span>
     </div>
   );
