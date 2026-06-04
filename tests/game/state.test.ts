@@ -134,4 +134,27 @@ describe('useGameStore', () => {
     // effective units halved → escalation halved
     expect(useGameStore.getState().costEscalation).toBeCloseTo(baseline / 2, -3);
   });
+
+  it('resubmitLihtc(true) increments lihtcResubmits and sets lihtcAwarded=true', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.getState().submitLihtc(false); // initial denial
+    useGameStore.getState().resubmitLihtc(true);
+    const s = useGameStore.getState();
+    expect(s.stack.lihtcResubmits).toBe(1);
+    expect(s.stack.lihtcAwarded).toBe(true);
+    expect(s.stack.lihtcSubmitted).toBe(true); // stays true from the first submit
+  });
+
+  it('resubmitLihtc(false) increments counter and keeps lihtcAwarded false', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().submitLihtc(false);
+    useGameStore.getState().resubmitLihtc(false);
+    useGameStore.getState().resubmitLihtc(false);
+    const s = useGameStore.getState();
+    expect(s.stack.lihtcResubmits).toBe(2);
+    expect(s.stack.lihtcAwarded).toBe(false);
+  });
 });
