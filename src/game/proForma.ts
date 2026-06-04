@@ -37,7 +37,7 @@ export function computeTdc(input: {
 export function weightedAvgAmi(breakdown: Record<AmiBand, number>): number {
   const total = Object.values(breakdown).reduce((a, b) => a + b, 0);
   if (total === 0) return 0;
-  const sum = (30 * breakdown[30]) + (50 * breakdown[50]) + (60 * breakdown[60]) + (80 * breakdown[80]);
+  const sum = (30 * breakdown[30]) + (60 * breakdown[60]) + (80 * breakdown[80]);
   return sum / total;
 }
 
@@ -53,7 +53,7 @@ export function computeNoi(input: {
   vacancyRatio: number;
 }): number {
   let gpr = 0;
-  for (const ami of [30, 50, 60, 80] as AmiBand[]) {
+  for (const ami of [30, 60, 80] as AmiBand[]) {
     gpr += input.amiBreakdown[ami] * rentAtAmi(ami) * 12;
   }
   gpr += input.marketUnits * input.marketRent * 12;

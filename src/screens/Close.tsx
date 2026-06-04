@@ -73,11 +73,11 @@ export function Close() {
 
           <div className="text-xs uppercase tracking-wider text-accent font-bold mt-4 mb-1">Affordability</div>
           <div className="flex h-5 rounded overflow-hidden text-xs text-white font-bold">
-            {([30, 50, 60, 80] as AmiBand[]).map((ami) => {
+            {([30, 60, 80] as AmiBand[]).map((ami) => {
               const count = proForma.amiBreakdown[ami];
               const pct = (count / finalUnits) * 100;
               if (pct < 0.5) return null;
-              const color = ami === 30 ? 'bg-gap' : ami === 50 ? 'bg-caution' : ami === 60 ? 'bg-accent' : 'bg-debt';
+              const color = ami === 30 ? 'bg-gap' : ami === 60 ? 'bg-accent' : 'bg-debt';
               return (
                 <div key={ami} className={`${color} flex items-center justify-center`} style={{ flexBasis: `${pct}%` }}>
                   {pct >= 10 && `${count}@${ami}%`}

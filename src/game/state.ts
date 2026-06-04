@@ -30,7 +30,7 @@ const initialState: GameState = {
     intent: 'all-affordable',
   },
   proForma: {
-    amiBreakdown: { 30: 12, 50: 12, 60: 30, 80: 6 },
+    amiBreakdown: { 30: 12, 60: 36, 80: 12 },
     marketUnits: 0,
     finishLevel: 'standard',
     opexRatio: 0.38,
@@ -89,7 +89,6 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     const ratio = n / totalAffordable;
     const newBreakdown = {
       30: Math.round(s.proForma.amiBreakdown[30] * ratio),
-      50: Math.round(s.proForma.amiBreakdown[50] * ratio),
       60: Math.round(s.proForma.amiBreakdown[60] * ratio),
       80: Math.round(s.proForma.amiBreakdown[80] * ratio),
     };

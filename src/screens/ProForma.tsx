@@ -84,7 +84,7 @@ export function ProForma() {
             <div className="text-xs text-muted mt-1">
               Total affordable: {totalAffordable} · target {project.units}
             </div>
-            {[30, 50, 60, 80].map((ami) => {
+            {[30, 60, 80].map((ami) => {
               const a = ami as AmiBand;
               return (
                 <div key={ami} className="mt-2">

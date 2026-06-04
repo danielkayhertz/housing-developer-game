@@ -4,7 +4,7 @@ export type NeighborhoodId = 'englewood' | 'pilsen' | 'lakeview' | 'albany-park'
 export type BuildingType = 'walkup' | 'midrise' | 'larger';
 export type Intent = 'all-affordable' | 'mixed-income';
 export type FinishLevel = 'basic' | 'standard' | 'elevated';
-export type AmiBand = 30 | 50 | 60 | 80;
+export type AmiBand = 30 | 60 | 80;
 export type Phase = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export type SourceId =
@@ -131,8 +131,7 @@ export const LIHTC_BASELINE_WIN_RATE = 0.20; // 20% statewide
 
 export const AMI_SCORE_MULTIPLIERS: Record<AmiBand, number> = {
   30: 4,
-  50: 2.5,
-  60: 1.5,
+  60: 1.75,
   80: 1,
 };
 

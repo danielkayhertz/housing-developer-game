@@ -39,30 +39,30 @@ describe('computeTdc', () => {
 
 describe('weightedAvgAmi', () => {
   it('all 60% AMI → 60', () => {
-    expect(weightedAvgAmi({ 30: 0, 50: 0, 60: 60, 80: 0 })).toBe(60);
+    expect(weightedAvgAmi({ 30: 0, 60: 60, 80: 0 })).toBe(60);
   });
 
-  it('balanced mix → ~55%', () => {
-    // 12×30 + 12×50 + 30×60 + 6×80 = 360 + 600 + 1800 + 480 = 3240
-    // / 60 = 54
-    expect(weightedAvgAmi({ 30: 12, 50: 12, 60: 30, 80: 6 })).toBe(54);
+  it('balanced 30/60/80 mix → 58', () => {
+    // 12×30 + 36×60 + 12×80 = 360 + 2160 + 960 = 3480
+    // / 60 = 58
+    expect(weightedAvgAmi({ 30: 12, 60: 36, 80: 12 })).toBe(58);
   });
 });
 
 describe('isLihtcEligible', () => {
   it('average ≤ 60% AMI → eligible', () => {
-    expect(isLihtcEligible({ 30: 12, 50: 12, 60: 30, 80: 6 })).toBe(true);
+    expect(isLihtcEligible({ 30: 12, 60: 36, 80: 12 })).toBe(true);
   });
 
   it('average > 60% AMI → not eligible', () => {
-    expect(isLihtcEligible({ 30: 0, 50: 0, 60: 20, 80: 40 })).toBe(false);
+    expect(isLihtcEligible({ 30: 0, 60: 20, 80: 40 })).toBe(false);
   });
 });
 
 describe('computeNoi', () => {
   it('NOI = (GPR × (1 - vacancy)) × (1 - opex)', () => {
     const noi = computeNoi({
-      amiBreakdown: { 30: 0, 50: 0, 60: 60, 80: 0 },
+      amiBreakdown: { 30: 0, 60: 60, 80: 0 },
       marketUnits: 0,
       marketRent: 1150,
       opexRatio: 0.38,

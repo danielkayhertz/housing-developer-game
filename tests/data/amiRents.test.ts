@@ -10,10 +10,6 @@ describe('rentAtAmi', () => {
     expect(rentAtAmi(30)).toBe(625);
   });
 
-  it('returns 50% AMI rent', () => {
-    expect(rentAtAmi(50)).toBe(1_040);
-  });
-
   it('returns 80% AMI rent', () => {
     expect(rentAtAmi(80)).toBe(1_665);
   });
