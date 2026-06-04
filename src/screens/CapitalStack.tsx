@@ -8,7 +8,8 @@ import { Header } from '../components/Header';
 import { StackBar } from '../components/StackBar';
 import { SourceCard } from '../components/SourceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
-import { janelleLines } from '../data/characters';
+import { CharacterIntroCard } from '../components/CharacterIntroCard';
+import { janelleLines, davidLines, characters } from '../data/characters';
 import { SourceId, COMPLEXITY_PENALTY_THRESHOLD } from '../game/types';
 
 export function CapitalStack() {
@@ -94,6 +95,15 @@ export function CapitalStack() {
     <div className="max-w-6xl mx-auto p-6">
       <Header />
       <h2 className="text-2xl mt-6 mb-4">Capital Stack</h2>
+
+      <div className="mb-3">
+        <CharacterIntroCard
+          avatar={characters.david.emoji}
+          name={characters.david.name}
+          role={characters.david.role}
+          body={<p>{davidLines.capitalStackIntro}</p>}
+        />
+      </div>
 
       {/* Gap status */}
       <div className="bg-panel border border-line rounded-lg p-3 mb-3">
