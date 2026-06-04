@@ -9,7 +9,7 @@ import { StackBar } from '../components/StackBar';
 import { SourceCard } from '../components/SourceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
-import { janelleLines, davidLines, characters } from '../data/characters';
+import { janelleLines, davidLines, marcusLines, characters } from '../data/characters';
 import { ReviseSubScreen } from '../components/ReviseSubScreen';
 import { AmiBand, FinishLevel, SourceId, COMPLEXITY_PENALTY_THRESHOLD, REVISION_SOFT_PENALTY, GAP_ADVANCE_THRESHOLD } from '../game/types';
 
@@ -223,6 +223,10 @@ export function CapitalStack() {
           </div>
         </div>
       )}
+
+      <div className="mb-3">
+        <CharacterBubble characterId="marcus" line={marcusLines.capitalStackBubble} />
+      </div>
 
       {/* Source grid */}
       <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">Funding sources</div>
