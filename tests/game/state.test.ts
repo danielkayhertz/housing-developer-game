@@ -157,4 +157,31 @@ describe('useGameStore', () => {
     expect(s.stack.lihtcResubmits).toBe(2);
     expect(s.stack.lihtcAwarded).toBe(false);
   });
+
+  it('reviseLihtc(true) increments lihtcRevisions, applies penalties, sets lihtcAwarded', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.getState().submitLihtc(false);
+    const alderBefore = useGameStore.getState().entitlement.alderGoodwill;
+    const communityBefore = useGameStore.getState().entitlement.communitySupport;
+    useGameStore.getState().reviseLihtc(true);
+    const s = useGameStore.getState();
+    expect(s.stack.lihtcRevisions).toBe(1);
+    expect(s.stack.lihtcAwarded).toBe(true);
+    expect(s.entitlement.alderGoodwill).toBe(alderBefore - 4);
+    expect(s.entitlement.communitySupport).toBe(communityBefore - 2);
+  });
+
+  it('reviseLihtc penalty floors at 0 (does not go negative)', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState((s) => ({
+      entitlement: { ...s.entitlement, alderGoodwill: 2, communitySupport: 1 },
+    }));
+    useGameStore.getState().reviseLihtc(false);
+    const s = useGameStore.getState();
+    expect(s.entitlement.alderGoodwill).toBe(0);
+    expect(s.entitlement.communitySupport).toBe(0);
+  });
 });

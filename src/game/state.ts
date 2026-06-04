@@ -77,6 +77,7 @@ interface StoreActions {
   removeSource: (sourceId: string) => void;
   submitLihtc: (awarded: boolean) => void;
   resubmitLihtc: (awarded: boolean) => void;
+  reviseLihtc: (awarded: boolean) => void;
   tickMonths: (n: number) => void;
   takeEntitlementStep: (choice: StepChoiceKey, ctx?: { shrinkBy?: number }) => void;
   setOutcome: (o: GameState['outcome']) => void;
@@ -165,6 +166,19 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
       ...s.stack,
       lihtcResubmits: s.stack.lihtcResubmits + 1,
       lihtcAwarded: awarded,
+    },
+  })),
+
+  reviseLihtc: (awarded) => set((s) => ({
+    stack: {
+      ...s.stack,
+      lihtcRevisions: s.stack.lihtcRevisions + 1,
+      lihtcAwarded: awarded,
+    },
+    entitlement: {
+      ...s.entitlement,
+      alderGoodwill: Math.max(0, s.entitlement.alderGoodwill - 4),
+      communitySupport: Math.max(0, s.entitlement.communitySupport - 2),
     },
   })),
 
