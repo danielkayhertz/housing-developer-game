@@ -119,7 +119,7 @@ export function SiteAndConcept() {
               }`}
             >
               <b>🤝 Partner with a CBO</b>
-              <div className="text-muted mt-1">+18 QAP · +6 community at entitlement start · +6 mo pre-app time</div>
+              <div className="text-muted mt-1">+18 QAP · +6 community support · +6 mo pre-app time</div>
             </button>
             <button
               onClick={() => setCboPartner(false)}
