@@ -4,7 +4,8 @@ import { getNeighborhood } from '../data/neighborhoods';
 import { rentAtAmi } from '../data/amiRents';
 import { Header } from '../components/Header';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
-import { marcusLines } from '../data/characters';
+import { marcusLines, janelleLines, characters } from '../data/characters';
+import { computeLihtcScore, estimatedAwardProbability } from '../game/capitalStack';
 import { AmiBand, FinishLevel } from '../game/types';
 
 export function ProForma() {
@@ -54,6 +55,17 @@ export function ProForma() {
   const gap = computeGap({ tdc: tdcTotal, costEscalation: 0, supportableDebt: debt.amount });
   const avgAmi = weightedAvgAmi(proForma.amiBreakdown);
   const eligible = isLihtcEligible(proForma.amiBreakdown);
+  const projectedQapScore = computeLihtcScore({
+    weightedAvgAmi: avgAmi,
+    hasCboPartner: project.hasCboPartner,
+    hasLeverageCommitments: true,
+    neighborhood: project.neighborhood,
+  });
+  const projectedQapOdds = estimatedAwardProbability(projectedQapScore);
+  const projectedQapLine =
+    projectedQapScore < 50 ? janelleLines.qapScoreLow :
+    projectedQapScore < 75 ? janelleLines.qapScoreMid :
+    janelleLines.qapScoreHigh;
 
   const totalAffordable = Object.values(proForma.amiBreakdown).reduce((a, b) => a + b, 0);
 
@@ -162,6 +174,19 @@ export function ProForma() {
             <div className="text-xs uppercase tracking-wider opacity-80">Gap to close in the capital stack</div>
             <div className="text-3xl font-bold tabular">${(gap / 1_000_000).toFixed(1)}M</div>
             <div className="text-xs opacity-80 mt-1">{((gap / tdcTotal) * 100).toFixed(0)}% of TDC. Normal for affordable.</div>
+          </div>
+
+          <div className="bg-panel border border-line rounded-lg p-3">
+            <div className="text-xs uppercase tracking-wider text-accent font-bold">{characters.janelle.emoji} 9% LIHTC — projected QAP score</div>
+            <div className="mt-2 flex justify-between items-baseline">
+              <div className="text-3xl font-bold tabular">{projectedQapScore} <span className="text-muted text-base">/ 100</span></div>
+              <div className="text-right">
+                <div className="text-xs uppercase text-muted tracking-wider">Est. award probability</div>
+                <div className="text-lg font-bold tabular">{(projectedQapOdds * 100).toFixed(0)}%</div>
+              </div>
+            </div>
+            <div className="text-xs text-muted italic mt-1">Projection assumes you assemble a typical stack on the next screen.</div>
+            <div className="text-xs text-muted mt-2"><b>{characters.janelle.emoji} {characters.janelle.name}:</b> "{projectedQapLine}"</div>
           </div>
 
           <button
