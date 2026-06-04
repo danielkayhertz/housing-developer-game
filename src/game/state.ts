@@ -28,6 +28,8 @@ const initialState: GameState = {
     units: 60,
     buildingType: 'midrise',
     intent: 'all-affordable',
+    hasCboPartner: false,
+    cboTimePaid: false,
   },
   proForma: {
     amiBreakdown: { 30: 12, 60: 36, 80: 12 },
@@ -59,6 +61,7 @@ interface StoreActions {
   setUnits: (n: number) => void;
   setBuildingType: (t: BuildingType) => void;
   setIntent: (i: Intent) => void;
+  setCboPartner: (value: boolean) => void;
   setAmiUnit: (ami: AmiBand, n: number) => void;
   setMarketUnits: (n: number) => void;
   setFinishLevel: (f: FinishLevel) => void;
@@ -100,6 +103,21 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
 
   setBuildingType: (t) => set((s) => ({ project: { ...s.project, buildingType: t } })),
   setIntent: (i) => set((s) => ({ project: { ...s.project, intent: i } })),
+
+  setCboPartner: (value) => {
+    const s = get();
+    set({
+      project: {
+        ...s.project,
+        hasCboPartner: value,
+        cboTimePaid: s.project.cboTimePaid || value,
+      },
+    });
+    // Charge +6 mo the first time CBO is enabled
+    if (value && !s.project.cboTimePaid) {
+      get().tickMonths(6);
+    }
+  },
 
   setAmiUnit: (ami, n) => set((s) => ({
     proForma: {

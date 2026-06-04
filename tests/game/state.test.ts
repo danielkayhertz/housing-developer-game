@@ -60,4 +60,32 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().phase).toBe(1);
     expect(useGameStore.getState().project.neighborhood).toBe(null);
   });
+
+  it('starts with hasCboPartner=false and cboTimePaid=false', () => {
+    const s = useGameStore.getState();
+    expect(s.project.hasCboPartner).toBe(false);
+    expect(s.project.cboTimePaid).toBe(false);
+  });
+
+  it('setCboPartner(true) the first time pays 6 months and sets cboTimePaid', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.getState().setCboPartner(true);
+    const s = useGameStore.getState();
+    expect(s.project.hasCboPartner).toBe(true);
+    expect(s.project.cboTimePaid).toBe(true);
+    expect(s.monthsElapsed).toBe(6);
+  });
+
+  it('setCboPartner(false) then setCboPartner(true) only pays the 6 months once', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.getState().setCboPartner(true);
+    useGameStore.getState().setCboPartner(false);
+    useGameStore.getState().setCboPartner(true);
+    const s = useGameStore.getState();
+    expect(s.project.hasCboPartner).toBe(true);
+    expect(s.project.cboTimePaid).toBe(true);
+    expect(s.monthsElapsed).toBe(6); // unchanged after first payment
+  });
 });

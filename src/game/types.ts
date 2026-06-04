@@ -95,6 +95,8 @@ export interface GameState {
     units: number;
     buildingType: BuildingType;
     intent: Intent;
+    hasCboPartner: boolean;
+    cboTimePaid: boolean;
   };
 
   proForma: {
