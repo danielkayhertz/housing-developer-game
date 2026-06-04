@@ -12,15 +12,16 @@ describe('useGameStore', () => {
     expect(state.project.neighborhood).toBe(null);
   });
 
-  it('advancePhase increments phase up to 6', () => {
+  it('advancePhase increments phase and ceiling is 7', () => {
     const s = useGameStore.getState();
     s.advancePhase();
     expect(useGameStore.getState().phase).toBe(2);
+    // From phase 2 advance to 7 (phase 4 skips to 6 when no neighborhood / gap=0)
     s.advancePhase(); s.advancePhase(); s.advancePhase(); s.advancePhase(); s.advancePhase();
-    expect(useGameStore.getState().phase).toBe(6);
-    // Stays at 6
+    expect(useGameStore.getState().phase).toBe(7);
+    // Stays at 7
     useGameStore.getState().advancePhase();
-    expect(useGameStore.getState().phase).toBe(6);
+    expect(useGameStore.getState().phase).toBe(7);
   });
 
   it('selectNeighborhood records id', () => {
@@ -183,5 +184,61 @@ describe('useGameStore', () => {
     const s = useGameStore.getState();
     expect(s.entitlement.alderGoodwill).toBe(0);
     expect(s.entitlement.communitySupport).toBe(0);
+  });
+
+  it('shelveProject sets outcome to shelved-stack and phase to 7', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().shelveProject();
+    const s = useGameStore.getState();
+    expect(s.outcome).toBe('shelved-stack');
+    expect(s.phase).toBe(7);
+  });
+
+  it('advancePhase from phase 4 with large gap routes to phase 5 (GapResolution)', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.setState({ phase: 4 });
+    // No sources awarded → gap is large
+    useGameStore.getState().advancePhase();
+    expect(useGameStore.getState().phase).toBe(5);
+  });
+
+  it('advancePhase from phase 4 with closed gap routes to phase 6 (Entitlement)', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.setState({ phase: 4 });
+    // Add enough extraSubsidy to push gap below threshold
+    useGameStore.setState((s) => ({
+      gapResolution: { ...s.gapResolution, extraSubsidy: 100_000_000 },
+    }));
+    useGameStore.getState().advancePhase();
+    expect(useGameStore.getState().phase).toBe(6);
+  });
+
+  it('advancePhase from phase 5 goes to phase 6 (Entitlement) unconditionally', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState({ phase: 5 });
+    useGameStore.getState().advancePhase();
+    expect(useGameStore.getState().phase).toBe(6);
+  });
+
+  it('advancePhase from phase 6 goes to phase 7 (Close)', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState({ phase: 6 });
+    useGameStore.getState().advancePhase();
+    expect(useGameStore.getState().phase).toBe(7);
+  });
+
+  it('advancePhase ceiling is 7 (cannot go past Close)', () => {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState({ phase: 7 });
+    useGameStore.getState().advancePhase();
+    expect(useGameStore.getState().phase).toBe(7);
   });
 });

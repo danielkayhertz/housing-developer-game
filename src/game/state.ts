@@ -17,8 +17,10 @@ import {
   SOFT_COST_RATIO,
   CONTINGENCY_RATIO,
   LOWER_QUALITY_HARD_MULTIPLIER,
+  GAP_ADVANCE_THRESHOLD,
 } from './types';
 import { applyChoice } from './entitlement';
+import { computeEffectiveGap } from './gapResolution';
 
 const initialState: GameState = {
   phase: 1,
@@ -82,6 +84,7 @@ interface StoreActions {
   tickMonths: (n: number) => void;
   takeEntitlementStep: (choice: StepChoiceKey, ctx?: { shrinkBy?: number }) => void;
   setOutcome: (o: GameState['outcome']) => void;
+  shelveProject: () => void;
 }
 
 export const useGameStore = create<GameState & StoreActions>((set, get) => ({
@@ -90,9 +93,15 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
   reset: () => set({ ...initialState }),
 
   advancePhase: () => {
-    // Ceiling stays at 6 until Phase 2 ships the GapResolution screen at phase 5.
-    // Update to Math.min(7, ...) and add phaseNames[7] in Header when that lands.
-    const next = Math.min(6, get().phase + 1) as Phase;
+    const s = get();
+    let next: Phase;
+    if (s.phase === 4) {
+      // Capital Stack → GapResolution if the gap is still too big, else Entitlement.
+      const { gap } = computeEffectiveGap(s);
+      next = gap > GAP_ADVANCE_THRESHOLD ? 5 : 6;
+    } else {
+      next = Math.min(7, s.phase + 1) as Phase;
+    }
     set({ phase: next });
     track('phase_advanced', { to: next });
   },
@@ -263,4 +272,6 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
   }),
 
   setOutcome: (o) => set({ outcome: o }),
+
+  shelveProject: () => set({ outcome: 'shelved-stack', phase: 7 }),
 }));
