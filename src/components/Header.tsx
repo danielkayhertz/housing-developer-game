@@ -2,6 +2,7 @@ import { useGameStore } from '../game/state';
 import { getNeighborhood } from '../data/neighborhoods';
 import { computeTdc } from '../game/proForma';
 import { totalCommitted } from '../game/capitalStack';
+import { TimelinePill } from './TimelinePill';
 
 export function Header() {
   const phase = useGameStore((s) => s.phase);
@@ -42,8 +43,9 @@ export function Header() {
       <span>
         Gap <b className={gap > 0 ? 'text-gap tabular' : 'text-equity tabular'}>${(gap / 1_000_000).toFixed(1)}M</b>
       </span>
-      <span className="ml-auto">
-        Months <b className="text-ink tabular">{monthsElapsed}</b> · Phase <b className="text-ink">{phase} / 6 — {phaseNames[phase]}</b>
+      <span className="ml-auto flex items-center gap-2">
+        <TimelinePill months={monthsElapsed} />
+        <span>Phase <b className="text-ink">{phase} / 6 — {phaseNames[phase]}</b></span>
       </span>
     </div>
   );
