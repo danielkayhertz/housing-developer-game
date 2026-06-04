@@ -32,3 +32,6 @@ dist-ssr
 
 # Superpowers brainstorm artifacts
 .superpowers/
+
+# Git worktrees
+.worktrees/
