@@ -39,6 +39,8 @@ export const ashaLines = {
   financeReframe: 'The cost number is going to follow you forever. If you can shift the conversation to per-unit-of-impact, A is your best path.',
   financeConcede: 'Conceding on TIF costs you real money. Find that gap from somewhere — quickly.',
   financeStakeholders: 'Coalition testimony works but burns the goodwill you\'ll want at lease-up and beyond.',
+  gapResolutionIntro: "It doesn't go to Council with an open gap. Three ways out — pick what you can stomach.",
+  gapResolutionShelve: "I'm sorry. Sometimes the math just doesn't work in this neighborhood. We'll come back to this site.",
 };
 
 export const janelleLines = {
