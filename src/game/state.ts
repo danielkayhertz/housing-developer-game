@@ -106,15 +106,21 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
 
   setCboPartner: (value) => {
     const s = get();
+    const firstTimeOn = value && !s.project.cboTimePaid;
     set({
       project: {
         ...s.project,
         hasCboPartner: value,
         cboTimePaid: s.project.cboTimePaid || value,
       },
+      entitlement: firstTimeOn
+        ? {
+            ...s.entitlement,
+            communitySupport: Math.min(100, s.entitlement.communitySupport + 6),
+          }
+        : s.entitlement,
     });
-    // Charge +6 mo the first time CBO is enabled
-    if (value && !s.project.cboTimePaid) {
+    if (firstTimeOn) {
       get().tickMonths(6);
     }
   },

@@ -88,4 +88,23 @@ describe('useGameStore', () => {
     expect(s.project.cboTimePaid).toBe(true);
     expect(s.monthsElapsed).toBe(6); // unchanged after first payment
   });
+
+  it('setCboPartner(true) first time bumps community support by 6', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    const before = useGameStore.getState().entitlement.communitySupport;
+    useGameStore.getState().setCboPartner(true);
+    const after = useGameStore.getState().entitlement.communitySupport;
+    expect(after).toBe(before + 6);
+  });
+
+  it('setCboPartner(false) then setCboPartner(true) bumps community only once', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    const before = useGameStore.getState().entitlement.communitySupport;
+    useGameStore.getState().setCboPartner(true);
+    useGameStore.getState().setCboPartner(false);
+    useGameStore.getState().setCboPartner(true);
+    expect(useGameStore.getState().entitlement.communitySupport).toBe(before + 6);
+  });
 });
