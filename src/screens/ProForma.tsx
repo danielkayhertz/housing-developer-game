@@ -128,8 +128,7 @@ export function ProForma() {
           <div className="bg-panel border border-line rounded-lg p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold">NOI &amp; supportable debt</div>
             <div className="text-sm mt-2 space-y-1 tabular">
-              <div className="flex justify-between"><span>NOI</span><b>${(noi / 1000).toFixed(0)}k</b></div>
-              <div className="flex justify-between"><span>Stabilized value (NOI ÷ 6%)</span><b>${(stabilizedValue / 1_000_000).toFixed(1)}M</b></div>
+              <div className="flex justify-between"><span>NOI (annual)</span><b>${(noi / 1000).toFixed(0)}k</b></div>
               <div className="flex justify-between"><span>Supportable debt <span className="text-caution text-xs">({debt.binding}-limited)</span></span><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
             </div>
           </div>
