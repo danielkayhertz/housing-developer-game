@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getReactions, Reaction } from '../../src/data/closeReactions';
+import { getReactions } from '../../src/data/closeReactions';
 import { GameState } from '../../src/game/types';
 
 // Deep-partial merge so nested fields can be overridden without spreading the whole object.
