@@ -1,3 +1,7 @@
+/**
+ * Format a month count as "1 yr 6 mo" / "3 mo" / "2 yr".
+ * Fractional inputs are floored.
+ */
 export function formatElapsed(months: number): string {
   const m = Math.max(0, Math.floor(months));
   const years = Math.floor(m / 12);
