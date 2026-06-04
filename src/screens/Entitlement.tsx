@@ -6,7 +6,21 @@ import { Meter } from '../components/Meter';
 import { ChoiceCard } from '../components/ChoiceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { ashaLines, financeAttackLines } from '../data/characters';
-import { StepChoiceKey } from '../game/types';
+import {
+  StepChoiceKey,
+  HARD_COST_PER_UNIT,
+  FINISH_MULTIPLIER,
+  SOFT_COST_RATIO,
+  CONTINGENCY_RATIO,
+  COST_ESCALATION_PER_YEAR,
+} from '../game/types';
+
+const STEP_DURATIONS: Record<number, number> = {
+  1: 6,  // pre-app
+  2: 9,  // community
+  3: 3,  // zoning committee
+  4: 3,  // finance committee
+};
 
 const STEP_NAMES = ['', 'Pre-app intake', 'Community meeting', 'Committee on Zoning', 'Committee on Finance'];
 
@@ -37,6 +51,7 @@ export function Entitlement() {
   const project = useGameStore((s) => s.project);
   const stack = useGameStore((s) => s.stack);
   const entitlement = useGameStore((s) => s.entitlement);
+  const proForma = useGameStore((s) => s.proForma);
   const takeStep = useGameStore((s) => s.takeEntitlementStep);
   const tickMonths = useGameStore((s) => s.tickMonths);
   const advancePhase = useGameStore((s) => s.advancePhase);
@@ -50,8 +65,9 @@ export function Entitlement() {
   const allStepsComplete = entitlement.pastChoices.length >= 4;
 
   function onChoose(choice: StepChoiceKey) {
+    const months = STEP_DURATIONS[entitlement.currentStep] ?? 0;
     takeStep(choice);
-    tickMonths(12);
+    tickMonths(months);
   }
 
   function onComplete() {
@@ -136,15 +152,23 @@ export function Entitlement() {
           )}
 
           <div className="grid grid-cols-3 gap-2 mt-3">
-            {STEP_CHOICES[currentStep].map((c) => (
-              <ChoiceCard
-                key={c.key}
-                title={c.title}
-                description={c.description}
-                consequences={c.consequences}
-                onClick={() => onChoose(c.key)}
-              />
-            ))}
+            {STEP_CHOICES[currentStep].map((c) => {
+              const months = STEP_DURATIONS[currentStep] ?? 0;
+              const hardPerU = HARD_COST_PER_UNIT[project.buildingType] * FINISH_MULTIPLIER[proForma.finishLevel];
+              const hard = hardPerU * project.units;
+              const escThisStep = hard * (COST_ESCALATION_PER_YEAR / 12) * months * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
+              const timeLabel = `+${months} mo · +$${(escThisStep / 1_000_000).toFixed(1)}M cost escalation`;
+              return (
+                <ChoiceCard
+                  key={c.key}
+                  title={c.title}
+                  description={c.description}
+                  consequences={c.consequences}
+                  timeLabel={timeLabel}
+                  onClick={() => onChoose(c.key)}
+                />
+              );
+            })}
           </div>
 
           <div className="mt-3">

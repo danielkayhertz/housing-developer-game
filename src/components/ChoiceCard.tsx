@@ -2,11 +2,12 @@ interface ChoiceCardProps {
   title: string;
   description: string;
   consequences: string;
+  timeLabel?: string;
   selected?: boolean;
   onClick: () => void;
 }
 
-export function ChoiceCard({ title, description, consequences, selected = false, onClick }: ChoiceCardProps) {
+export function ChoiceCard({ title, description, consequences, timeLabel, selected = false, onClick }: ChoiceCardProps) {
   return (
     <button
       onClick={onClick}
@@ -17,6 +18,7 @@ export function ChoiceCard({ title, description, consequences, selected = false,
       <div className="font-bold text-sm">{title}</div>
       <div className="text-muted text-xs mt-1">{description}</div>
       <div className="text-equity text-xs mt-2">{consequences}</div>
+      {timeLabel && <div className="text-caution text-xs mt-1 tabular">{timeLabel}</div>}
     </button>
   );
 }
