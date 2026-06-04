@@ -3,7 +3,7 @@ import { computeTdc, computeNoi, computeSupportableDebt, computeGap, weightedAvg
 import { getNeighborhood } from '../data/neighborhoods';
 import { rentAtAmi } from '../data/amiRents';
 import { Header } from '../components/Header';
-import { CharacterBubble } from '../components/CharacterBubble';
+import { CharacterIntroCard } from '../components/CharacterIntroCard';
 import { marcusLines } from '../data/characters';
 import { AmiBand, FinishLevel } from '../game/types';
 
@@ -42,6 +42,15 @@ export function ProForma() {
     ltv: 0.80,
     stabilizedValue,
   });
+  const dscrRequired = 1.20;
+  const annualRate = 0.065;
+  const amortYears = 30;
+  const cashForDebtService = noi / dscrRequired;
+  const k = (() => {
+    const i = annualRate / 12;
+    const nMonths = amortYears * 12;
+    return 12 * (i / (1 - Math.pow(1 + i, -nMonths)));
+  })();
   const gap = computeGap({ tdc: tdcTotal, costEscalation: 0, supportableDebt: debt.amount });
   const avgAmi = weightedAvgAmi(proForma.amiBreakdown);
   const eligible = isLihtcEligible(proForma.amiBreakdown);
@@ -111,6 +120,22 @@ export function ProForma() {
 
         {/* RIGHT — math */}
         <div className="space-y-3">
+          <CharacterIntroCard
+            avatar="🏦"
+            name="Marcus Bell"
+            role="Construction Lender, Loop Federal Bank"
+            body={<p>{marcusLines.intro}</p>}
+            footer={
+              <div className="bg-panel border border-line rounded p-2 text-xs tabular">
+                <div className="text-muted uppercase tracking-wider mb-1">DSCR walk-through</div>
+                <div className="flex justify-between"><span>NOI (annual)</span><b>${(noi / 1000).toFixed(0)}k</b></div>
+                <div className="flex justify-between"><span>÷ Required DSCR ({dscrRequired.toFixed(2)})</span><b>${(cashForDebtService / 1000).toFixed(0)}k</b></div>
+                <div className="flex justify-between"><span>÷ Annual mortgage constant ({k.toFixed(4)})</span><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
+                <div className="border-t border-line mt-1 pt-1 flex justify-between"><b>Supportable loan</b><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
+                <div className="text-muted mt-2 italic">{marcusLines.walkthroughClosing(debt.amount, tdcTotal)}</div>
+              </div>
+            }
+          />
           <div className="bg-panel border border-line rounded-lg p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold">TDC bottom-up</div>
             <div className="text-sm mt-2 space-y-1 tabular">
@@ -138,8 +163,6 @@ export function ProForma() {
             <div className="text-3xl font-bold tabular">${(gap / 1_000_000).toFixed(1)}M</div>
             <div className="text-xs opacity-80 mt-1">{((gap / tdcTotal) * 100).toFixed(0)}% of TDC. Normal for affordable.</div>
           </div>
-
-          <CharacterBubble characterId="marcus" line={debt.binding === 'DSCR' ? marcusLines.dscrLimited : marcusLines.ltvLimited} />
 
           <button
             onClick={onAdvance}
