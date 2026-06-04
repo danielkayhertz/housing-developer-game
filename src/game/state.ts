@@ -78,6 +78,7 @@ interface StoreActions {
   submitLihtc: (awarded: boolean) => void;
   resubmitLihtc: (awarded: boolean) => void;
   reviseLihtc: (awarded: boolean) => void;
+  applyGapAction: (action: 'askSubsidy' | 'redesignSmaller' | 'lowerQuality') => void;
   tickMonths: (n: number) => void;
   takeEntitlementStep: (choice: StepChoiceKey, ctx?: { shrinkBy?: number }) => void;
   setOutcome: (o: GameState['outcome']) => void;
@@ -181,6 +182,48 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
       communitySupport: Math.max(0, s.entitlement.communitySupport - 2),
     },
   })),
+
+  applyGapAction: (action) => {
+    const s = get();
+    if (action === 'askSubsidy') {
+      set({
+        gapResolution: {
+          ...s.gapResolution,
+          extraSubsidy: s.gapResolution.extraSubsidy + 1_000_000,
+        },
+        entitlement: {
+          ...s.entitlement,
+          alderGoodwill: Math.max(0, s.entitlement.alderGoodwill - 15),
+        },
+      });
+      get().tickMonths(9);
+    } else if (action === 'redesignSmaller') {
+      set({
+        gapResolution: {
+          ...s.gapResolution,
+          shrinkBy: s.gapResolution.shrinkBy + 10,
+        },
+        entitlement: {
+          ...s.entitlement,
+          communitySupport: Math.min(100, s.entitlement.communitySupport + 8),
+        },
+      });
+      get().tickMonths(6);
+    } else if (action === 'lowerQuality') {
+      if (s.gapResolution.lowerQualityUsed) return; // one-shot guard
+      set({
+        gapResolution: {
+          ...s.gapResolution,
+          lowerQualityUsed: true,
+        },
+        entitlement: {
+          ...s.entitlement,
+          communitySupport: Math.max(0, s.entitlement.communitySupport - 12),
+        },
+      });
+      get().tickMonths(3);
+    }
+  },
 
   tickMonths: (n: number) => set((s) => {
     if (!s.project.neighborhood) return {};

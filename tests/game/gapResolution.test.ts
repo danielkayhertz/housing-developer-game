@@ -57,3 +57,77 @@ describe('computeEffectiveGap', () => {
     expect(effectiveUnits).toBe(0);
   });
 });
+
+describe('applyGapAction store action', () => {
+  function setup() {
+    useGameStore.getState().reset();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+  }
+
+  it('askSubsidy: +1M extraSubsidy, -15 alder, +9 months', () => {
+    setup();
+    const monthsBefore = useGameStore.getState().monthsElapsed;
+    const alderBefore = useGameStore.getState().entitlement.alderGoodwill;
+    useGameStore.getState().applyGapAction('askSubsidy');
+    const s = useGameStore.getState();
+    expect(s.gapResolution.extraSubsidy).toBe(1_000_000);
+    expect(s.entitlement.alderGoodwill).toBe(alderBefore - 15);
+    expect(s.monthsElapsed).toBe(monthsBefore + 9);
+  });
+
+  it('askSubsidy is repeatable; alder floors at 0', () => {
+    setup();
+    useGameStore.setState((s) => ({
+      entitlement: { ...s.entitlement, alderGoodwill: 10 },
+    }));
+    useGameStore.getState().applyGapAction('askSubsidy');
+    useGameStore.getState().applyGapAction('askSubsidy');
+    const s = useGameStore.getState();
+    expect(s.gapResolution.extraSubsidy).toBe(2_000_000);
+    expect(s.entitlement.alderGoodwill).toBe(0);
+  });
+
+  it('redesignSmaller: +10 shrinkBy, +8 community, +6 months', () => {
+    setup();
+    const monthsBefore = useGameStore.getState().monthsElapsed;
+    const communityBefore = useGameStore.getState().entitlement.communitySupport;
+    useGameStore.getState().applyGapAction('redesignSmaller');
+    const s = useGameStore.getState();
+    expect(s.gapResolution.shrinkBy).toBe(10);
+    expect(s.entitlement.communitySupport).toBe(communityBefore + 8);
+    expect(s.monthsElapsed).toBe(monthsBefore + 6);
+  });
+
+  it('redesignSmaller community caps at 100', () => {
+    setup();
+    useGameStore.setState((s) => ({
+      entitlement: { ...s.entitlement, communitySupport: 95 },
+    }));
+    useGameStore.getState().applyGapAction('redesignSmaller');
+    expect(useGameStore.getState().entitlement.communitySupport).toBe(100);
+  });
+
+  it('lowerQuality: sets flag, -12 community, +3 months', () => {
+    setup();
+    const monthsBefore = useGameStore.getState().monthsElapsed;
+    const communityBefore = useGameStore.getState().entitlement.communitySupport;
+    useGameStore.getState().applyGapAction('lowerQuality');
+    const s = useGameStore.getState();
+    expect(s.gapResolution.lowerQualityUsed).toBe(true);
+    expect(s.entitlement.communitySupport).toBe(communityBefore - 12);
+    expect(s.monthsElapsed).toBe(monthsBefore + 3);
+  });
+
+  it('lowerQuality is one-shot: second call is a no-op (no extra community penalty, no extra months)', () => {
+    setup();
+    useGameStore.getState().applyGapAction('lowerQuality');
+    const after1 = useGameStore.getState();
+    const communityAfter1 = after1.entitlement.communitySupport;
+    const monthsAfter1 = after1.monthsElapsed;
+    useGameStore.getState().applyGapAction('lowerQuality');
+    const after2 = useGameStore.getState();
+    expect(after2.entitlement.communitySupport).toBe(communityAfter1);
+    expect(after2.monthsElapsed).toBe(monthsAfter1);
+  });
+});
