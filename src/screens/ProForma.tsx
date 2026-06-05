@@ -5,6 +5,7 @@ import { rentAtAmi } from '../data/amiRents';
 import { Header } from '../components/Header';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
 import { JargonScreenScope } from '../components/JargonScreenScope';
+import { TooltipTerm } from '../components/TooltipTerm';
 import { marcusLines, janelleLines, characters } from '../data/characters';
 import { computeLihtcScore, estimatedAwardProbability } from '../game/capitalStack';
 import { AmiBand, FinishLevel, BuildingType, HARD_COST_PER_UNIT, LAND_COST_BUILDING_MULTIPLIER, SOFT_COST_RATIO, CONTINGENCY_RATIO, MIXED_INCOME_QAP_PENALTY } from '../game/types';
@@ -118,7 +119,7 @@ export function ProForma() {
           </div>
 
           <div className="bg-panel border border-line rounded-lg p-3">
-            <div className="text-xs uppercase tracking-wider text-accent font-bold">Lever 2 — Affordable AMI breakdown</div>
+            <div className="text-xs uppercase tracking-wider text-accent font-bold">Lever 2 — Affordable <TooltipTerm term="AMI">AMI</TooltipTerm> breakdown</div>
             <div className="text-xs text-muted mt-1">
               Total affordable: {totalAffordable}{project.intent === 'mixed-income' ? ` · market: ${proForma.marketUnits ?? 0}` : ''} · target {project.units}
             </div>
@@ -173,7 +174,7 @@ export function ProForma() {
             body={<p>{marcusLines.intro}</p>}
             footer={
               <div className="bg-panel border border-line rounded p-2 text-xs tabular">
-                <div className="text-muted uppercase tracking-wider mb-1">DSCR walk-through</div>
+                <div className="text-muted uppercase tracking-wider mb-1"><TooltipTerm term="DSCR">DSCR</TooltipTerm> walk-through</div>
                 <div className="flex justify-between"><span>NOI (annual)</span><b>${(noi / 1000).toFixed(0)}k</b></div>
                 <div className="flex justify-between"><span>÷ Required DSCR ({dscrRequired.toFixed(2)})</span><b>${(cashForDebtService / 1000).toFixed(0)}k</b></div>
                 <div className="flex justify-between"><span>÷ Annual mortgage constant ({k.toFixed(4)})</span><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
@@ -183,7 +184,7 @@ export function ProForma() {
             }
           />
           <div className="bg-panel border border-line rounded-lg p-3">
-            <div className="text-xs uppercase tracking-wider text-accent font-bold">TDC bottom-up</div>
+            <div className="text-xs uppercase tracking-wider text-accent font-bold"><TooltipTerm term="TDC">TDC</TooltipTerm> bottom-up</div>
             <div className="text-sm mt-2 space-y-1 tabular">
               <div className="flex justify-between">
                 <span>
@@ -225,7 +226,7 @@ export function ProForma() {
           </div>
 
           <div className="bg-panel border border-line rounded-lg p-3">
-            <div className="text-xs uppercase tracking-wider text-accent font-bold">NOI &amp; supportable debt</div>
+            <div className="text-xs uppercase tracking-wider text-accent font-bold"><TooltipTerm term="NOI">NOI</TooltipTerm> &amp; supportable debt</div>
             <div className="text-sm mt-2 space-y-1 tabular">
               <div className="flex justify-between"><span>NOI (annual)</span><b>${(noi / 1000).toFixed(0)}k</b></div>
               <div className="flex justify-between"><span>Supportable debt <span className="text-caution text-xs">({debt.binding}-limited)</span></span><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
@@ -239,7 +240,7 @@ export function ProForma() {
           </div>
 
           <div className="bg-panel border border-line rounded-lg p-3">
-            <div className="text-xs uppercase tracking-wider text-accent font-bold">{characters.janelle.emoji} 9% LIHTC — projected QAP score</div>
+            <div className="text-xs uppercase tracking-wider text-accent font-bold">{characters.janelle.emoji} 9% <TooltipTerm term="LIHTC">LIHTC</TooltipTerm> — projected <TooltipTerm term="QAP">QAP</TooltipTerm> score</div>
             <div className="mt-2 flex justify-between items-baseline">
               <div className="text-3xl font-bold tabular">{projectedQapScore} <span className="text-muted text-base">/ 100</span></div>
               <div className="text-right">
