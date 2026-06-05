@@ -1,12 +1,16 @@
-import { BuildingType, StepChoiceKey } from './types';
+import { BuildingType, NeighborhoodId, StepChoiceKey } from './types';
+import { getNeighborhood } from '../data/neighborhoods';
 
 export type EntitlementPath = 'by-right' | 'zma' | 'pd';
 
 export function resolveEntitlementPath(input: {
   buildingType: BuildingType;
   units: number;
+  neighborhood: NeighborhoodId;
 }): EntitlementPath {
+  const n = getNeighborhood(input.neighborhood);
   if (input.buildingType === 'larger') return 'pd';
+  if (n.hooks.jeffersonParkSfrOnly && input.buildingType !== 'larger') return 'zma';
   if (input.buildingType === 'walkup' && input.units >= 40) return 'pd';
   if (input.buildingType === 'midrise') return 'zma';
   return 'by-right'; // walkup < 40 units

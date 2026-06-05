@@ -6,16 +6,30 @@ import {
 } from '../../src/game/entitlement';
 
 describe('resolveEntitlementPath', () => {
-  it('Mid-rise + zoning change needed → Zoning Map Amendment path', () => {
-    expect(resolveEntitlementPath({ buildingType: 'midrise', units: 60 })).toBe('zma');
+  it('larger always returns pd', () => {
+    expect(resolveEntitlementPath({ buildingType: 'larger', units: 80, neighborhood: 'englewood' })).toBe('pd');
+    expect(resolveEntitlementPath({ buildingType: 'larger', units: 80, neighborhood: 'jefferson-park' })).toBe('pd');
   });
 
-  it('Walk-up at 60 units → Planned Development path', () => {
-    expect(resolveEntitlementPath({ buildingType: 'walkup', units: 60 })).toBe('pd');
+  it('midrise returns zma in any neighborhood', () => {
+    expect(resolveEntitlementPath({ buildingType: 'midrise', units: 50, neighborhood: 'englewood' })).toBe('zma');
+    expect(resolveEntitlementPath({ buildingType: 'midrise', units: 50, neighborhood: 'jefferson-park' })).toBe('zma');
   });
 
-  it('Larger building → Planned Development', () => {
-    expect(resolveEntitlementPath({ buildingType: 'larger', units: 60 })).toBe('pd');
+  it('walkup < 40 by-right in non-Jefferson-Park neighborhoods', () => {
+    expect(resolveEntitlementPath({ buildingType: 'walkup', units: 24, neighborhood: 'englewood' })).toBe('by-right');
+    expect(resolveEntitlementPath({ buildingType: 'walkup', units: 24, neighborhood: 'pilsen' })).toBe('by-right');
+    expect(resolveEntitlementPath({ buildingType: 'walkup', units: 24, neighborhood: 'albany-park' })).toBe('by-right');
+  });
+
+  it('walkup in Jefferson Park always returns zma (SFR override)', () => {
+    expect(resolveEntitlementPath({ buildingType: 'walkup', units: 24, neighborhood: 'jefferson-park' })).toBe('zma');
+    expect(resolveEntitlementPath({ buildingType: 'walkup', units: 39, neighborhood: 'jefferson-park' })).toBe('zma');
+  });
+
+  it('walkup ≥ 40 returns pd in non-Jefferson-Park (existing rule)', () => {
+    expect(resolveEntitlementPath({ buildingType: 'walkup', units: 40, neighborhood: 'englewood' })).toBe('pd');
+    expect(resolveEntitlementPath({ buildingType: 'walkup', units: 50, neighborhood: 'albany-park' })).toBe('pd');
   });
 });
 

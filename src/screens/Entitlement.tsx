@@ -60,7 +60,11 @@ export function Entitlement() {
 
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
-  const path = resolveEntitlementPath({ buildingType: project.buildingType, units: project.units });
+  const path = resolveEntitlementPath({
+    buildingType: project.buildingType,
+    units: project.units,
+    neighborhood: project.neighborhood!,  // null-checked earlier in render
+  });
 
   const currentStep = entitlement.currentStep;
   const allStepsComplete = entitlement.pastChoices.length >= 4;
