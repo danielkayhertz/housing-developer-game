@@ -297,6 +297,19 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
 
   takeEntitlementStep: (choice, step, ctx = {}) => set((s) => {
     const consequence = applyChoice(choice, ctx);
+    let newCommunity = Math.max(0, Math.min(100, s.entitlement.communitySupport + consequence.communityDelta));
+
+    // Albany Park multilingual-skip cap
+    const n = s.project.neighborhood ? getNeighborhood(s.project.neighborhood) : null;
+    if (n?.hooks.albanyParkMultilingualChoice) {
+      const skippedMultilingual = s.entitlement.pastChoices.some(
+        (c) => c.step === 1 && c.choice !== 'preapp-multilingual'
+      );
+      if (skippedMultilingual) {
+        newCommunity = Math.min(50, newCommunity);
+      }
+    }
+
     return {
       entitlement: {
         ...s.entitlement,
@@ -313,7 +326,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
           },
         ],
         alderGoodwill: Math.max(0, Math.min(100, s.entitlement.alderGoodwill + consequence.alderDelta)),
-        communitySupport: Math.max(0, Math.min(100, s.entitlement.communitySupport + consequence.communityDelta)),
+        communitySupport: newCommunity,
         projectShrinkBy: s.entitlement.projectShrinkBy + consequence.shrinkBy,
       },
     };
