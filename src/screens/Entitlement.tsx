@@ -15,6 +15,7 @@ import {
   COST_ESCALATION_PER_YEAR,
   DENSITY_VARIANCE_TDC_PER_UNIT,
   DENSITY_VARIANCE_MONTHS,
+  ARO_FLOOR_AFFORDABLE_SHARE,
 } from '../game/types';
 
 export const stepsByPath: Record<EntitlementPath, number[]> = {
@@ -95,6 +96,17 @@ export function Entitlement() {
   }
 
   function onComplete() {
+    const affordableUnits =
+      proForma.amiBreakdown[30] + proForma.amiBreakdown[60] + proForma.amiBreakdown[80];
+    const totalUnits = affordableUnits + (proForma.marketUnits ?? 0);
+    const affordableShare = totalUnits > 0 ? affordableUnits / totalUnits : 1;
+
+    if (affordableShare < ARO_FLOOR_AFFORDABLE_SHARE) {
+      setOutcome('shelved-aro');
+      advancePhase();
+      return;
+    }
+
     if (entitlement.alderGoodwill < 20) {
       setOutcome('shelved-alder');
     } else if (entitlement.communitySupport < 25) {
