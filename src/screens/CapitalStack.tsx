@@ -11,6 +11,7 @@ import { CharacterBubble } from '../components/CharacterBubble';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
 import { janelleLines, davidLines, marcusLines, characters } from '../data/characters';
 import { ReviseSubScreen } from '../components/ReviseSubScreen';
+import { LiveGapRow } from '../components/LiveGapRow';
 import { AmiBand, FinishLevel, SourceId, COMPLEXITY_PENALTY_THRESHOLD, REVISION_SOFT_PENALTY, GAP_ADVANCE_THRESHOLD } from '../game/types';
 import { JargonScreenScope } from '../components/JargonScreenScope';
 import { TooltipTerm } from '../components/TooltipTerm';
@@ -322,17 +323,9 @@ function CutCostsSubScreen({ onDone }: { onDone: () => void }) {
   const setUnits = useGameStore((s) => s.setUnits);
   const setFinishLevel = useGameStore((s) => s.setFinishLevel);
   const setAmiUnit = useGameStore((s) => s.setAmiUnit);
-  const costEscalation = useGameStore((s) => s.costEscalation);
 
   if (!project.neighborhood) return null;
 
-  const tdcParts = computeTdc({
-    neighborhood: project.neighborhood,
-    units: project.units,
-    buildingType: project.buildingType,
-    finishLevel: proForma.finishLevel,
-  });
-  const tdc = tdcParts.total + costEscalation;
   const totalAffordable = Object.values(proForma.amiBreakdown).reduce((a, b) => a + b, 0);
 
   return (
@@ -398,10 +391,7 @@ function CutCostsSubScreen({ onDone }: { onDone: () => void }) {
         })}
       </div>
 
-      <div className="bg-bg p-3 rounded-lg text-sm tabular flex justify-between">
-        <span className="text-muted">Live <TooltipTerm term="TDC">TDC</TooltipTerm> preview</span>
-        <b>${(tdc / 1_000_000).toFixed(1)}M</b>
-      </div>
+      <LiveGapRow />
     </ReviseSubScreen>
   );
 }
@@ -485,6 +475,8 @@ function QapOddsSubScreen({
         <span className="text-muted">Projected score</span>
         <b>{projectedScore} / 100 · {(projectedOdds * 100).toFixed(0)}% odds</b>
       </div>
+
+      <LiveGapRow />
 
       <button
         onClick={onCancel}
