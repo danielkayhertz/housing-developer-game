@@ -21,6 +21,7 @@ export function ProForma() {
   const setAmiUnit = useGameStore((s) => s.setAmiUnit);
   const setMarketUnits = useGameStore((s) => s.setMarketUnits);
   const setFinishLevel = useGameStore((s) => s.setFinishLevel);
+  const setCboPartner = useGameStore((s) => s.setCboPartner);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
   const tickMonths = useGameStore((s) => s.tickMonths);
@@ -161,6 +162,32 @@ export function ProForma() {
             )}
             <div className={`mt-3 p-2 rounded text-xs ${eligible ? 'bg-bg' : 'bg-gap text-white'}`}>
               Weighted avg: <b>{avgAmi.toFixed(0)}% AMI</b> · {eligible ? 'LIHTC-eligible ✓' : 'LIHTC ineligible — average exceeds 60%'}
+            </div>
+          </div>
+
+          <div className="bg-panel border border-line rounded-lg p-3">
+            <div className="text-xs uppercase tracking-wider text-accent font-bold">
+              Lever 3 — <TooltipTerm term="CBO">CBO</TooltipTerm> partner
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <button
+                onClick={() => setCboPartner(true)}
+                className={`p-2 text-xs rounded border-2 transition text-left ${
+                  project.hasCboPartner ? 'bg-bg border-accent' : 'bg-panel border-line hover:border-accent'
+                }`}
+              >
+                <b>🤝 Partner with a CBO</b>
+                <div className="text-muted mt-1">+18 QAP · +6 community support{!project.cboTimePaid && ' · +6 mo first time'}</div>
+              </button>
+              <button
+                onClick={() => setCboPartner(false)}
+                className={`p-2 text-xs rounded border-2 transition text-left ${
+                  !project.hasCboPartner ? 'bg-bg border-accent' : 'bg-panel border-line hover:border-accent'
+                }`}
+              >
+                <b>Go solo</b>
+                <div className="text-muted mt-1">Faster start, but no QAP bonus and you'll need to earn community support cold.</div>
+              </button>
             </div>
           </div>
         </div>

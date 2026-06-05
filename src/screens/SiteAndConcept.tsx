@@ -15,7 +15,6 @@ export function SiteAndConcept() {
   const setUnits = useGameStore((s) => s.setUnits);
   const setBuildingType = useGameStore((s) => s.setBuildingType);
   const setIntent = useGameStore((s) => s.setIntent);
-  const setCboPartner = useGameStore((s) => s.setCboPartner);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
 
@@ -140,29 +139,6 @@ export function SiteAndConcept() {
                 Some affordability still required under the <TooltipTerm term="ARO">ARO</TooltipTerm>.
               </div>
             </div>
-          </div>
-
-          {/* CBO partner */}
-          <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">5. <TooltipTerm term="CBO">CBO</TooltipTerm> partner</div>
-          <div className="grid grid-cols-2 gap-2 mb-6">
-            <button
-              onClick={() => setCboPartner(true)}
-              className={`p-2 text-xs rounded border-2 transition text-left ${
-                project.hasCboPartner ? 'bg-bg border-accent' : 'bg-panel border-line hover:border-accent'
-              }`}
-            >
-              <b>🤝 Partner with a CBO</b>
-              <div className="text-muted mt-1">+18 QAP · +6 community support · +6 mo pre-app time</div>
-            </button>
-            <button
-              onClick={() => setCboPartner(false)}
-              className={`p-2 text-xs rounded border-2 transition text-left ${
-                !project.hasCboPartner ? 'bg-bg border-accent' : 'bg-panel border-line hover:border-accent'
-              }`}
-            >
-              <b>Go solo</b>
-              <div className="text-muted mt-1">Faster start, but you'll need to earn community support cold.</div>
-            </button>
           </div>
 
           <button
