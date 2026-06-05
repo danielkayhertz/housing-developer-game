@@ -1,6 +1,6 @@
 // src/game/types.ts
 
-export type NeighborhoodId = 'englewood' | 'pilsen' | 'lakeview' | 'albany-park';
+export type NeighborhoodId = 'englewood' | 'pilsen' | 'jefferson-park' | 'albany-park';
 export type BuildingType = 'walkup' | 'midrise' | 'larger';
 export type Intent = 'all-affordable' | 'mixed-income';
 export type FinishLevel = 'basic' | 'standard' | 'elevated';
@@ -21,6 +21,14 @@ export type SourceId =
   | 'bank-loan'
   | 'deferred-dev-fee';
 
+export interface NeighborhoodHooks {
+  pilsenDeepThirtyAmiBonus?: boolean;
+  jeffersonParkParkingChoice?: boolean;
+  jeffersonParkSfrOnly?: boolean;
+  albanyParkMultilingualChoice?: boolean;
+  albanyParkCboAmplified?: boolean;
+}
+
 export interface NeighborhoodProfile {
   id: NeighborhoodId;
   name: string;
@@ -32,6 +40,9 @@ export interface NeighborhoodProfile {
   alderTone: AlderTone;
   alderGreeting: string;
   tifAvailable: boolean;
+  startingAlderGoodwill: number;     // NEW
+  startingCommunitySupport: number;  // NEW
+  hooks: NeighborhoodHooks;          // NEW
   status: 'mvp' | 'stub';
 }
 

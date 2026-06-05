@@ -10,8 +10,8 @@ describe('aroMinimumFraction', () => {
     expect(aroMinimumFraction('pilsen', 60)).toBe(0.20);
   });
 
-  it('returns 0.20 for 40+ unit Lakeview project', () => {
-    expect(aroMinimumFraction('lakeview', 60)).toBe(0.20);
+  it('returns 0.20 for 40+ unit Jefferson Park project', () => {
+    expect(aroMinimumFraction('jefferson-park', 60)).toBe(0.20);
   });
 
   it('returns 0.20 for 40+ unit Albany Park project', () => {
