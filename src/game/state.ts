@@ -124,6 +124,14 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
           entitlement = { ...entitlement, communitySupport: Math.max(0, entitlement.communitySupport - 10) };
         }
       }
+      // CBO amplified community delta
+      if (s.project.hasCboPartner) {
+        const delta = n?.hooks.albanyParkCboAmplified ? 12 : 6;
+        entitlement = {
+          ...entitlement,
+          communitySupport: Math.min(100, entitlement.communitySupport + delta),
+        };
+      }
     }
 
     set({ phase: next, entitlement });
