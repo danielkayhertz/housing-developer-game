@@ -29,7 +29,7 @@ export interface NeighborhoodProfile {
   landCostPerUnit: number;     // dollars
   marketRentPerUnit: number;   // monthly dollars
   alderName: string;
-  alderTone: 'green' | 'yellow';
+  alderTone: AlderTone;
   alderGreeting: string;
   tifAvailable: boolean;
   status: 'mvp' | 'stub';
@@ -77,13 +77,16 @@ export interface StepChoice {
   shrinkBy?: number;
 }
 
+export type AlderTone = 'green' | 'yellow' | 'red';
+
 export type Outcome =
   | 'in-progress'
   | 'closed'
   | 'shelved-stack'
   | 'shelved-finance'
   | 'shelved-alder'
-  | 'shelved-community';
+  | 'shelved-community'
+  | 'shelved-aro';   // NEW — affordable share < 25% at close
 
 export interface GameState {
   phase: Phase;
@@ -150,10 +153,27 @@ export const AMI_SCORE_MULTIPLIERS: Record<AmiBand, number> = {
 };
 
 export const HARD_COST_PER_UNIT: Record<BuildingType, number> = {
-  walkup: 470_000,
-  midrise: 560_000,
-  larger: 620_000,
+  walkup: 376_000,    // was 470_000 in v2
+  midrise: 448_000,   // was 560_000 in v2
+  larger: 496_000,    // was 620_000 in v2
 };
+
+export const LAND_COST_BUILDING_MULTIPLIER: Record<BuildingType, number> = {
+  walkup: 1.25,
+  midrise: 1.00,
+  larger: 0.75,
+};
+
+export const UNIT_DEFAULTS_BY_BUILDING_TYPE: Record<BuildingType, number> = {
+  walkup: 24,
+  midrise: 50,
+  larger: 80,
+};
+
+export const MIXED_INCOME_QAP_PENALTY = 12;
+export const ARO_FLOOR_AFFORDABLE_SHARE = 0.25;
+export const DENSITY_VARIANCE_TDC_PER_UNIT = 25_000;
+export const DENSITY_VARIANCE_MONTHS = 3;
 
 export const FINISH_MULTIPLIER: Record<FinishLevel, number> = {
   basic: 0.90,
