@@ -10,6 +10,7 @@ interface SourceCardProps {
   complexityWarning?: boolean;
   scalingNote?: string;
   onApply?: () => void;
+  onRemove?: () => void;
 }
 
 const STATUS_STYLES: Record<Status, { badgeClass: string; cardClass: string; label: string }> = {
@@ -20,7 +21,7 @@ const STATUS_STYLES: Record<Status, { badgeClass: string; cardClass: string; lab
   secured:   { badgeClass: 'bg-debt',    cardClass: 'border-debt', label: 'SECURED' },
 };
 
-export function SourceCard({ source, status, awardedAmount, complexityWarning, scalingNote, onApply }: SourceCardProps) {
+export function SourceCard({ source, status, awardedAmount, complexityWarning, scalingNote, onApply, onRemove }: SourceCardProps) {
   const s = STATUS_STYLES[status];
   return (
     <div className={`bg-panel border-2 ${s.cardClass} rounded-lg p-2 text-xs relative`}>
@@ -51,6 +52,15 @@ export function SourceCard({ source, status, awardedAmount, complexityWarning, s
           onClick={onApply}
         >
           Apply →
+        </button>
+      )}
+      {status === 'awarded' && onRemove && (
+        <button
+          aria-label="Remove"
+          className="absolute bottom-1 right-1 text-muted hover:text-gap text-[10px] px-1"
+          onClick={onRemove}
+        >
+          × remove
         </button>
       )}
     </div>

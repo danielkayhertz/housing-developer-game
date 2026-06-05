@@ -22,6 +22,7 @@ export function CapitalStack() {
   const costEscalation = useGameStore((s) => s.costEscalation);
   const stack = useGameStore((s) => s.stack);
   const awardSource = useGameStore((s) => s.awardSource);
+  const removeSource = useGameStore((s) => s.removeSource);
   const submitLihtc = useGameStore((s) => s.submitLihtc);
   const resubmitLihtc = useGameStore((s) => s.resubmitLihtc);
   const reviseLihtc = useGameStore((s) => s.reviseLihtc);
@@ -265,6 +266,11 @@ export function CapitalStack() {
             src.id === '9-lihtc' && affordableShare < 1
               ? `scaled to ${(affordableShare * 100).toFixed(0)}% affordable share`
               : undefined;
+          const canRemove =
+            status === 'awarded' &&
+            src.id !== '9-lihtc' &&
+            src.id !== '4-lihtc-bonds' &&
+            src.id !== 'bank-loan';
           return (
             <SourceCard
               key={src.id}
@@ -274,6 +280,7 @@ export function CapitalStack() {
               complexityWarning={complexityWarning}
               scalingNote={scalingNote}
               onApply={() => onApply(src.id)}
+              onRemove={canRemove ? () => removeSource(src.id) : undefined}
             />
           );
         })}
