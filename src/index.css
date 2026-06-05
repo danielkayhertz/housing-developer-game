@@ -29,3 +29,14 @@ h1, h2, h3 {
 .tabular {
   font-variant-numeric: tabular-nums;
 }
+
+.jargon-term {
+  border-bottom: 1px dotted currentColor;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+.jargon-term:hover { color: var(--accent); }
+.jargon-term:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
