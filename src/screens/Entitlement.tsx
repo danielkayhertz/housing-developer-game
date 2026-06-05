@@ -1,5 +1,5 @@
 import { useGameStore } from '../game/state';
-import { resolveEntitlementPath } from '../game/entitlement';
+import { resolveEntitlementPath, EntitlementPath } from '../game/entitlement';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
 import { Meter } from '../components/Meter';
@@ -14,6 +14,12 @@ import {
   CONTINGENCY_RATIO,
   COST_ESCALATION_PER_YEAR,
 } from '../game/types';
+
+export const stepsByPath: Record<EntitlementPath, number[]> = {
+  'by-right': [1, 2, 4],
+  zma:        [1, 2, 3, 4],
+  pd:         [1, 2, 3, 4],
+};
 
 const STEP_DURATIONS: Record<number, number> = {
   1: 6,  // pre-app
@@ -66,11 +72,13 @@ export function Entitlement() {
     neighborhood: project.neighborhood!,  // null-checked earlier in render
   });
 
-  const currentStep = entitlement.currentStep;
-  const allStepsComplete = entitlement.pastChoices.length >= 4;
+  const stepsForPath = stepsByPath[path];
+  const stepsCompleted = entitlement.pastChoices.length;
+  const allStepsComplete = stepsCompleted >= stepsForPath.length;
+  const currentStep = stepsForPath[stepsCompleted] ?? null;
 
   function onChoose(choice: StepChoiceKey) {
-    const months = STEP_DURATIONS[entitlement.currentStep] ?? 0;
+    const months = currentStep != null ? (STEP_DURATIONS[currentStep] ?? 0) : 0;
     takeStep(choice);
     tickMonths(months);
   }
@@ -102,8 +110,11 @@ export function Entitlement() {
 
       {/* Path */}
       <div className="bg-panel border border-line rounded-lg p-3 mb-3 text-xs">
-        <b>Path:</b> {path === 'pd' ? 'Planned Development' : 'Zoning Map Amendment'} ·{' '}
-        Pre-app → Community → Committee on Zoning → Committee on Finance → Council (narrative)
+        <b>Path:</b>{' '}
+        {path === 'pd' ? 'Planned Development' : path === 'zma' ? 'Zoning Map Amendment' : 'By-right'}{' '}·{' '}
+        {path === 'by-right'
+          ? 'Pre-app → Community → Committee on Finance → Council (narrative)'
+          : 'Pre-app → Community → Committee on Zoning → Committee on Finance → Council (narrative)'}
       </div>
 
       {/* Meters */}
@@ -137,11 +148,18 @@ export function Entitlement() {
       )}
 
       {/* Active step */}
-      {!allStepsComplete && (
+      {!allStepsComplete && currentStep != null && (
         <div className="bg-bg border-2 border-caution rounded-lg p-4 mb-3">
           <div className="text-xs uppercase tracking-wider text-caution font-bold">
             ▶ Step {currentStep} — {STEP_NAMES[currentStep]}
           </div>
+
+          {/* Ghost row: by-right skips Committee on Zoning */}
+          {path === 'by-right' && currentStep === 4 && (
+            <div className="text-xs text-muted italic mb-3 bg-panel/40 rounded p-2">
+              Committee on Zoning skipped — by-right at this density, no zoning case required.
+            </div>
+          )}
 
           {/* Finance committee — show attacks */}
           {currentStep === 4 && (
@@ -163,7 +181,7 @@ export function Entitlement() {
           )}
 
           <div className="grid grid-cols-3 gap-2 mt-3">
-            {STEP_CHOICES[currentStep].map((c) => {
+            {(STEP_CHOICES[currentStep] ?? []).map((c) => {
               const months = STEP_DURATIONS[currentStep] ?? 0;
               const hardPerU = HARD_COST_PER_UNIT[project.buildingType] * FINISH_MULTIPLIER[proForma.finishLevel];
               const hard = hardPerU * project.units;
