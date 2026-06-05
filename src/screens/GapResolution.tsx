@@ -3,6 +3,7 @@ import { computeEffectiveGap } from '../game/gapResolution';
 import { gapActions, GapActionKey } from '../data/gapResolution';
 import { Header } from '../components/Header';
 import { CharacterBubble } from '../components/CharacterBubble';
+import { JargonScreenScope } from '../components/JargonScreenScope';
 import { ashaLines } from '../data/characters';
 import { GAP_ADVANCE_THRESHOLD, MIN_UNITS_FLOOR } from '../game/types';
 
@@ -31,6 +32,7 @@ export function GapResolution() {
   }
 
   return (
+    <JargonScreenScope>
     <div className="max-w-5xl mx-auto p-6">
       <button
         onClick={retreatPhase}
@@ -103,5 +105,6 @@ export function GapResolution() {
         </>
       )}
     </div>
+    </JargonScreenScope>
   );
 }

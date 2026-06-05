@@ -1,9 +1,11 @@
 import { useGameStore } from '../game/state';
+import { JargonScreenScope } from '../components/JargonScreenScope';
 
 export function IntroScreen() {
   const advancePhase = useGameStore((s) => s.advancePhase);
 
   return (
+    <JargonScreenScope>
     <div className="max-w-2xl mx-auto pt-16 pb-8">
       <p className="text-xs uppercase tracking-widest text-accent font-bold mb-2">A civic finance game</p>
       <h1 className="text-4xl mb-4">Welcome, developer.</h1>
@@ -24,5 +26,6 @@ export function IntroScreen() {
         Start a project →
       </button>
     </div>
+    </JargonScreenScope>
   );
 }

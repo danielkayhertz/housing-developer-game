@@ -33,6 +33,7 @@ export function Header() {
   const phaseNames = ['', 'Intro', 'Site & Concept', 'Pro Forma', 'Capital Stack', 'Gap Resolution', 'Entitlement', 'Close'];
 
   return (
+    <>
     <div className="bg-panel border border-line rounded-lg px-3 py-2 text-sm text-muted flex flex-wrap gap-3 items-center">
       <span>
         {n.emoji} <b className="text-ink">{n.name}</b> · {project.units} units · {project.intent === 'all-affordable' ? 'all-affordable' : 'mixed-income'}
@@ -61,5 +62,6 @@ export function Header() {
       </span>
     </div>
     <GlossaryPanel open={glossaryOpen} onClose={() => setGlossaryOpen(false)} />
+    </>
   );
 }

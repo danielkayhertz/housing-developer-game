@@ -12,6 +12,7 @@ import { CharacterIntroCard } from '../components/CharacterIntroCard';
 import { janelleLines, davidLines, marcusLines, characters } from '../data/characters';
 import { ReviseSubScreen } from '../components/ReviseSubScreen';
 import { AmiBand, FinishLevel, SourceId, COMPLEXITY_PENALTY_THRESHOLD, REVISION_SOFT_PENALTY, GAP_ADVANCE_THRESHOLD } from '../game/types';
+import { JargonScreenScope } from '../components/JargonScreenScope';
 
 export function CapitalStack() {
   const project = useGameStore((s) => s.project);
@@ -133,16 +134,19 @@ export function CapitalStack() {
 
   if (reviseMode === 'cut-costs') {
     return (
+      <JargonScreenScope>
       <div className="max-w-6xl mx-auto p-6">
         <Header />
         <h2 className="text-2xl mt-6 mb-4">Capital Stack — revise</h2>
         <CutCostsSubScreen onDone={onExitCutCosts} />
       </div>
+      </JargonScreenScope>
     );
   }
 
   if (reviseMode === 'qap-odds') {
     return (
+      <JargonScreenScope>
       <div className="max-w-6xl mx-auto p-6">
         <Header />
         <h2 className="text-2xl mt-6 mb-4">Capital Stack — revise</h2>
@@ -153,10 +157,12 @@ export function CapitalStack() {
           onCancel={() => setReviseMode('none')}
         />
       </div>
+      </JargonScreenScope>
     );
   }
 
   return (
+    <JargonScreenScope>
     <div className="max-w-6xl mx-auto p-6">
       <button
         onClick={retreatPhase}
@@ -300,6 +306,7 @@ export function CapitalStack() {
           : `Resolve the remaining $${(gap / 1_000_000).toFixed(1)}M gap →`}
       </button>
     </div>
+    </JargonScreenScope>
   );
 }
 

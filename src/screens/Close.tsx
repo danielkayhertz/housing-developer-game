@@ -6,6 +6,7 @@ import { computeImpactScore } from '../game/scoring';
 import { getNeighborhood } from '../data/neighborhoods';
 import { StackBar } from '../components/StackBar';
 import { AmiBand } from '../game/types';
+import { JargonScreenScope } from '../components/JargonScreenScope';
 import { getReactions } from '../data/closeReactions';
 
 export function Close() {
@@ -44,6 +45,7 @@ export function Close() {
     '';
 
   return (
+    <JargonScreenScope>
     <div className="max-w-3xl mx-auto p-6">
       <div className="bg-panel border border-line rounded-xl p-4 mb-4 text-center">
         <div className="text-4xl">{closed ? '🎉' : '🛑'}</div>
@@ -116,6 +118,7 @@ export function Close() {
         </a>
       </div>
     </div>
+    </JargonScreenScope>
   );
 }
 

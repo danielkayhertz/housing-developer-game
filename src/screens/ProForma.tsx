@@ -4,6 +4,7 @@ import { getNeighborhood } from '../data/neighborhoods';
 import { rentAtAmi } from '../data/amiRents';
 import { Header } from '../components/Header';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
+import { JargonScreenScope } from '../components/JargonScreenScope';
 import { marcusLines, janelleLines, characters } from '../data/characters';
 import { computeLihtcScore, estimatedAwardProbability } from '../game/capitalStack';
 import { AmiBand, FinishLevel, BuildingType, HARD_COST_PER_UNIT, LAND_COST_BUILDING_MULTIPLIER, SOFT_COST_RATIO, CONTINGENCY_RATIO, MIXED_INCOME_QAP_PENALTY } from '../game/types';
@@ -84,6 +85,7 @@ export function ProForma() {
   }
 
   return (
+    <JargonScreenScope>
     <div className="max-w-5xl mx-auto p-6">
       <button
         onClick={retreatPhase}
@@ -265,5 +267,6 @@ export function ProForma() {
         </div>
       </div>
     </div>
+    </JargonScreenScope>
   );
 }
