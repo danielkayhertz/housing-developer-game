@@ -82,7 +82,7 @@ export function SiteAndConcept() {
           <div className="mb-4">
             <input
               type="range"
-              min={40}
+              min={20}
               max={100}
               step={1}
               value={project.units}
@@ -90,7 +90,7 @@ export function SiteAndConcept() {
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted tabular">
-              <span>40</span><span className="font-bold text-ink">{project.units} units</span><span>100</span>
+              <span>20</span><span className="font-bold text-ink">{project.units} units</span><span>100</span>
             </div>
           </div>
 
