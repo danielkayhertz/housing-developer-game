@@ -17,6 +17,7 @@ export function ProForma() {
   const proForma = useGameStore((s) => s.proForma);
   const costEscalation = useGameStore((s) => s.costEscalation);
   const setAmiUnit = useGameStore((s) => s.setAmiUnit);
+  const setMarketUnits = useGameStore((s) => s.setMarketUnits);
   const setFinishLevel = useGameStore((s) => s.setFinishLevel);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
@@ -75,6 +76,7 @@ export function ProForma() {
     janelleLines.qapScoreHigh;
 
   const totalAffordable = Object.values(proForma.amiBreakdown).reduce((a, b) => a + b, 0);
+  const totalUnitsAllocated = totalAffordable + (project.intent === 'mixed-income' ? (proForma.marketUnits ?? 0) : 0);
 
   function onAdvance() {
     tickMonths(12);
@@ -116,7 +118,7 @@ export function ProForma() {
           <div className="bg-panel border border-line rounded-lg p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold">Lever 2 — Affordable AMI breakdown</div>
             <div className="text-xs text-muted mt-1">
-              Total affordable: {totalAffordable} · target {project.units}
+              Total affordable: {totalAffordable}{project.intent === 'mixed-income' ? ` · market: ${proForma.marketUnits ?? 0}` : ''} · target {project.units}
             </div>
             {[30, 60, 80].map((ami) => {
               const a = ami as AmiBand;
@@ -137,6 +139,23 @@ export function ProForma() {
                 </div>
               );
             })}
+            {project.intent === 'mixed-income' && (
+              <div className="grid grid-cols-4 gap-3 items-center mb-2 mt-2">
+                <label className="text-sm font-medium">Market</label>
+                <input
+                  type="range"
+                  min={0}
+                  max={project.units}
+                  value={proForma.marketUnits ?? 0}
+                  onChange={(e) => setMarketUnits(Number(e.target.value))}
+                  className="col-span-1"
+                />
+                <span className="text-sm font-mono">{proForma.marketUnits ?? 0} units</span>
+                <span className="text-sm text-muted">
+                  ${n.marketRentPerUnit.toLocaleString()}/mo
+                </span>
+              </div>
+            )}
             <div className={`mt-3 p-2 rounded text-xs ${eligible ? 'bg-bg' : 'bg-gap text-white'}`}>
               Weighted avg: <b>{avgAmi.toFixed(0)}% AMI</b> · {eligible ? 'LIHTC-eligible ✓' : 'LIHTC ineligible — average exceeds 60%'}
             </div>
@@ -232,10 +251,10 @@ export function ProForma() {
 
           <button
             onClick={onAdvance}
-            disabled={!eligible || totalAffordable !== project.units}
+            disabled={!eligible || totalUnitsAllocated !== project.units}
             className="w-full bg-accent text-white py-3 rounded-lg font-bold disabled:opacity-40"
           >
-            {totalAffordable !== project.units ? `Distribute all ${project.units} units` : 'On to the capital stack →'}
+            {totalUnitsAllocated !== project.units ? `Distribute all ${project.units} units` : 'On to the capital stack →'}
           </button>
         </div>
       </div>
