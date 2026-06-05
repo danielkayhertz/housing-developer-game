@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { sources, getSource } from '../data/sources';
 import { computeTdc, computeNoi, computeSupportableDebt, weightedAvgAmi } from '../game/proForma';
-import { complexityPenalty, computeLihtcScore, estimatedAwardProbability, totalCommitted } from '../game/capitalStack';
+import { complexityPenalty, computeLihtcAward, computeLihtcScore, estimatedAwardProbability, totalCommitted } from '../game/capitalStack';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
 import { StackBar } from '../components/StackBar';
@@ -66,6 +66,15 @@ export function CapitalStack() {
   });
   const lihtcOdds = estimatedAwardProbability(lihtcScore);
 
+  const affordableUnits = (Object.values(proForma.amiBreakdown) as number[]).reduce((s, v) => s + v, 0);
+  const totalUnits = affordableUnits + proForma.marketUnits;
+  const affordableShare = totalUnits > 0 ? affordableUnits / totalUnits : 0;
+  const lihtcEquity = computeLihtcAward({
+    hardCost: tdcParts.hard,
+    amiBreakdown: proForma.amiBreakdown,
+    marketUnits: proForma.marketUnits,
+  });
+
   function onApply(sourceId: SourceId) {
     const src = getSource(sourceId);
     if (!src.amountRange) return;
@@ -77,8 +86,7 @@ export function CapitalStack() {
     setShowLihtcDecision(false);
     const win = Math.random() < lihtcOdds;
     if (win) {
-      const equity = Math.min(24_000_000, tdcParts.hard * 0.55);
-      awardSource({ sourceId: '9-lihtc', amount: equity, daysSpent: 280 });
+      awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     submitLihtc(win);
     tickMonths(12);
@@ -87,8 +95,7 @@ export function CapitalStack() {
   function onSubmitAgain() {
     const win = Math.random() < lihtcOdds;
     if (win) {
-      const equity = Math.min(24_000_000, tdcParts.hard * 0.55);
-      awardSource({ sourceId: '9-lihtc', amount: equity, daysSpent: 280 });
+      awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     resubmitLihtc(win);
     tickMonths(12);
@@ -97,8 +104,7 @@ export function CapitalStack() {
   function onResubmitFromRevise() {
     const win = Math.random() < lihtcOdds;
     if (win) {
-      const equity = Math.min(24_000_000, tdcParts.hard * 0.55);
-      awardSource({ sourceId: '9-lihtc', amount: equity, daysSpent: 280 });
+      awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     reviseLihtc(win);
     tickMonths(12);
@@ -255,6 +261,10 @@ export function CapitalStack() {
           const amt = getAwardedAmount(src.id);
           const complexityWarning =
             src.usesComplexityPenalty && status === 'available' && penaltyEligibleCount >= COMPLEXITY_PENALTY_THRESHOLD;
+          const scalingNote =
+            src.id === '9-lihtc' && affordableShare < 1
+              ? `scaled to ${(affordableShare * 100).toFixed(0)}% affordable share`
+              : undefined;
           return (
             <SourceCard
               key={src.id}
@@ -262,6 +272,7 @@ export function CapitalStack() {
               status={status}
               awardedAmount={amt}
               complexityWarning={complexityWarning}
+              scalingNote={scalingNote}
               onApply={() => onApply(src.id)}
             />
           );

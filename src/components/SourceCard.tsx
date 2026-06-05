@@ -7,6 +7,7 @@ interface SourceCardProps {
   status: Status;
   awardedAmount?: number;
   complexityWarning?: boolean;
+  scalingNote?: string;
   onApply?: () => void;
 }
 
@@ -18,7 +19,7 @@ const STATUS_STYLES: Record<Status, { badgeClass: string; cardClass: string; lab
   secured:   { badgeClass: 'bg-debt',    cardClass: 'border-debt', label: 'SECURED' },
 };
 
-export function SourceCard({ source, status, awardedAmount, complexityWarning, onApply }: SourceCardProps) {
+export function SourceCard({ source, status, awardedAmount, complexityWarning, scalingNote, onApply }: SourceCardProps) {
   const s = STATUS_STYLES[status];
   return (
     <div className={`bg-panel border-2 ${s.cardClass} rounded-lg p-2 text-xs relative`}>
@@ -37,6 +38,9 @@ export function SourceCard({ source, status, awardedAmount, complexityWarning, o
         ) : null}
         {' '}· {source.daysToProcess} d
       </div>
+      {scalingNote && (
+        <div className="mt-1 text-muted text-[11px]">{scalingNote}</div>
+      )}
       {complexityWarning && (
         <div className="mt-1 text-caution text-[11px]">⚠ +complexity penalty</div>
       )}
