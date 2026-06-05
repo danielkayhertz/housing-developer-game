@@ -40,9 +40,10 @@ describe('useGameStore', () => {
     useGameStore.getState().tickMonths(12);
     const s = useGameStore.getState();
     expect(s.monthsElapsed).toBe(12);
-    // hard = 60 * 560k * 1.0 = 33.6M
-    // annual escalation = 33.6M * 0.05 * (1 + 0.27 + 0.05) = 33.6M * 0.05 * 1.32 = 2,217,600
-    expect(s.costEscalation).toBeCloseTo(2_217_600, -3);
+    // v3: −20% hard cost
+    // hard = 60 * 448k * 1.0 = 26.88M
+    // annual escalation = 26.88M * 0.05 * (1 + 0.27 + 0.05) = 26.88M * 0.05 * 1.32 = 1,774,080
+    expect(s.costEscalation).toBeCloseTo(1_774_080, -3);
   });
 
   it('tickMonths(3) adds 3 months + 1/4 of annual escalation', () => {
@@ -51,7 +52,8 @@ describe('useGameStore', () => {
     useGameStore.getState().tickMonths(3);
     const s = useGameStore.getState();
     expect(s.monthsElapsed).toBe(3);
-    expect(s.costEscalation).toBeCloseTo(2_217_600 / 4, -3);
+    // v3: −20% hard cost; annual escalation = 1,774,080 → quarterly = 443,520
+    expect(s.costEscalation).toBeCloseTo(1_774_080 / 4, -3);
   });
 
   it('reset returns to initial state', () => {
@@ -254,8 +256,8 @@ describe('useGameStore', () => {
       const recap = useGameStore.getState().lastRecap;
       expect(recap).not.toBeNull();
       expect(recap!.months).toBe(3);
-      // escalationAdded = (60 * 560k * 1.0 * 1.32 * 0.05 / 12) * 3 ≈ 554,400
-      expect(recap!.escalationAdded).toBeCloseTo(554_400, -2);
+      // v3: −20% hard cost; escalationAdded = (60 * 448k * 1.0 * 1.32 * 0.05 / 12) * 3 ≈ 443,520
+      expect(recap!.escalationAdded).toBeCloseTo(443_520, -2);
     });
 
     it('tickMonths(2) does NOT set lastRecap', () => {

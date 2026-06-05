@@ -89,8 +89,8 @@ describe('getReactions — success path', () => {
   });
 
   it('Editorial midCost when perUnit $400k–499k', () => {
-    // Base TDC ~$45,072,000. For $450k/unit (27,000,000 total): escalation = 27M - 45.072M = -18.072M
-    const s = makeState({ costEscalation: -18_072_000 });
+    // v3: −20% hard cost; base TDC ~$36,201,600. For $450k/unit (27,000,000 total): escalation = 27M - 36.2016M = -9.2016M
+    const s = makeState({ costEscalation: -9_201_600 });
     const editorial = getReactions(s).find((r) => r.affiliation.includes('Reader'))!;
     expect(editorial.line).toContain('questions');
   });
