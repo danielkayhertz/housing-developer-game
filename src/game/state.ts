@@ -85,7 +85,7 @@ interface StoreActions {
   reviseLihtc: (awarded: boolean) => void;
   applyGapAction: (action: 'askSubsidy' | 'redesignSmaller' | 'lowerQuality') => void;
   tickMonths: (n: number) => void;
-  takeEntitlementStep: (choice: StepChoiceKey, ctx?: { shrinkBy?: number }) => void;
+  takeEntitlementStep: (choice: StepChoiceKey, step: number, ctx?: { shrinkBy?: number }) => void;
   setOutcome: (o: GameState['outcome']) => void;
   shelveProject: () => void;
   clearRecap: () => void;
@@ -268,7 +268,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     };
   }),
 
-  takeEntitlementStep: (choice, ctx = {}) => set((s) => {
+  takeEntitlementStep: (choice, step, ctx = {}) => set((s) => {
     const consequence = applyChoice(choice, ctx);
     return {
       entitlement: {
@@ -277,7 +277,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
         pastChoices: [
           ...s.entitlement.pastChoices,
           {
-            step: s.entitlement.currentStep,
+            step,
             choice,
             alderDelta: consequence.alderDelta,
             communityDelta: consequence.communityDelta,

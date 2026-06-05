@@ -79,7 +79,7 @@ export function Entitlement() {
 
   function onChoose(choice: StepChoiceKey) {
     const months = currentStep != null ? (STEP_DURATIONS[currentStep] ?? 0) : 0;
-    takeStep(choice);
+    takeStep(choice, currentStep ?? 1);
     tickMonths(months);
   }
 
