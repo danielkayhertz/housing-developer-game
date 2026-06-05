@@ -6,14 +6,7 @@ import { Header } from '../components/Header';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { JargonScreenScope } from '../components/JargonScreenScope';
 import { TooltipTerm } from '../components/TooltipTerm';
-import { NeighborhoodId, BuildingType, AlderTone } from '../game/types';
-
-function tonePillClass(tone: AlderTone): string {
-  const base = 'text-xs font-semibold px-2 py-0.5 rounded-full';
-  if (tone === 'green') return `${base} bg-green-100 text-green-800`;
-  if (tone === 'yellow') return `${base} bg-yellow-100 text-yellow-800`;
-  return `${base} bg-red-100 text-red-800`;
-}
+import { NeighborhoodId, BuildingType } from '../game/types';
 
 export function SiteAndConcept() {
   const project = useGameStore((s) => s.project);
@@ -72,7 +65,6 @@ export function SiteAndConcept() {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xl">{nb.emoji}</span>
                   <span className="font-semibold text-sm">{nb.name}</span>
-                  <span className={tonePillClass(nb.alderTone)}>{nb.alderTone}</span>
                 </div>
                 <div className="text-xs text-muted mb-2">{nb.description}</div>
                 <div className="text-sm flex flex-col gap-0.5 tabular">
