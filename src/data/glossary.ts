@@ -97,7 +97,7 @@ export const glossary: GlossaryEntry[] = [
     term: 'By-right',
     expansion: 'By-right development',
     definition: 'Development permitted under existing zoning without a discretionary approval from the city.',
-    inGameContext: 'A by-right path skips the Committee on Zoning step — three entitlement steps instead of four.',
+    inGameContext: 'A by-right path skips the Committee on Zoning step — three permitting steps instead of four.',
     category: 'entitlement',
   },
   {
