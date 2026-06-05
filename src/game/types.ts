@@ -1,6 +1,6 @@
 // src/game/types.ts
 
-export type NeighborhoodId = 'englewood' | 'pilsen' | 'lakeview' | 'albany-park';
+export type NeighborhoodId = 'englewood' | 'pilsen' | 'jefferson-park' | 'albany-park';
 export type BuildingType = 'walkup' | 'midrise' | 'larger';
 export type Intent = 'all-affordable' | 'mixed-income';
 export type FinishLevel = 'basic' | 'standard' | 'elevated';
@@ -21,6 +21,14 @@ export type SourceId =
   | 'bank-loan'
   | 'deferred-dev-fee';
 
+export interface NeighborhoodHooks {
+  pilsenDeepThirtyAmiBonus?: boolean;
+  jeffersonParkParkingChoice?: boolean;
+  jeffersonParkSfrOnly?: boolean;
+  albanyParkMultilingualChoice?: boolean;
+  albanyParkCboAmplified?: boolean;
+}
+
 export interface NeighborhoodProfile {
   id: NeighborhoodId;
   name: string;
@@ -29,9 +37,12 @@ export interface NeighborhoodProfile {
   landCostPerUnit: number;     // dollars
   marketRentPerUnit: number;   // monthly dollars
   alderName: string;
-  alderTone: 'green' | 'yellow';
+  alderTone: AlderTone;
   alderGreeting: string;
   tifAvailable: boolean;
+  startingAlderGoodwill: number;     // NEW
+  startingCommunitySupport: number;  // NEW
+  hooks: NeighborhoodHooks;          // NEW
   status: 'mvp' | 'stub';
 }
 
@@ -64,12 +75,14 @@ export interface SourceApplication {
 export type EntitlementStep = 1 | 2 | 3 | 4;
 export type StepChoiceKey =
   | 'preapp-quiet' | 'preapp-formal-cbo' | 'preapp-public'
+  | 'preapp-multilingual'                                                                        // Albany Park
   | 'community-data' | 'community-story' | 'community-coalition'
+  | 'community-jp-full-parking' | 'community-jp-traffic-data' | 'community-jp-refuse-parking'  // Jefferson Park
   | 'zoning-hold' | 'zoning-shrink' | 'zoning-accept'
   | 'finance-reframe' | 'finance-concede' | 'finance-stakeholders';
 
 export interface StepChoice {
-  step: EntitlementStep;
+  step: number;
   choice: StepChoiceKey;
   alderDelta: number;
   communityDelta: number;
@@ -77,13 +90,16 @@ export interface StepChoice {
   shrinkBy?: number;
 }
 
+export type AlderTone = 'green' | 'yellow' | 'red';
+
 export type Outcome =
   | 'in-progress'
   | 'closed'
   | 'shelved-stack'
   | 'shelved-finance'
   | 'shelved-alder'
-  | 'shelved-community';
+  | 'shelved-community'
+  | 'shelved-aro';   // NEW — affordable share < 25% at close
 
 export interface GameState {
   phase: Phase;
@@ -150,10 +166,27 @@ export const AMI_SCORE_MULTIPLIERS: Record<AmiBand, number> = {
 };
 
 export const HARD_COST_PER_UNIT: Record<BuildingType, number> = {
-  walkup: 470_000,
-  midrise: 560_000,
-  larger: 620_000,
+  walkup: 376_000,    // was 470_000 in v2
+  midrise: 448_000,   // was 560_000 in v2
+  larger: 496_000,    // was 620_000 in v2
 };
+
+export const LAND_COST_BUILDING_MULTIPLIER: Record<BuildingType, number> = {
+  walkup: 1.25,
+  midrise: 1.00,
+  larger: 0.75,
+};
+
+export const UNIT_DEFAULTS_BY_BUILDING_TYPE: Record<BuildingType, number> = {
+  walkup: 24,
+  midrise: 50,
+  larger: 80,
+};
+
+export const MIXED_INCOME_QAP_PENALTY = 12;
+export const ARO_FLOOR_AFFORDABLE_SHARE = 0.25;
+export const DENSITY_VARIANCE_TDC_PER_UNIT = 25_000;
+export const DENSITY_VARIANCE_MONTHS = 3;
 
 export const FINISH_MULTIPLIER: Record<FinishLevel, number> = {
   basic: 0.90,

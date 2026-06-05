@@ -18,9 +18,11 @@ import {
   CONTINGENCY_RATIO,
   LOWER_QUALITY_HARD_MULTIPLIER,
   GAP_ADVANCE_THRESHOLD,
+  UNIT_DEFAULTS_BY_BUILDING_TYPE,
 } from './types';
 import { applyChoice } from './entitlement';
 import { computeEffectiveGap } from './gapResolution';
+import { getNeighborhood } from '../data/neighborhoods';
 
 const initialState: GameState = {
   phase: 1,
@@ -28,14 +30,14 @@ const initialState: GameState = {
   costEscalation: 0,
   project: {
     neighborhood: null,
-    units: 60,
+    units: 50, // v3: midrise default 50
     buildingType: 'midrise',
     intent: 'all-affordable',
     hasCboPartner: false,
     cboTimePaid: false,
   },
   proForma: {
-    amiBreakdown: { 30: 12, 60: 36, 80: 12 },
+    amiBreakdown: { 30: 10, 60: 30, 80: 10 }, // v3: midrise default 50
     marketUnits: 0,
     finishLevel: 'standard',
     opexRatio: 0.38,
@@ -83,7 +85,8 @@ interface StoreActions {
   reviseLihtc: (awarded: boolean) => void;
   applyGapAction: (action: 'askSubsidy' | 'redesignSmaller' | 'lowerQuality') => void;
   tickMonths: (n: number) => void;
-  takeEntitlementStep: (choice: StepChoiceKey, ctx?: { shrinkBy?: number }) => void;
+  takeEntitlementStep: (choice: StepChoiceKey, step: number, ctx?: { shrinkBy?: number }) => void;
+  addCostEscalation: (delta: number) => void;
   setOutcome: (o: GameState['outcome']) => void;
   shelveProject: () => void;
   clearRecap: () => void;
@@ -105,11 +108,47 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     } else {
       next = Math.min(7, s.phase + 1) as Phase;
     }
-    set({ phase: next });
+
+    // Hook firings on Phase 6 entry
+    let entitlement = s.entitlement;
+    if (next === 6 && s.phase !== 6) {
+      const n = s.project.neighborhood ? getNeighborhood(s.project.neighborhood) : null;
+      if (n?.hooks.pilsenDeepThirtyAmiBonus) {
+        const affordable = s.proForma.amiBreakdown[30] + s.proForma.amiBreakdown[60] + s.proForma.amiBreakdown[80];
+        const totalUnits = affordable + s.proForma.marketUnits;
+        const thirtyShare = totalUnits > 0 ? s.proForma.amiBreakdown[30] / totalUnits : 0;
+
+        if (thirtyShare >= 0.20) {
+          entitlement = { ...entitlement, communitySupport: Math.min(100, entitlement.communitySupport + 15) };
+        } else if (thirtyShare < 0.10) {
+          entitlement = { ...entitlement, communitySupport: Math.max(0, entitlement.communitySupport - 10) };
+        }
+      }
+      // CBO amplified community delta
+      if (s.project.hasCboPartner) {
+        const delta = n?.hooks.albanyParkCboAmplified ? 12 : 6;
+        entitlement = {
+          ...entitlement,
+          communitySupport: Math.min(100, entitlement.communitySupport + delta),
+        };
+      }
+    }
+
+    set({ phase: next, entitlement });
     track('phase_advanced', { to: next });
   },
 
-  selectNeighborhood: (id) => set((s) => ({ project: { ...s.project, neighborhood: id } })),
+  selectNeighborhood: (id) => {
+    const n = getNeighborhood(id);
+    set((s) => ({
+      project: { ...s.project, neighborhood: id },
+      entitlement: {
+        ...s.entitlement,
+        alderGoodwill: n.startingAlderGoodwill,
+        communitySupport: n.startingCommunitySupport,
+      },
+    }));
+  },
 
   setUnits: (n) => set((s) => {
     const totalAffordable = Object.values(s.proForma.amiBreakdown).reduce((a, b) => a + b, 0);
@@ -126,7 +165,11 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     };
   }),
 
-  setBuildingType: (t) => set((s) => ({ project: { ...s.project, buildingType: t } })),
+  setBuildingType: (t) => {
+    const newUnits = UNIT_DEFAULTS_BY_BUILDING_TYPE[t];
+    get().setUnits(newUnits);          // existing setUnits rebalances AMI proportionally
+    set((s) => ({ project: { ...s.project, buildingType: t } }));
+  },
   setIntent: (i) => set((s) => ({ project: { ...s.project, intent: i } })),
 
   setCboPartner: (value) => {
@@ -252,29 +295,51 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     };
   }),
 
-  takeEntitlementStep: (choice, ctx = {}) => set((s) => {
+  takeEntitlementStep: (choice, step, ctx = {}) => {
+    const s = get();
     const consequence = applyChoice(choice, ctx);
-    return {
-      entitlement: {
-        ...s.entitlement,
-        currentStep: Math.min(4, (s.entitlement.currentStep + 1)) as EntitlementStep,
-        pastChoices: [
-          ...s.entitlement.pastChoices,
-          {
-            step: s.entitlement.currentStep,
-            choice,
-            alderDelta: consequence.alderDelta,
-            communityDelta: consequence.communityDelta,
-            shrinkBy: consequence.shrinkBy,
-            tdcDelta: consequence.tdcDelta,
-          },
-        ],
-        alderGoodwill: Math.max(0, Math.min(100, s.entitlement.alderGoodwill + consequence.alderDelta)),
-        communitySupport: Math.max(0, Math.min(100, s.entitlement.communitySupport + consequence.communityDelta)),
-        projectShrinkBy: s.entitlement.projectShrinkBy + consequence.shrinkBy,
-      },
-    };
-  }),
+    if (consequence.tdcDelta) {
+      get().addCostEscalation(consequence.tdcDelta * s.project.units);
+    }
+    set((s) => {
+      const consequence = applyChoice(choice, ctx);
+      let newCommunity = Math.max(0, Math.min(100, s.entitlement.communitySupport + consequence.communityDelta));
+
+      // Albany Park multilingual-skip cap
+      const n = s.project.neighborhood ? getNeighborhood(s.project.neighborhood) : null;
+      if (n?.hooks.albanyParkMultilingualChoice) {
+        const skippedMultilingual = s.entitlement.pastChoices.some(
+          (c) => c.step === 1 && c.choice !== 'preapp-multilingual'
+        );
+        if (skippedMultilingual) {
+          newCommunity = Math.min(50, newCommunity);
+        }
+      }
+
+      return {
+        entitlement: {
+          ...s.entitlement,
+          currentStep: Math.min(4, (s.entitlement.currentStep + 1)) as EntitlementStep,
+          pastChoices: [
+            ...s.entitlement.pastChoices,
+            {
+              step,
+              choice,
+              alderDelta: consequence.alderDelta,
+              communityDelta: consequence.communityDelta,
+              shrinkBy: consequence.shrinkBy,
+              tdcDelta: consequence.tdcDelta,
+            },
+          ],
+          alderGoodwill: Math.max(0, Math.min(100, s.entitlement.alderGoodwill + consequence.alderDelta)),
+          communitySupport: newCommunity,
+          projectShrinkBy: s.entitlement.projectShrinkBy + consequence.shrinkBy,
+        },
+      };
+    });
+  },
+
+  addCostEscalation: (delta) => set((s) => ({ costEscalation: s.costEscalation + delta })),
 
   setOutcome: (o) => set({ outcome: o }),
 

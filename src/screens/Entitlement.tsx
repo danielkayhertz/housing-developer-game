@@ -1,8 +1,11 @@
+import React from 'react';
 import { useGameStore } from '../game/state';
-import { resolveEntitlementPath } from '../game/entitlement';
+import { resolveEntitlementPath, EntitlementPath } from '../game/entitlement';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
 import { Meter } from '../components/Meter';
+import { JargonScreenScope } from '../components/JargonScreenScope';
+import { TooltipTerm } from '../components/TooltipTerm';
 import { ChoiceCard } from '../components/ChoiceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { ashaLines, financeAttackLines } from '../data/characters';
@@ -13,7 +16,16 @@ import {
   SOFT_COST_RATIO,
   CONTINGENCY_RATIO,
   COST_ESCALATION_PER_YEAR,
+  DENSITY_VARIANCE_TDC_PER_UNIT,
+  DENSITY_VARIANCE_MONTHS,
+  ARO_FLOOR_AFFORDABLE_SHARE,
 } from '../game/types';
+
+export const stepsByPath: Record<EntitlementPath, number[]> = {
+  'by-right': [1, 2, 4],
+  zma:        [1, 2, 3, 4],
+  pd:         [1, 2, 3, 4],
+};
 
 const STEP_DURATIONS: Record<number, number> = {
   1: 6,  // pre-app
@@ -24,12 +36,42 @@ const STEP_DURATIONS: Record<number, number> = {
 
 const STEP_NAMES = ['', 'Pre-app intake', 'Community meeting', 'Committee on Zoning', 'Committee on Finance'];
 
+const BASE_STEP1_CHOICES: { key: StepChoiceKey; title: string; description: string; consequences: string }[] = [
+  { key: 'preapp-quiet', title: 'Quiet alder meeting', description: 'Just you and Asha. Low-key, no public attention yet.', consequences: '+2 alder · ±0 community' },
+  { key: 'preapp-formal-cbo', title: 'Formal w/ CBO partner', description: 'Bring a community development partner to the first conversation.', consequences: '+5 alder · +6 community' },
+  { key: 'preapp-public', title: 'Public pre-launch w/ press', description: 'Announce intentions broadly. Bold; reads as committed.', consequences: '−3 alder · +4 community' },
+];
+
+const MULTILINGUAL_CHOICE: { key: StepChoiceKey; title: string; description: string; consequences: string } = {
+  key: 'preapp-multilingual',
+  title: 'Multilingual community outreach',
+  description: 'Lead with door-knocking and printed materials in the languages your future residents speak.',
+  consequences: '+15 community · +3 mo',
+};
+
+const JP_STEP2_CHOICES: { key: StepChoiceKey; title: string; description: string; consequences: string }[] = [
+  {
+    key: 'community-jp-full-parking',
+    title: 'Accept the parking ask',
+    description: 'Provide structured parking matching the neighborhood expectation.',
+    consequences: '+12 alder · +15 community · +$30k/u TDC',
+  },
+  {
+    key: 'community-jp-traffic-data',
+    title: 'Show traffic data, offer minimal parking',
+    description: 'Smaller parking + impact study to address neighborhood concerns.',
+    consequences: '+5 alder · +6 community · +$15k/u TDC',
+  },
+  {
+    key: 'community-jp-refuse-parking',
+    title: 'Refuse / minimal parking',
+    description: "Make the case for transit-oriented development. Risk pushback.",
+    consequences: '−5 alder · −10 community',
+  },
+];
+
 const STEP_CHOICES: Record<number, { key: StepChoiceKey; title: string; description: string; consequences: string }[]> = {
-  1: [
-    { key: 'preapp-quiet', title: 'Quiet alder meeting', description: 'Just you and Asha. Low-key, no public attention yet.', consequences: '+2 alder · ±0 community' },
-    { key: 'preapp-formal-cbo', title: 'Formal w/ CBO partner', description: 'Bring a community development partner to the first conversation.', consequences: '+5 alder · +6 community' },
-    { key: 'preapp-public', title: 'Public pre-launch w/ press', description: 'Announce intentions broadly. Bold; reads as committed.', consequences: '−3 alder · +4 community' },
-  ],
+  1: BASE_STEP1_CHOICES,
   2: [
     { key: 'community-data', title: 'Data-led', description: 'Lead with rent, jobs, taxes. Facts, charts, evidence.', consequences: '+3 alder · +4 community' },
     { key: 'community-story', title: 'Story-led', description: 'Resident testimonials. Make it about people, not numbers.', consequences: '−2 alder · +12 community' },
@@ -54,24 +96,54 @@ export function Entitlement() {
   const proForma = useGameStore((s) => s.proForma);
   const takeStep = useGameStore((s) => s.takeEntitlementStep);
   const tickMonths = useGameStore((s) => s.tickMonths);
+  const addCostEscalation = useGameStore((s) => s.addCostEscalation);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
   const setOutcome = useGameStore((s) => s.setOutcome);
 
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
-  const path = resolveEntitlementPath({ buildingType: project.buildingType, units: project.units });
+  const path = resolveEntitlementPath({
+    buildingType: project.buildingType,
+    units: project.units,
+    neighborhood: project.neighborhood!,  // null-checked earlier in render
+  });
 
-  const currentStep = entitlement.currentStep;
-  const allStepsComplete = entitlement.pastChoices.length >= 4;
+  const stepsForPath = stepsByPath[path];
+  const stepsCompleted = entitlement.pastChoices.length;
+  const allStepsComplete = stepsCompleted >= stepsForPath.length;
+  const currentStep = stepsForPath[stepsCompleted] ?? null;
 
   function onChoose(choice: StepChoiceKey) {
-    const months = STEP_DURATIONS[entitlement.currentStep] ?? 0;
-    takeStep(choice);
+    const months = currentStep != null ? (STEP_DURATIONS[currentStep] ?? 0) : 0;
+    takeStep(choice, currentStep ?? 1);
+
+    // Larger building: auto-apply density variance condition at zoning step
+    if (currentStep === 3 && project.buildingType === 'larger') {
+      const conditionCost = DENSITY_VARIANCE_TDC_PER_UNIT * project.units;
+      addCostEscalation(conditionCost);
+      tickMonths(DENSITY_VARIANCE_MONTHS);
+    }
+
+    // Multilingual outreach adds 3 months of extra community engagement time
+    const extraMonths = choice === 'preapp-multilingual' ? 3 : 0;
+    if (extraMonths > 0) tickMonths(extraMonths);
+
     tickMonths(months);
   }
 
   function onComplete() {
+    const affordableUnits =
+      proForma.amiBreakdown[30] + proForma.amiBreakdown[60] + proForma.amiBreakdown[80];
+    const totalUnits = affordableUnits + (proForma.marketUnits ?? 0);
+    const affordableShare = totalUnits > 0 ? affordableUnits / totalUnits : 1;
+
+    if (affordableShare < ARO_FLOOR_AFFORDABLE_SHARE) {
+      setOutcome('shelved-aro');
+      advancePhase();
+      return;
+    }
+
     if (entitlement.alderGoodwill < 20) {
       setOutcome('shelved-alder');
     } else if (entitlement.communitySupport < 25) {
@@ -86,6 +158,7 @@ export function Entitlement() {
   const hasHedBond = stack.awarded.some((a) => a.sourceId === 'hed-bond');
 
   return (
+    <JargonScreenScope>
     <div className="max-w-5xl mx-auto p-6">
       <button
         onClick={retreatPhase}
@@ -98,8 +171,13 @@ export function Entitlement() {
 
       {/* Path */}
       <div className="bg-panel border border-line rounded-lg p-3 mb-3 text-xs">
-        <b>Path:</b> {path === 'pd' ? 'Planned Development' : 'Zoning Map Amendment'} ·{' '}
-        Pre-app → Community → Committee on Zoning → Committee on Finance → Council (narrative)
+        <b>Path:</b>{' '}
+        <TooltipTerm term={path === 'by-right' ? 'By-right' : path === 'zma' ? 'ZMA' : 'PD'}>
+          {path === 'by-right' ? 'By-right' : path.toUpperCase()}
+        </TooltipTerm>{' '}·{' '}
+        {path === 'by-right'
+          ? 'Pre-app → Community → Committee on Finance → Council (narrative)'
+          : 'Pre-app → Community → Committee on Zoning → Committee on Finance → Council (narrative)'}
       </div>
 
       {/* Meters */}
@@ -133,11 +211,18 @@ export function Entitlement() {
       )}
 
       {/* Active step */}
-      {!allStepsComplete && (
+      {!allStepsComplete && currentStep != null && (
         <div className="bg-bg border-2 border-caution rounded-lg p-4 mb-3">
           <div className="text-xs uppercase tracking-wider text-caution font-bold">
             ▶ Step {currentStep} — {STEP_NAMES[currentStep]}
           </div>
+
+          {/* Ghost row: by-right skips Committee on Zoning */}
+          {path === 'by-right' && currentStep === 4 && (
+            <div className="text-xs text-muted italic mb-3 bg-panel/40 rounded p-2">
+              Committee on Zoning skipped — by-right at this density, no zoning case required.
+            </div>
+          )}
 
           {/* Finance committee — show attacks */}
           {currentStep === 4 && (
@@ -158,24 +243,49 @@ export function Entitlement() {
             </div>
           )}
 
+          {/* Density variance condition banner for larger buildings at zoning step */}
+          {currentStep === 3 && project.buildingType === 'larger' && (
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-900 rounded-lg p-3 mb-3 text-sm">
+              <strong><TooltipTerm term="Density variance">Density variance</TooltipTerm> condition.</strong> Committee will impose a height-modulation
+              condition: +${((DENSITY_VARIANCE_TDC_PER_UNIT * project.units) / 1_000_000).toFixed(2)}M TDC,
+              +{DENSITY_VARIANCE_MONTHS} mo review.
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-2 mt-3">
-            {STEP_CHOICES[currentStep].map((c) => {
-              const months = STEP_DURATIONS[currentStep] ?? 0;
-              const hardPerU = HARD_COST_PER_UNIT[project.buildingType] * FINISH_MULTIPLIER[proForma.finishLevel];
-              const hard = hardPerU * project.units;
-              const escThisStep = hard * (COST_ESCALATION_PER_YEAR / 12) * months * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
-              const timeLabel = `+${months} mo · +$${(escThisStep / 1_000_000).toFixed(1)}M cost escalation`;
-              return (
-                <ChoiceCard
-                  key={c.key}
-                  title={c.title}
-                  description={c.description}
-                  consequences={c.consequences}
-                  timeLabel={timeLabel}
-                  onClick={() => onChoose(c.key)}
-                />
-              );
-            })}
+            {(() => {
+              const baseChoices =
+                currentStep === 2 && n.hooks.jeffersonParkParkingChoice
+                  ? JP_STEP2_CHOICES
+                  : STEP_CHOICES[currentStep] ?? [];
+              const choices =
+                currentStep === 1 && n.hooks.albanyParkMultilingualChoice
+                  ? [...baseChoices, MULTILINGUAL_CHOICE]
+                  : baseChoices;
+              return choices.map((c) => {
+                const baseDurationMonths = STEP_DURATIONS[currentStep] ?? 0;
+                const extraMonths = c.key === 'preapp-multilingual' ? 3 : 0;
+                const months = baseDurationMonths + extraMonths;
+                const hardPerU = HARD_COST_PER_UNIT[project.buildingType] * FINISH_MULTIPLIER[proForma.finishLevel];
+                const hard = hardPerU * project.units;
+                const escThisStep = hard * (COST_ESCALATION_PER_YEAR / 12) * months * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
+                const timeLabel = `+${months} mo · +$${(escThisStep / 1_000_000).toFixed(1)}M cost escalation`;
+                const cardTitle: React.ReactNode =
+                  c.key === 'preapp-formal-cbo'
+                    ? <>Formal w/ <TooltipTerm term="CBO">CBO</TooltipTerm> partner</>
+                    : c.title;
+                return (
+                  <ChoiceCard
+                    key={c.key}
+                    title={cardTitle}
+                    description={c.description}
+                    consequences={c.consequences}
+                    timeLabel={timeLabel}
+                    onClick={() => onChoose(c.key)}
+                  />
+                );
+              });
+            })()}
           </div>
 
           <div className="mt-3">
@@ -207,5 +317,6 @@ export function Entitlement() {
         </div>
       )}
     </div>
+    </JargonScreenScope>
   );
 }

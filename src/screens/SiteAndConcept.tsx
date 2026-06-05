@@ -4,7 +4,16 @@ import { computeTdc } from '../game/proForma';
 import { resolveEntitlementPath } from '../game/entitlement';
 import { Header } from '../components/Header';
 import { CharacterBubble } from '../components/CharacterBubble';
-import { NeighborhoodId, BuildingType, Intent } from '../game/types';
+import { JargonScreenScope } from '../components/JargonScreenScope';
+import { TooltipTerm } from '../components/TooltipTerm';
+import { NeighborhoodId, BuildingType, AlderTone } from '../game/types';
+
+function tonePillClass(tone: AlderTone): string {
+  const base = 'text-xs font-semibold px-2 py-0.5 rounded-full';
+  if (tone === 'green') return `${base} bg-green-100 text-green-800`;
+  if (tone === 'yellow') return `${base} bg-yellow-100 text-yellow-800`;
+  return `${base} bg-red-100 text-red-800`;
+}
 
 export function SiteAndConcept() {
   const project = useGameStore((s) => s.project);
@@ -26,14 +35,18 @@ export function SiteAndConcept() {
         finishLevel,
       }).total
     : 0;
-  const entitlementPath = resolveEntitlementPath({
-    buildingType: project.buildingType,
-    units: project.units,
-  });
+  const entitlementPath = project.neighborhood
+    ? resolveEntitlementPath({
+        buildingType: project.buildingType,
+        units: project.units,
+        neighborhood: project.neighborhood,
+      })
+    : null;
 
   const canAdvance = project.neighborhood && getNeighborhood(project.neighborhood).status === 'mvp';
 
   return (
+    <JargonScreenScope>
     <div className="max-w-5xl mx-auto p-6">
       <button
         onClick={retreatPhase}
@@ -49,19 +62,26 @@ export function SiteAndConcept() {
           <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">1. Neighborhood</div>
           <div className="grid grid-cols-2 gap-2 mb-4">
             {neighborhoods.map((nb) => (
-              <button
+              <div
                 key={nb.id}
+                className={`p-4 border rounded-lg cursor-pointer ${
+                  project.neighborhood === nb.id ? 'border-accent bg-accent/10' : 'border-line bg-panel hover:border-accent'
+                }`}
                 onClick={() => selectNeighborhood(nb.id as NeighborhoodId)}
-                className={`text-left p-3 rounded-lg border-2 transition ${
-                  project.neighborhood === nb.id ? 'bg-bg border-accent' : 'bg-panel border-line hover:border-accent'
-                } ${nb.status === 'stub' ? 'opacity-60' : ''}`}
               >
-                <div className="font-bold text-sm">{nb.emoji} {nb.name} {nb.status === 'stub' && <span className="text-xs text-caution">(v2)</span>}</div>
-                <div className="text-xs text-muted mt-1">{nb.description}</div>
-                <div className="text-xs text-muted mt-1 tabular">
-                  Land ~${(nb.landCostPerUnit / 1000).toFixed(0)}k/u · Mkt ${nb.marketRentPerUnit.toLocaleString()}
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xl">{nb.emoji}</span>
+                  <span className="font-semibold text-sm">{nb.name}</span>
+                  <span className={tonePillClass(nb.alderTone)}>{nb.alderTone}</span>
                 </div>
-              </button>
+                <div className="text-xs text-muted mb-2">{nb.description}</div>
+                <div className="text-sm flex flex-col gap-0.5 tabular">
+                  <div className="flex justify-between text-xs"><span>Base land</span><span>${(nb.landCostPerUnit / 1000).toFixed(0)}k/u</span></div>
+                  <div className="flex justify-between text-xs"><span>Market rent</span><span>${nb.marketRentPerUnit.toLocaleString()}/mo</span></div>
+                  <div className="flex justify-between text-xs"><span>TIF</span><span>{nb.tifAvailable ? 'available' : 'not available'}</span></div>
+                  <div className="flex justify-between text-xs"><span>Alder</span><span>{nb.alderName}</span></div>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -102,22 +122,36 @@ export function SiteAndConcept() {
 
           {/* Intent */}
           <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">4. Intent</div>
-          <div className="grid grid-cols-2 gap-2 mb-6">
-            {(['all-affordable', 'mixed-income'] as Intent[]).map((i) => (
-              <button
-                key={i}
-                onClick={() => setIntent(i)}
-                className={`p-2 text-xs rounded border-2 transition ${
-                  project.intent === i ? 'bg-bg border-accent' : 'bg-panel border-line hover:border-accent'
-                } ${i === 'mixed-income' ? 'opacity-60' : ''}`}
-              >
-                {i === 'all-affordable' ? 'All-affordable (LIHTC) · MVP' : 'Mixed-income (v2)'}
-              </button>
-            ))}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div
+              className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                project.intent === 'all-affordable'
+                  ? 'border-accent bg-accent/10'
+                  : 'border-line hover:border-accent/50'
+              }`}
+              onClick={() => setIntent('all-affordable')}
+            >
+              <div className="font-semibold mb-1">All-affordable</div>
+              <div className="text-xs text-muted">100% affordable units across 30/60/80 AMI bands.</div>
+            </div>
+            <div
+              className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                project.intent === 'mixed-income'
+                  ? 'border-accent bg-accent/10'
+                  : 'border-line hover:border-accent/50'
+              }`}
+              onClick={() => setIntent('mixed-income')}
+            >
+              <div className="font-semibold mb-1">Mixed-income</div>
+              <div className="text-xs text-muted">Allocate some units at market rate; cross-subsidy from market rents.</div>
+              <div className="text-xs text-muted mt-1">
+                Some affordability still required under the <TooltipTerm term="ARO">ARO</TooltipTerm>.
+              </div>
+            </div>
           </div>
 
           {/* CBO partner */}
-          <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">5. CBO partner</div>
+          <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">5. <TooltipTerm term="CBO">CBO</TooltipTerm> partner</div>
           <div className="grid grid-cols-2 gap-2 mb-6">
             <button
               onClick={() => setCboPartner(true)}
@@ -175,5 +209,6 @@ export function SiteAndConcept() {
         </div>
       </div>
     </div>
+    </JargonScreenScope>
   );
 }

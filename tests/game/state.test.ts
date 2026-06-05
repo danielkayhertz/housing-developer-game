@@ -1,6 +1,38 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useGameStore } from '../../src/game/state';
 
+describe('selectNeighborhood reads per-neighborhood starting values', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('Englewood select sets 75/50', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    const s = useGameStore.getState();
+    expect(s.entitlement.alderGoodwill).toBe(75);
+    expect(s.entitlement.communitySupport).toBe(50);
+  });
+
+  it('Jefferson Park select sets 35/30', () => {
+    useGameStore.getState().selectNeighborhood('jefferson-park');
+    const s = useGameStore.getState();
+    expect(s.entitlement.alderGoodwill).toBe(35);
+    expect(s.entitlement.communitySupport).toBe(30);
+  });
+
+  it('Pilsen select sets 65/35', () => {
+    useGameStore.getState().selectNeighborhood('pilsen');
+    const s = useGameStore.getState();
+    expect(s.entitlement.alderGoodwill).toBe(65);
+    expect(s.entitlement.communitySupport).toBe(35);
+  });
+
+  it('Albany Park select sets 60/45', () => {
+    useGameStore.getState().selectNeighborhood('albany-park');
+    const s = useGameStore.getState();
+    expect(s.entitlement.alderGoodwill).toBe(60);
+    expect(s.entitlement.communitySupport).toBe(45);
+  });
+});
+
 describe('useGameStore', () => {
   beforeEach(() => {
     useGameStore.getState().reset();
@@ -40,9 +72,10 @@ describe('useGameStore', () => {
     useGameStore.getState().tickMonths(12);
     const s = useGameStore.getState();
     expect(s.monthsElapsed).toBe(12);
-    // hard = 60 * 560k * 1.0 = 33.6M
-    // annual escalation = 33.6M * 0.05 * (1 + 0.27 + 0.05) = 33.6M * 0.05 * 1.32 = 2,217,600
-    expect(s.costEscalation).toBeCloseTo(2_217_600, -3);
+    // v3: −20% hard cost
+    // hard = 60 * 448k * 1.0 = 26.88M
+    // annual escalation = 26.88M * 0.05 * (1 + 0.27 + 0.05) = 26.88M * 0.05 * 1.32 = 1,774,080
+    expect(s.costEscalation).toBeCloseTo(1_774_080, -3);
   });
 
   it('tickMonths(3) adds 3 months + 1/4 of annual escalation', () => {
@@ -51,7 +84,8 @@ describe('useGameStore', () => {
     useGameStore.getState().tickMonths(3);
     const s = useGameStore.getState();
     expect(s.monthsElapsed).toBe(3);
-    expect(s.costEscalation).toBeCloseTo(2_217_600 / 4, -3);
+    // v3: −20% hard cost; annual escalation = 1,774,080 → quarterly = 443,520
+    expect(s.costEscalation).toBeCloseTo(1_774_080 / 4, -3);
   });
 
   it('reset returns to initial state', () => {
@@ -60,6 +94,20 @@ describe('useGameStore', () => {
     useGameStore.getState().reset();
     expect(useGameStore.getState().phase).toBe(1);
     expect(useGameStore.getState().project.neighborhood).toBe(null);
+  });
+
+  it('initial units = 50 (midrise default)', () => {
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().project.units).toBe(50);
+  });
+
+  it('initial AMI breakdown sums to 50 with 20/60/20 ratio', () => {
+    useGameStore.getState().reset();
+    const b = useGameStore.getState().proForma.amiBreakdown;
+    expect(b[30]).toBe(10);
+    expect(b[60]).toBe(30);
+    expect(b[80]).toBe(10);
+    expect(b[30] + b[60] + b[80]).toBe(50);
   });
 
   it('starts with hasCboPartner=false and cboTimePaid=false', () => {
@@ -254,8 +302,8 @@ describe('useGameStore', () => {
       const recap = useGameStore.getState().lastRecap;
       expect(recap).not.toBeNull();
       expect(recap!.months).toBe(3);
-      // escalationAdded = (60 * 560k * 1.0 * 1.32 * 0.05 / 12) * 3 ≈ 554,400
-      expect(recap!.escalationAdded).toBeCloseTo(554_400, -2);
+      // v3: −20% hard cost; escalationAdded = (60 * 448k * 1.0 * 1.32 * 0.05 / 12) * 3 ≈ 443,520
+      expect(recap!.escalationAdded).toBeCloseTo(443_520, -2);
     });
 
     it('tickMonths(2) does NOT set lastRecap', () => {

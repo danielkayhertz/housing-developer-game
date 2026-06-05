@@ -4,15 +4,22 @@ import { getNeighborhood } from '../data/neighborhoods';
 import { rentAtAmi } from '../data/amiRents';
 import { Header } from '../components/Header';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
+import { JargonScreenScope } from '../components/JargonScreenScope';
+import { TooltipTerm } from '../components/TooltipTerm';
 import { marcusLines, janelleLines, characters } from '../data/characters';
 import { computeLihtcScore, estimatedAwardProbability } from '../game/capitalStack';
-import { AmiBand, FinishLevel } from '../game/types';
+import { AmiBand, FinishLevel, BuildingType, HARD_COST_PER_UNIT, LAND_COST_BUILDING_MULTIPLIER, SOFT_COST_RATIO, CONTINGENCY_RATIO, MIXED_INCOME_QAP_PENALTY } from '../game/types';
+
+function titleCase(t: BuildingType): string {
+  return { walkup: 'Walk-up', midrise: 'Mid-rise', larger: 'Larger' }[t];
+}
 
 export function ProForma() {
   const project = useGameStore((s) => s.project);
   const proForma = useGameStore((s) => s.proForma);
   const costEscalation = useGameStore((s) => s.costEscalation);
   const setAmiUnit = useGameStore((s) => s.setAmiUnit);
+  const setMarketUnits = useGameStore((s) => s.setMarketUnits);
   const setFinishLevel = useGameStore((s) => s.setFinishLevel);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
@@ -61,6 +68,8 @@ export function ProForma() {
     hasCboPartner: project.hasCboPartner,
     hasLeverageCommitments: true,
     neighborhood: project.neighborhood,
+    intent: project.intent,
+    marketUnits: proForma.marketUnits ?? 0,
   });
   const projectedQapOdds = estimatedAwardProbability(projectedQapScore);
   const projectedQapLine =
@@ -69,6 +78,7 @@ export function ProForma() {
     janelleLines.qapScoreHigh;
 
   const totalAffordable = Object.values(proForma.amiBreakdown).reduce((a, b) => a + b, 0);
+  const totalUnitsAllocated = totalAffordable + (project.intent === 'mixed-income' ? (proForma.marketUnits ?? 0) : 0);
 
   function onAdvance() {
     tickMonths(12);
@@ -76,6 +86,7 @@ export function ProForma() {
   }
 
   return (
+    <JargonScreenScope>
     <div className="max-w-5xl mx-auto p-6">
       <button
         onClick={retreatPhase}
@@ -108,9 +119,9 @@ export function ProForma() {
           </div>
 
           <div className="bg-panel border border-line rounded-lg p-3">
-            <div className="text-xs uppercase tracking-wider text-accent font-bold">Lever 2 — Affordable AMI breakdown</div>
+            <div className="text-xs uppercase tracking-wider text-accent font-bold">Lever 2 — Affordable <TooltipTerm term="AMI">AMI</TooltipTerm> breakdown</div>
             <div className="text-xs text-muted mt-1">
-              Total affordable: {totalAffordable} · target {project.units}
+              Total affordable: {totalAffordable}{project.intent === 'mixed-income' ? ` · market: ${proForma.marketUnits ?? 0}` : ''} · target {project.units}
             </div>
             {[30, 60, 80].map((ami) => {
               const a = ami as AmiBand;
@@ -131,6 +142,23 @@ export function ProForma() {
                 </div>
               );
             })}
+            {project.intent === 'mixed-income' && (
+              <div className="grid grid-cols-4 gap-3 items-center mb-2 mt-2">
+                <label className="text-sm font-medium">Market</label>
+                <input
+                  type="range"
+                  min={0}
+                  max={project.units}
+                  value={proForma.marketUnits ?? 0}
+                  onChange={(e) => setMarketUnits(Number(e.target.value))}
+                  className="col-span-1"
+                />
+                <span className="text-sm font-mono">{proForma.marketUnits ?? 0} units</span>
+                <span className="text-sm text-muted">
+                  ${n.marketRentPerUnit.toLocaleString()}/mo
+                </span>
+              </div>
+            )}
             <div className={`mt-3 p-2 rounded text-xs ${eligible ? 'bg-bg' : 'bg-gap text-white'}`}>
               Weighted avg: <b>{avgAmi.toFixed(0)}% AMI</b> · {eligible ? 'LIHTC-eligible ✓' : 'LIHTC ineligible — average exceeds 60%'}
             </div>
@@ -146,7 +174,7 @@ export function ProForma() {
             body={<p>{marcusLines.intro}</p>}
             footer={
               <div className="bg-panel border border-line rounded p-2 text-xs tabular">
-                <div className="text-muted uppercase tracking-wider mb-1">DSCR walk-through</div>
+                <div className="text-muted uppercase tracking-wider mb-1"><TooltipTerm term="DSCR">DSCR</TooltipTerm> walk-through</div>
                 <div className="flex justify-between"><span>NOI (annual)</span><b>${(noi / 1000).toFixed(0)}k</b></div>
                 <div className="flex justify-between"><span>÷ Required DSCR ({dscrRequired.toFixed(2)})</span><b>${(cashForDebtService / 1000).toFixed(0)}k</b></div>
                 <div className="flex justify-between"><span>÷ Annual mortgage constant ({k.toFixed(4)})</span><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
@@ -156,12 +184,40 @@ export function ProForma() {
             }
           />
           <div className="bg-panel border border-line rounded-lg p-3">
-            <div className="text-xs uppercase tracking-wider text-accent font-bold">TDC bottom-up</div>
+            <div className="text-xs uppercase tracking-wider text-accent font-bold"><TooltipTerm term="TDC">TDC</TooltipTerm> bottom-up</div>
             <div className="text-sm mt-2 space-y-1 tabular">
-              <div className="flex justify-between"><span>Land · ${n.landCostPerUnit.toLocaleString()}/u</span><b>${(tdcParts.land / 1000).toFixed(0)}k</b></div>
-              <div className="flex justify-between"><span>Hard construction</span><b>${(tdcParts.hard / 1_000_000).toFixed(1)}M</b></div>
-              <div className="flex justify-between"><span>Soft (27%)</span><b>${(tdcParts.soft / 1_000_000).toFixed(1)}M</b></div>
-              <div className="flex justify-between"><span>Contingency (5%)</span><b>${(tdcParts.contingency / 1_000_000).toFixed(1)}M</b></div>
+              <div className="flex justify-between">
+                <span>
+                  Hard cost
+                  <span className="text-xs text-muted ml-2">
+                    ({titleCase(project.buildingType)} · ${(HARD_COST_PER_UNIT[project.buildingType] / 1000).toFixed(0)}k × {project.units}u)
+                  </span>
+                </span>
+                <b>${(tdcParts.hard / 1_000_000).toFixed(1)}M</b>
+              </div>
+              <div className="flex justify-between">
+                <span>
+                  Land
+                  <span className="text-xs text-muted ml-2">
+                    ({n.name} · ${(n.landCostPerUnit / 1000).toFixed(0)}k × {LAND_COST_BUILDING_MULTIPLIER[project.buildingType].toFixed(2)} × {project.units}u)
+                  </span>
+                </span>
+                <b>${(tdcParts.land / 1000).toFixed(0)}k</b>
+              </div>
+              <div className="flex justify-between">
+                <span>
+                  Soft costs
+                  <span className="text-xs text-muted ml-2">({(SOFT_COST_RATIO * 100).toFixed(0)}% of hard)</span>
+                </span>
+                <b>${(tdcParts.soft / 1_000_000).toFixed(1)}M</b>
+              </div>
+              <div className="flex justify-between">
+                <span>
+                  Contingency
+                  <span className="text-xs text-muted ml-2">({(CONTINGENCY_RATIO * 100).toFixed(0)}% of hard)</span>
+                </span>
+                <b>${(tdcParts.contingency / 1_000_000).toFixed(1)}M</b>
+              </div>
               {costEscalation > 0 && (
                 <div className="flex justify-between text-caution"><span>Cost escalation</span><b>+${(costEscalation / 1_000_000).toFixed(1)}M</b></div>
               )}
@@ -170,7 +226,7 @@ export function ProForma() {
           </div>
 
           <div className="bg-panel border border-line rounded-lg p-3">
-            <div className="text-xs uppercase tracking-wider text-accent font-bold">NOI &amp; supportable debt</div>
+            <div className="text-xs uppercase tracking-wider text-accent font-bold"><TooltipTerm term="NOI">NOI</TooltipTerm> &amp; supportable debt</div>
             <div className="text-sm mt-2 space-y-1 tabular">
               <div className="flex justify-between"><span>NOI (annual)</span><b>${(noi / 1000).toFixed(0)}k</b></div>
               <div className="flex justify-between"><span>Supportable debt <span className="text-caution text-xs">({debt.binding}-limited)</span></span><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
@@ -184,7 +240,7 @@ export function ProForma() {
           </div>
 
           <div className="bg-panel border border-line rounded-lg p-3">
-            <div className="text-xs uppercase tracking-wider text-accent font-bold">{characters.janelle.emoji} 9% LIHTC — projected QAP score</div>
+            <div className="text-xs uppercase tracking-wider text-accent font-bold">{characters.janelle.emoji} 9% <TooltipTerm term="LIHTC">LIHTC</TooltipTerm> — projected <TooltipTerm term="QAP">QAP</TooltipTerm> score</div>
             <div className="mt-2 flex justify-between items-baseline">
               <div className="text-3xl font-bold tabular">{projectedQapScore} <span className="text-muted text-base">/ 100</span></div>
               <div className="text-right">
@@ -192,19 +248,26 @@ export function ProForma() {
                 <div className="text-lg font-bold tabular">{(projectedQapOdds * 100).toFixed(0)}%</div>
               </div>
             </div>
+            {project.intent === 'mixed-income' && (proForma.marketUnits ?? 0) > 0 && project.neighborhood !== 'englewood' && (
+              <div className="mt-2 flex justify-between text-xs text-red-700">
+                <span>Mixed-income outside Englewood penalty</span>
+                <span className="font-mono font-semibold">−{MIXED_INCOME_QAP_PENALTY} pts</span>
+              </div>
+            )}
             <div className="text-xs text-muted italic mt-1">Projection assumes you assemble a typical stack on the next screen.</div>
             <div className="text-xs text-muted mt-2"><b>{characters.janelle.emoji} {characters.janelle.name}:</b> "{projectedQapLine}"</div>
           </div>
 
           <button
             onClick={onAdvance}
-            disabled={!eligible || totalAffordable !== project.units}
+            disabled={!eligible || totalUnitsAllocated !== project.units}
             className="w-full bg-accent text-white py-3 rounded-lg font-bold disabled:opacity-40"
           >
-            {totalAffordable !== project.units ? `Distribute all ${project.units} units` : 'On to the capital stack →'}
+            {totalUnitsAllocated !== project.units ? `Distribute all ${project.units} units` : 'On to the capital stack →'}
           </button>
         </div>
       </div>
     </div>
+    </JargonScreenScope>
   );
 }

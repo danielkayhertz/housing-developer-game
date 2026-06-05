@@ -7,6 +7,7 @@ import {
   FINISH_MULTIPLIER,
   SOFT_COST_RATIO,
   CONTINGENCY_RATIO,
+  LAND_COST_BUILDING_MULTIPLIER,
 } from './types';
 import { getNeighborhood } from '../data/neighborhoods';
 import { rentAtAmi } from '../data/amiRents';
@@ -26,7 +27,7 @@ export function computeTdc(input: {
   finishLevel: FinishLevel;
 }): TdcParts {
   const n = getNeighborhood(input.neighborhood);
-  const land = n.landCostPerUnit * input.units;
+  const land = n.landCostPerUnit * LAND_COST_BUILDING_MULTIPLIER[input.buildingType] * input.units;
   const hardPerUnit = HARD_COST_PER_UNIT[input.buildingType] * FINISH_MULTIPLIER[input.finishLevel];
   const hard = hardPerUnit * input.units;
   const soft = hard * SOFT_COST_RATIO;

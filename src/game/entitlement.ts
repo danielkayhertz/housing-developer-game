@@ -1,12 +1,16 @@
-import { BuildingType, StepChoiceKey } from './types';
+import { BuildingType, NeighborhoodId, StepChoiceKey } from './types';
+import { getNeighborhood } from '../data/neighborhoods';
 
 export type EntitlementPath = 'by-right' | 'zma' | 'pd';
 
 export function resolveEntitlementPath(input: {
   buildingType: BuildingType;
   units: number;
+  neighborhood: NeighborhoodId;
 }): EntitlementPath {
+  const n = getNeighborhood(input.neighborhood);
   if (input.buildingType === 'larger') return 'pd';
+  if (n.hooks.jeffersonParkSfrOnly) return 'zma';
   if (input.buildingType === 'walkup' && input.units >= 40) return 'pd';
   if (input.buildingType === 'midrise') return 'zma';
   return 'by-right'; // walkup < 40 units
@@ -32,6 +36,8 @@ export function applyChoice(
       return { ...base, alderDelta: 5, communityDelta: 6 };
     case 'preapp-public':
       return { ...base, alderDelta: -3, communityDelta: 4 };
+    case 'preapp-multilingual':
+      return { ...base, alderDelta: 0, communityDelta: 15 };
 
     case 'community-data':
       return { ...base, alderDelta: 3, communityDelta: 4 };
@@ -39,6 +45,13 @@ export function applyChoice(
       return { ...base, alderDelta: -2, communityDelta: 12 };
     case 'community-coalition':
       return { ...base, alderDelta: 4, communityDelta: 10 };
+
+    case 'community-jp-full-parking':
+      return { ...base, alderDelta: 12, communityDelta: 15, tdcDelta: 30_000 };
+    case 'community-jp-traffic-data':
+      return { ...base, alderDelta: 5, communityDelta: 6, tdcDelta: 15_000 };
+    case 'community-jp-refuse-parking':
+      return { ...base, alderDelta: -5, communityDelta: -10, tdcDelta: 0 };
 
     case 'zoning-hold':
       return { ...base, alderDelta: -14, communityDelta: -4 };

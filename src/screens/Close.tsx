@@ -6,6 +6,8 @@ import { computeImpactScore } from '../game/scoring';
 import { getNeighborhood } from '../data/neighborhoods';
 import { StackBar } from '../components/StackBar';
 import { AmiBand } from '../game/types';
+import { JargonScreenScope } from '../components/JargonScreenScope';
+import { TooltipTerm } from '../components/TooltipTerm';
 import { getReactions } from '../data/closeReactions';
 
 export function Close() {
@@ -44,6 +46,7 @@ export function Close() {
     '';
 
   return (
+    <JargonScreenScope>
     <div className="max-w-3xl mx-auto p-6">
       <div className="bg-panel border border-line rounded-xl p-4 mb-4 text-center">
         <div className="text-4xl">{closed ? '🎉' : '🛑'}</div>
@@ -67,7 +70,7 @@ export function Close() {
 
           <div className="grid grid-cols-4 gap-2 mt-3 text-center">
             <div><div className="text-xs uppercase text-muted">Units</div><div className="text-xl font-bold tabular">{finalUnits}</div></div>
-            <div><div className="text-xs uppercase text-muted">Wtd avg AMI</div><div className="text-xl font-bold tabular">{Math.round(weightedAvgAmi(proForma.amiBreakdown))}%</div></div>
+            <div><div className="text-xs uppercase text-muted">Wtd avg <TooltipTerm term="AMI">AMI</TooltipTerm></div><div className="text-xl font-bold tabular">{Math.round(weightedAvgAmi(proForma.amiBreakdown))}%</div></div>
             <div><div className="text-xs uppercase text-muted">Final TDC</div><div className="text-xl font-bold tabular">${(tdcTotal / 1_000_000).toFixed(1)}M</div></div>
             <div><div className="text-xs uppercase text-muted">Per unit</div><div className="text-xl font-bold tabular">${(tdcTotal / finalUnits / 1000).toFixed(0)}k</div></div>
           </div>
@@ -116,6 +119,7 @@ export function Close() {
         </a>
       </div>
     </div>
+    </JargonScreenScope>
   );
 }
 
@@ -128,14 +132,20 @@ function StakeholderPanel() {
     <div className="bg-panel border border-line rounded-xl p-4 mb-4">
       <div className="text-xs uppercase tracking-wider text-accent font-bold mb-3">Reactions</div>
       <div className="space-y-2">
-        {reactions.map((r, i) => (
-          <div key={i} className="bg-bg p-3 rounded-lg text-sm">
-            <b>{r.emoji} {r.voice}</b>
-            <span className="text-muted"> · {r.affiliation}</span>
-            <br />
-            <i className="text-muted">{r.line}</i>
-          </div>
-        ))}
+        {reactions.map((r, i) => {
+          const lineContent =
+            state.outcome === 'shelved-aro' && i === 0
+              ? <>The <TooltipTerm term="ARO">ARO</TooltipTerm> requires 20% affordability anyway. We&apos;re not going to subsidize that.</>
+              : r.line;
+          return (
+            <div key={i} className="bg-bg p-3 rounded-lg text-sm">
+              <b>{r.emoji} {r.voice}</b>
+              <span className="text-muted"> · {r.affiliation}</span>
+              <br />
+              <i className="text-muted">{lineContent}</i>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

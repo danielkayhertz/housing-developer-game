@@ -1,10 +1,42 @@
 import {
   SourceAward,
+  AmiBand,
   COMPLEXITY_PENALTY_THRESHOLD,
   COMPLEXITY_PENALTY_PER_UNIT,
   LIHTC_BASELINE_WIN_RATE,
+  MIXED_INCOME_QAP_PENALTY,
   NeighborhoodId,
+  Intent,
 } from './types';
+
+/** Maximum LIHTC equity award regardless of hard cost. */
+const LIHTC_AWARD_CAP = 24_000_000;
+/** LIHTC equity as a fraction of hard construction cost (55%). */
+const LIHTC_HARD_COST_RATIO = 0.55;
+
+/**
+ * Compute the 9% LIHTC equity award amount.
+ *
+ * The base award is `min(LIHTC_AWARD_CAP, hardCost × 0.55)`.
+ * It scales linearly by affordable share: if only 80% of units are
+ * affordable the award is 80% of the base.
+ *
+ * @param hardCost - Hard construction cost in dollars
+ * @param amiBreakdown - Unit counts by AMI band (30/60/80)
+ * @param marketUnits - Number of market-rate units (default 0)
+ */
+export function computeLihtcAward(input: {
+  hardCost: number;
+  amiBreakdown: Record<AmiBand, number>;
+  marketUnits?: number;
+}): number {
+  const { hardCost, amiBreakdown, marketUnits = 0 } = input;
+  const affordableUnits = (Object.values(amiBreakdown) as number[]).reduce((sum, v) => sum + v, 0);
+  const totalUnits = affordableUnits + marketUnits;
+  const affordableShare = totalUnits > 0 ? affordableUnits / totalUnits : 0;
+  const baseAward = Math.min(LIHTC_AWARD_CAP, hardCost * LIHTC_HARD_COST_RATIO);
+  return Math.round(baseAward * affordableShare);
+}
 
 export function complexityPenalty(sourceCount: number, units: number): number {
   const overage = Math.max(0, sourceCount - COMPLEXITY_PENALTY_THRESHOLD);
@@ -20,6 +52,8 @@ export function computeLihtcScore(input: {
   hasCboPartner: boolean;
   hasLeverageCommitments: boolean;
   neighborhood: NeighborhoodId;
+  intent: Intent;
+  marketUnits: number;
 }): number {
   let score = 24; // base
 
@@ -32,6 +66,14 @@ export function computeLihtcScore(input: {
 
   if (input.neighborhood === 'englewood' || input.neighborhood === 'pilsen') {
     score += 10;
+  }
+
+  if (
+    input.intent === 'mixed-income' &&
+    input.marketUnits > 0 &&
+    input.neighborhood !== 'englewood'
+  ) {
+    score -= MIXED_INCOME_QAP_PENALTY;
   }
 
   return Math.min(100, Math.round(score));

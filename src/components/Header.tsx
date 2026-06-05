@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { getNeighborhood } from '../data/neighborhoods';
 import { computeTdc } from '../game/proForma';
 import { totalCommitted } from '../game/capitalStack';
 import { TimelinePill } from './TimelinePill';
+import { GlossaryPanel } from './GlossaryPanel';
 import { REVISION_SOFT_PENALTY } from '../game/types';
 
 export function Header() {
+  const [glossaryOpen, setGlossaryOpen] = useState(false);
   const phase = useGameStore((s) => s.phase);
   const project = useGameStore((s) => s.project);
   const proForma = useGameStore((s) => s.proForma);
@@ -30,6 +33,7 @@ export function Header() {
   const phaseNames = ['', 'Intro', 'Site & Concept', 'Pro Forma', 'Capital Stack', 'Gap Resolution', 'Entitlement', 'Close'];
 
   return (
+    <>
     <div className="bg-panel border border-line rounded-lg px-3 py-2 text-sm text-muted flex flex-wrap gap-3 items-center">
       <span>
         {n.emoji} <b className="text-ink">{n.name}</b> · {project.units} units · {project.intent === 'all-affordable' ? 'all-affordable' : 'mixed-income'}
@@ -48,7 +52,16 @@ export function Header() {
       <span className="ml-auto flex items-center gap-2">
         <TimelinePill months={monthsElapsed} />
         <span>Phase <b className="text-ink">{phase} / 7 — {phaseNames[phase]}</b></span>
+        <button
+          onClick={() => setGlossaryOpen(true)}
+          aria-label="Open glossary"
+          className="w-7 h-7 rounded-full border border-line bg-panel hover:border-accent flex items-center justify-center text-xs font-bold text-muted hover:text-ink"
+        >
+          ?
+        </button>
       </span>
     </div>
+    <GlossaryPanel open={glossaryOpen} onClose={() => setGlossaryOpen(false)} />
+    </>
   );
 }

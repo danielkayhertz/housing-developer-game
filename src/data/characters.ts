@@ -49,6 +49,7 @@ export const ashaLines = {
   closingShelvedStack: "I'm sorry. The stack just never came together. Sometimes the numbers win.",
   closingShelvedFinance: "I lost the room. Powell and Reyes made their play and I couldn't hold the coalition. I'm so sorry.",
   closingShelvedAlder: "I couldn't make this work in my ward. I know that's not what you wanted to hear.",
+  shelvedAlder: "I couldn't make this work in my ward. I know that's not what you wanted to hear.",
   closingShelvedCommunity: "The community engagement fell apart. Without the block club, I couldn't keep moving forward.",
 };
 
@@ -62,6 +63,38 @@ export const janelleLines = {
 export const davidLines = {
   dohWelcome: 'DOH is on board with your profile. We\'ll need a coherent stack before final commitment — show me what else you\'re lining up.',
   capitalStackIntro: 'Putting this together is what we call assembling the capital stack — soft loans, grants, tax credits, and equity stacked to your TDC. Three rules: every source closes more of the gap; every source takes time, and time is money (hard costs escalate ~5%/year); past 5 sources, complexity penalty kicks in at ~$20k/unit per extra source. The art is closing the gap with the smallest, fastest set of sources you can.',
+  capitalStackQuipWalkup: "You chose Walk-up — lowest hard cost per unit, but a smaller building means LIHTC has less to work with. Watch the gap percentage.",
+  capitalStackQuipLarger: "You chose Larger — that's why the hard cost per unit is at the top of the band. Worth it if you can stack the gap.",
+  shelvedAro: "The ARO requires 20% affordability anyway. We're not going to subsidize that.",
+};
+
+export const carlosLines = {
+  greeting: "Look — we've lost too many longtime residents already. Show me you're serious about depth. Shallow won't fly here.",
+  bonusFired: "Twenty percent at 30% AMI. That's the depth we need. I can carry this to my council colleagues.",
+  closingHigh: "You actually built what you said you'd build. People here have heard a lot of promises — thanks for keeping yours.",
+  closingMid: "It's not perfect, but it's a start. Hold the line on rents and we won't have a problem.",
+  closingLow: "Look, I'll vote for it because we need units. But you didn't earn what some of the neighborhood was hoping for.",
+  shelvedAlder: "I can't sell this to the ward right now. Come back when you've got a deeper mix.",
+};
+
+export const frankLines = {
+  greeting: "I'm not going to lie — most of my constituents don't want this. Bring something with parking and you might get a hearing. Otherwise, expect a fight.",
+  parkingAccepted: "All right, that's the kind of partnership the block-club has been asking for. Good.",
+  parkingMinimal: "It's not what they wanted but the data helps. I can defend it at the meeting.",
+  parkingRefused: "You're going to make this very difficult. Don't say I didn't warn you.",
+  closingHigh: "I didn't expect to back this one, but you actually listened. I'll go to bat for it.",
+  closingMid: "Close call. Some folks are still mad. But it's going to get built.",
+  closingLow: "I'm voting no. You can take it to council without me.",
+  shelvedAlder: "I'm not bringing this to a vote. The ward isn't there yet — neither am I.",
+};
+
+export const nailaLines = {
+  greeting: "Welcome. Our community speaks half a dozen languages on a slow day — meet people where they are and you'll find real partners here.",
+  multilingualChoice: "Thank you for showing up the way you did. Real engagement looks like this.",
+  closingHigh: "Beautiful work. The whole community feels heard. They'll fill these units the day you open.",
+  closingMid: "It's good. Could've been deeper engagement but the design is solid.",
+  closingLow: "We needed more from you. The mayor's office will hear about this.",
+  shelvedAlder: "I can't take this forward. Come back when you've taken the time to actually meet the people who live here.",
 };
 
 export const financeAttackLines = {

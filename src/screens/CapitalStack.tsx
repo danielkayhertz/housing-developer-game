@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { sources, getSource } from '../data/sources';
 import { computeTdc, computeNoi, computeSupportableDebt, weightedAvgAmi } from '../game/proForma';
-import { complexityPenalty, computeLihtcScore, estimatedAwardProbability, totalCommitted } from '../game/capitalStack';
+import { complexityPenalty, computeLihtcAward, computeLihtcScore, estimatedAwardProbability, totalCommitted } from '../game/capitalStack';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
 import { StackBar } from '../components/StackBar';
@@ -12,6 +12,8 @@ import { CharacterIntroCard } from '../components/CharacterIntroCard';
 import { janelleLines, davidLines, marcusLines, characters } from '../data/characters';
 import { ReviseSubScreen } from '../components/ReviseSubScreen';
 import { AmiBand, FinishLevel, SourceId, COMPLEXITY_PENALTY_THRESHOLD, REVISION_SOFT_PENALTY, GAP_ADVANCE_THRESHOLD } from '../game/types';
+import { JargonScreenScope } from '../components/JargonScreenScope';
+import { TooltipTerm } from '../components/TooltipTerm';
 
 export function CapitalStack() {
   const project = useGameStore((s) => s.project);
@@ -61,8 +63,19 @@ export function CapitalStack() {
     hasCboPartner: project.hasCboPartner,
     hasLeverageCommitments: stack.awarded.length >= 2,
     neighborhood: project.neighborhood,
+    intent: project.intent,
+    marketUnits: proForma.marketUnits ?? 0,
   });
   const lihtcOdds = estimatedAwardProbability(lihtcScore);
+
+  const affordableUnits = (Object.values(proForma.amiBreakdown) as number[]).reduce((s, v) => s + v, 0);
+  const totalUnits = affordableUnits + proForma.marketUnits;
+  const affordableShare = totalUnits > 0 ? affordableUnits / totalUnits : 0;
+  const lihtcEquity = computeLihtcAward({
+    hardCost: tdcParts.hard,
+    amiBreakdown: proForma.amiBreakdown,
+    marketUnits: proForma.marketUnits,
+  });
 
   function onApply(sourceId: SourceId) {
     const src = getSource(sourceId);
@@ -75,8 +88,7 @@ export function CapitalStack() {
     setShowLihtcDecision(false);
     const win = Math.random() < lihtcOdds;
     if (win) {
-      const equity = Math.min(24_000_000, tdcParts.hard * 0.55);
-      awardSource({ sourceId: '9-lihtc', amount: equity, daysSpent: 280 });
+      awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     submitLihtc(win);
     tickMonths(12);
@@ -85,8 +97,7 @@ export function CapitalStack() {
   function onSubmitAgain() {
     const win = Math.random() < lihtcOdds;
     if (win) {
-      const equity = Math.min(24_000_000, tdcParts.hard * 0.55);
-      awardSource({ sourceId: '9-lihtc', amount: equity, daysSpent: 280 });
+      awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     resubmitLihtc(win);
     tickMonths(12);
@@ -95,8 +106,7 @@ export function CapitalStack() {
   function onResubmitFromRevise() {
     const win = Math.random() < lihtcOdds;
     if (win) {
-      const equity = Math.min(24_000_000, tdcParts.hard * 0.55);
-      awardSource({ sourceId: '9-lihtc', amount: equity, daysSpent: 280 });
+      awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     reviseLihtc(win);
     tickMonths(12);
@@ -125,16 +135,19 @@ export function CapitalStack() {
 
   if (reviseMode === 'cut-costs') {
     return (
+      <JargonScreenScope>
       <div className="max-w-6xl mx-auto p-6">
         <Header />
         <h2 className="text-2xl mt-6 mb-4">Capital Stack — revise</h2>
         <CutCostsSubScreen onDone={onExitCutCosts} />
       </div>
+      </JargonScreenScope>
     );
   }
 
   if (reviseMode === 'qap-odds') {
     return (
+      <JargonScreenScope>
       <div className="max-w-6xl mx-auto p-6">
         <Header />
         <h2 className="text-2xl mt-6 mb-4">Capital Stack — revise</h2>
@@ -145,10 +158,12 @@ export function CapitalStack() {
           onCancel={() => setReviseMode('none')}
         />
       </div>
+      </JargonScreenScope>
     );
   }
 
   return (
+    <JargonScreenScope>
     <div className="max-w-6xl mx-auto p-6">
       <button
         onClick={retreatPhase}
@@ -164,7 +179,17 @@ export function CapitalStack() {
           avatar={characters.david.emoji}
           name={characters.david.name}
           role={characters.david.role}
-          body={<p>{davidLines.capitalStackIntro}</p>}
+          body={
+            <>
+              <p>{davidLines.capitalStackIntro}</p>
+              {project.buildingType === 'walkup' && (
+                <p className="text-sm italic text-muted mt-2">{davidLines.capitalStackQuipWalkup}</p>
+              )}
+              {project.buildingType === 'larger' && (
+                <p className="text-sm italic text-muted mt-2">{davidLines.capitalStackQuipLarger}</p>
+              )}
+            </>
+          }
         />
       </div>
 
@@ -193,7 +218,7 @@ export function CapitalStack() {
         <div className="bg-bg border-2 border-accent rounded-lg p-4 mb-3">
           <div className="flex justify-between items-center">
             <div>
-              <div className="text-xs uppercase tracking-wider text-accent font-bold">9% LIHTC — IHDA QAP scoring</div>
+              <div className="text-xs uppercase tracking-wider text-accent font-bold">9% <TooltipTerm term="LIHTC">LIHTC</TooltipTerm> — IHDA <TooltipTerm term="QAP">QAP</TooltipTerm> scoring</div>
               <div className="text-sm mt-1">Score: <b>{lihtcScore} / 100</b> · Est. award probability: <b>{(lihtcOdds * 100).toFixed(0)}%</b></div>
               <div className="text-xs text-muted mt-1">
                 {lihtcScore < 50 ? janelleLines.qapScoreLow : lihtcScore < 75 ? janelleLines.qapScoreMid : janelleLines.qapScoreHigh}
@@ -243,6 +268,10 @@ export function CapitalStack() {
           const amt = getAwardedAmount(src.id);
           const complexityWarning =
             src.usesComplexityPenalty && status === 'available' && penaltyEligibleCount >= COMPLEXITY_PENALTY_THRESHOLD;
+          const scalingNote =
+            src.id === '9-lihtc' && affordableShare < 1
+              ? `scaled to ${(affordableShare * 100).toFixed(0)}% affordable share`
+              : undefined;
           return (
             <SourceCard
               key={src.id}
@@ -250,6 +279,7 @@ export function CapitalStack() {
               status={status}
               awardedAmount={amt}
               complexityWarning={complexityWarning}
+              scalingNote={scalingNote}
               onApply={() => onApply(src.id)}
             />
           );
@@ -277,6 +307,7 @@ export function CapitalStack() {
           : `Resolve the remaining $${(gap / 1_000_000).toFixed(1)}M gap →`}
       </button>
     </div>
+    </JargonScreenScope>
   );
 }
 
@@ -363,7 +394,7 @@ function CutCostsSubScreen({ onDone }: { onDone: () => void }) {
       </div>
 
       <div className="bg-bg p-3 rounded-lg text-sm tabular flex justify-between">
-        <span className="text-muted">Live TDC preview</span>
+        <span className="text-muted">Live <TooltipTerm term="TDC">TDC</TooltipTerm> preview</span>
         <b>${(tdc / 1_000_000).toFixed(1)}M</b>
       </div>
     </ReviseSubScreen>

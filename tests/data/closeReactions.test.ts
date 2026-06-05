@@ -89,8 +89,8 @@ describe('getReactions — success path', () => {
   });
 
   it('Editorial midCost when perUnit $400k–499k', () => {
-    // Base TDC ~$45,072,000. For $450k/unit (27,000,000 total): escalation = 27M - 45.072M = -18.072M
-    const s = makeState({ costEscalation: -18_072_000 });
+    // v3: −20% hard cost; base TDC ~$36,201,600. For $450k/unit (27,000,000 total): escalation = 27M - 36.2016M = -9.2016M
+    const s = makeState({ costEscalation: -9_201_600 });
     const editorial = getReactions(s).find((r) => r.affiliation.includes('Reader'))!;
     expect(editorial.line).toContain('questions');
   });
@@ -170,5 +170,71 @@ describe('getReactions — failure path', () => {
   it('in-progress returns empty array', () => {
     const s = makeState({ outcome: 'in-progress' });
     expect(getReactions(s)).toHaveLength(0);
+  });
+});
+
+describe('per-neighborhood alder routing', () => {
+  it('Pilsen + closed + high alder → Carlos Reyes closing line', () => {
+    const s = makeState({ project: { neighborhood: 'pilsen' }, entitlement: { alderGoodwill: 75 } });
+    const reactions = getReactions(s);
+    const alder = reactions.find((r) => r.affiliation.includes('Pilsen'));
+    expect(alder).toBeTruthy();
+    expect(alder?.line).toContain('keeping yours');  // from carlosLines.closingHigh
+  });
+
+  it('Jefferson Park + closed → Frank Kovac closing line', () => {
+    const s = makeState({ project: { neighborhood: 'jefferson-park' }, entitlement: { alderGoodwill: 40 } });
+    const reactions = getReactions(s);
+    const alder = reactions.find((r) => r.affiliation.includes('Jefferson Park'));
+    expect(alder).toBeTruthy();
+    expect(alder?.voice).toBe('Frank Kovac');
+  });
+
+  it('Albany Park + closed → Naila Hassan closing line', () => {
+    const s = makeState({ project: { neighborhood: 'albany-park' } });
+    const reactions = getReactions(s);
+    const alder = reactions.find((r) => r.affiliation.includes('Albany Park'));
+    expect(alder).toBeTruthy();
+    expect(alder?.voice).toBe('Naila Hassan');
+  });
+
+  it('shelved-aro → David Park ARO line', () => {
+    const s = makeState({ outcome: 'shelved-aro' });
+    const reactions = getReactions(s);
+    const david = reactions.find((r) => r.line.toLowerCase().includes('aro'));
+    expect(david).toBeTruthy();
+  });
+
+  it('mixed-income outside Englewood → advocate sharpened line', () => {
+    const s = makeState({
+      project: { neighborhood: 'pilsen', intent: 'mixed-income' },
+      proForma: { marketUnits: 10 },
+    });
+    const reactions = getReactions(s);
+    const advocate = reactions.find((r) => r.affiliation.toLowerCase().includes('coalition'));
+    expect(advocate?.line).toMatch(/left units on the table/i);
+  });
+
+  it('larger building → block club parking line', () => {
+    const s = makeState({ project: { buildingType: 'larger' } });
+    const reactions = getReactions(s);
+    const blockClub = reactions.find(
+      (r) => r.voice === 'Block Club' || r.affiliation.toLowerCase().includes('block club'),
+    );
+    expect(blockClub?.line).toMatch(/parking/i);
+  });
+
+  it('Pilsen shelved-alder → Carlos Reyes shelved line', () => {
+    const s = makeState({ project: { neighborhood: 'pilsen' }, outcome: 'shelved-alder' });
+    const reactions = getReactions(s);
+    expect(reactions.some((r) => r.voice === 'Carlos Reyes')).toBe(true);
+    expect(reactions.some((r) => r.affiliation.includes('Housing Coalition'))).toBe(true);
+  });
+
+  it('Jefferson Park shelved-community → Frank Kovac + block club', () => {
+    const s = makeState({ project: { neighborhood: 'jefferson-park' }, outcome: 'shelved-community' });
+    const reactions = getReactions(s);
+    expect(reactions.some((r) => r.voice === 'Frank Kovac')).toBe(true);
+    expect(reactions.some((r) => r.affiliation.toLowerCase().includes('block club'))).toBe(true);
   });
 });

@@ -9,21 +9,22 @@ import {
 } from '../../src/game/proForma';
 
 describe('computeTdc', () => {
-  it('Englewood mid-rise standard finish, 60 units → ~$45M', () => {
+  it('Englewood mid-rise standard finish, 60 units → ~$36.2M', () => {
     const tdc = computeTdc({
       neighborhood: 'englewood',
       units: 60,
       buildingType: 'midrise',
       finishLevel: 'standard',
     });
+    // v3: −20% hard cost
     // land 60×$12k = $720k
-    // hard 60×$560k = $33.6M
-    // soft 27% × $33.6M = $9.072M
-    // contingency 5% × $33.6M = $1.68M
-    // = $45.072M
-    expect(tdc.total).toBeCloseTo(45_072_000, -3);
+    // hard 60×$448k = $26.88M
+    // soft 27% × $26.88M = $7.2576M
+    // contingency 5% × $26.88M = $1.344M
+    // = $36.2016M
+    expect(tdc.total).toBeCloseTo(36_201_600, -3);
     expect(tdc.land).toBe(720_000);
-    expect(tdc.hard).toBe(33_600_000);
+    expect(tdc.hard).toBe(26_880_000);
   });
 
   it('Elevated finish increases hard cost by 15%', () => {
@@ -33,7 +34,8 @@ describe('computeTdc', () => {
       buildingType: 'midrise',
       finishLevel: 'elevated',
     });
-    expect(tdc.hard).toBeCloseTo(33_600_000 * 1.15, -2);
+    // v3: −20% hard cost; 60 × $448k × 1.15 = $30,912,000
+    expect(tdc.hard).toBeCloseTo(26_880_000 * 1.15, -2);
   });
 });
 
