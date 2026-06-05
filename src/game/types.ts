@@ -80,7 +80,7 @@ export type StepChoiceKey =
   | 'finance-reframe' | 'finance-concede' | 'finance-stakeholders';
 
 export interface StepChoice {
-  step: EntitlementStep;
+  step: number;
   choice: StepChoiceKey;
   alderDelta: number;
   communityDelta: number;

@@ -33,10 +33,13 @@ export function SiteAndConcept() {
         finishLevel,
       }).total
     : 0;
-  const entitlementPath = resolveEntitlementPath({
-    buildingType: project.buildingType,
-    units: project.units,
-  });
+  const entitlementPath = project.neighborhood
+    ? resolveEntitlementPath({
+        buildingType: project.buildingType,
+        units: project.units,
+        neighborhood: project.neighborhood,
+      })
+    : null;
 
   const canAdvance = project.neighborhood && getNeighborhood(project.neighborhood).status === 'mvp';
 

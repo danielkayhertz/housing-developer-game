@@ -10,7 +10,7 @@ export function resolveEntitlementPath(input: {
 }): EntitlementPath {
   const n = getNeighborhood(input.neighborhood);
   if (input.buildingType === 'larger') return 'pd';
-  if (n.hooks.jeffersonParkSfrOnly && input.buildingType !== 'larger') return 'zma';
+  if (n.hooks.jeffersonParkSfrOnly) return 'zma';
   if (input.buildingType === 'walkup' && input.units >= 40) return 'pd';
   if (input.buildingType === 'midrise') return 'zma';
   return 'by-right'; // walkup < 40 units
