@@ -6,7 +6,11 @@ import { Header } from '../components/Header';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
 import { marcusLines, janelleLines, characters } from '../data/characters';
 import { computeLihtcScore, estimatedAwardProbability } from '../game/capitalStack';
-import { AmiBand, FinishLevel } from '../game/types';
+import { AmiBand, FinishLevel, BuildingType, HARD_COST_PER_UNIT, LAND_COST_BUILDING_MULTIPLIER, SOFT_COST_RATIO, CONTINGENCY_RATIO } from '../game/types';
+
+function titleCase(t: BuildingType): string {
+  return { walkup: 'Walk-up', midrise: 'Mid-rise', larger: 'Larger' }[t];
+}
 
 export function ProForma() {
   const project = useGameStore((s) => s.project);
@@ -158,10 +162,38 @@ export function ProForma() {
           <div className="bg-panel border border-line rounded-lg p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold">TDC bottom-up</div>
             <div className="text-sm mt-2 space-y-1 tabular">
-              <div className="flex justify-between"><span>Land · ${n.landCostPerUnit.toLocaleString()}/u</span><b>${(tdcParts.land / 1000).toFixed(0)}k</b></div>
-              <div className="flex justify-between"><span>Hard construction</span><b>${(tdcParts.hard / 1_000_000).toFixed(1)}M</b></div>
-              <div className="flex justify-between"><span>Soft (27%)</span><b>${(tdcParts.soft / 1_000_000).toFixed(1)}M</b></div>
-              <div className="flex justify-between"><span>Contingency (5%)</span><b>${(tdcParts.contingency / 1_000_000).toFixed(1)}M</b></div>
+              <div className="flex justify-between">
+                <span>
+                  Hard cost
+                  <span className="text-xs text-muted ml-2">
+                    ({titleCase(project.buildingType)} · ${(HARD_COST_PER_UNIT[project.buildingType] / 1000).toFixed(0)}k × {project.units}u)
+                  </span>
+                </span>
+                <b>${(tdcParts.hard / 1_000_000).toFixed(1)}M</b>
+              </div>
+              <div className="flex justify-between">
+                <span>
+                  Land
+                  <span className="text-xs text-muted ml-2">
+                    ({n.name} · ${(n.landCostPerUnit / 1000).toFixed(0)}k × {LAND_COST_BUILDING_MULTIPLIER[project.buildingType].toFixed(2)} × {project.units}u)
+                  </span>
+                </span>
+                <b>${(tdcParts.land / 1000).toFixed(0)}k</b>
+              </div>
+              <div className="flex justify-between">
+                <span>
+                  Soft costs
+                  <span className="text-xs text-muted ml-2">({(SOFT_COST_RATIO * 100).toFixed(0)}% of hard)</span>
+                </span>
+                <b>${(tdcParts.soft / 1_000_000).toFixed(1)}M</b>
+              </div>
+              <div className="flex justify-between">
+                <span>
+                  Contingency
+                  <span className="text-xs text-muted ml-2">({(CONTINGENCY_RATIO * 100).toFixed(0)}% of hard)</span>
+                </span>
+                <b>${(tdcParts.contingency / 1_000_000).toFixed(1)}M</b>
+              </div>
               {costEscalation > 0 && (
                 <div className="flex justify-between text-caution"><span>Cost escalation</span><b>+${(costEscalation / 1_000_000).toFixed(1)}M</b></div>
               )}
