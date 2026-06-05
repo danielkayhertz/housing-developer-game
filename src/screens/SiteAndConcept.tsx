@@ -4,7 +4,14 @@ import { computeTdc } from '../game/proForma';
 import { resolveEntitlementPath } from '../game/entitlement';
 import { Header } from '../components/Header';
 import { CharacterBubble } from '../components/CharacterBubble';
-import { NeighborhoodId, BuildingType, Intent } from '../game/types';
+import { NeighborhoodId, BuildingType, Intent, AlderTone } from '../game/types';
+
+function tonePillClass(tone: AlderTone): string {
+  const base = 'text-xs font-semibold px-2 py-0.5 rounded-full';
+  if (tone === 'green') return `${base} bg-green-100 text-green-800`;
+  if (tone === 'yellow') return `${base} bg-yellow-100 text-yellow-800`;
+  return `${base} bg-red-100 text-red-800`;
+}
 
 export function SiteAndConcept() {
   const project = useGameStore((s) => s.project);
@@ -49,19 +56,26 @@ export function SiteAndConcept() {
           <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">1. Neighborhood</div>
           <div className="grid grid-cols-2 gap-2 mb-4">
             {neighborhoods.map((nb) => (
-              <button
+              <div
                 key={nb.id}
+                className={`p-4 border rounded-lg cursor-pointer ${
+                  project.neighborhood === nb.id ? 'border-accent bg-accent/10' : 'border-line bg-panel hover:border-accent'
+                }`}
                 onClick={() => selectNeighborhood(nb.id as NeighborhoodId)}
-                className={`text-left p-3 rounded-lg border-2 transition ${
-                  project.neighborhood === nb.id ? 'bg-bg border-accent' : 'bg-panel border-line hover:border-accent'
-                } ${nb.status === 'stub' ? 'opacity-60' : ''}`}
               >
-                <div className="font-bold text-sm">{nb.emoji} {nb.name} {nb.status === 'stub' && <span className="text-xs text-caution">(v2)</span>}</div>
-                <div className="text-xs text-muted mt-1">{nb.description}</div>
-                <div className="text-xs text-muted mt-1 tabular">
-                  Land ~${(nb.landCostPerUnit / 1000).toFixed(0)}k/u · Mkt ${nb.marketRentPerUnit.toLocaleString()}
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xl">{nb.emoji}</span>
+                  <span className="font-semibold text-sm">{nb.name}</span>
+                  <span className={tonePillClass(nb.alderTone)}>{nb.alderTone}</span>
                 </div>
-              </button>
+                <div className="text-xs text-muted mb-2">{nb.description}</div>
+                <div className="text-sm flex flex-col gap-0.5 tabular">
+                  <div className="flex justify-between text-xs"><span>Base land</span><span>${(nb.landCostPerUnit / 1000).toFixed(0)}k/u</span></div>
+                  <div className="flex justify-between text-xs"><span>Market rent</span><span>${nb.marketRentPerUnit.toLocaleString()}/mo</span></div>
+                  <div className="flex justify-between text-xs"><span>TIF</span><span>{nb.tifAvailable ? 'available' : 'not available'}</span></div>
+                  <div className="flex justify-between text-xs"><span>Alder</span><span>{nb.alderName}</span></div>
+                </div>
+              </div>
             ))}
           </div>
 
