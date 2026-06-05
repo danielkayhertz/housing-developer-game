@@ -287,7 +287,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     const hardPerU = HARD_COST_PER_UNIT[s.project.buildingType] * FINISH_MULTIPLIER[s.proForma.finishLevel] * qualityMul;
     const hard = hardPerU * effectiveUnits;
     const escalationPerMonth = hard * (COST_ESCALATION_PER_YEAR / 12) * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
-    const escalationAdded = escalationPerMonth * n;
+    const escalationAdded = s.phase >= 4 ? escalationPerMonth * n : 0;
     return {
       monthsElapsed: s.monthsElapsed + n,
       costEscalation: s.costEscalation + escalationAdded,

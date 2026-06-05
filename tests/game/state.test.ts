@@ -69,6 +69,9 @@ describe('useGameStore', () => {
   it('tickMonths(12) adds 12 months + ~5% annual cost escalation', () => {
     useGameStore.getState().selectNeighborhood('englewood');
     useGameStore.getState().setUnits(60);
+    useGameStore.getState().advancePhase(); // 1->2
+    useGameStore.getState().advancePhase(); // 2->3
+    useGameStore.getState().advancePhase(); // 3->4
     useGameStore.getState().tickMonths(12);
     const s = useGameStore.getState();
     expect(s.monthsElapsed).toBe(12);
@@ -81,6 +84,9 @@ describe('useGameStore', () => {
   it('tickMonths(3) adds 3 months + 1/4 of annual escalation', () => {
     useGameStore.getState().selectNeighborhood('englewood');
     useGameStore.getState().setUnits(60);
+    useGameStore.getState().advancePhase(); // 1->2
+    useGameStore.getState().advancePhase(); // 2->3
+    useGameStore.getState().advancePhase(); // 3->4
     useGameStore.getState().tickMonths(3);
     const s = useGameStore.getState();
     expect(s.monthsElapsed).toBe(3);
@@ -170,6 +176,9 @@ describe('useGameStore', () => {
     useGameStore.getState().reset();
     useGameStore.getState().selectNeighborhood('englewood');
     useGameStore.getState().setUnits(60);
+    useGameStore.getState().advancePhase(); // 1->2
+    useGameStore.getState().advancePhase(); // 2->3
+    useGameStore.getState().advancePhase(); // 3->4
     // baseline: 12 months → known escalation from Phase 1 tests
     useGameStore.getState().tickMonths(12);
     const baseline = useGameStore.getState().costEscalation;
@@ -178,7 +187,7 @@ describe('useGameStore', () => {
     useGameStore.getState().reset();
     useGameStore.getState().selectNeighborhood('englewood');
     useGameStore.getState().setUnits(60);
-    useGameStore.setState((s) => ({ gapResolution: { ...s.gapResolution, shrinkBy: 30 } }));
+    useGameStore.setState((s) => ({ phase: 4, gapResolution: { ...s.gapResolution, shrinkBy: 30 } }));
     useGameStore.getState().tickMonths(12);
     // effective units halved → escalation halved
     expect(useGameStore.getState().costEscalation).toBeCloseTo(baseline / 2, -3);
@@ -298,6 +307,9 @@ describe('useGameStore', () => {
     it('tickMonths(3) sets lastRecap with correct month count and escalationAdded', () => {
       useGameStore.getState().selectNeighborhood('englewood');
       useGameStore.getState().setUnits(60);
+      useGameStore.getState().advancePhase(); // 1->2
+      useGameStore.getState().advancePhase(); // 2->3
+      useGameStore.getState().advancePhase(); // 3->4
       useGameStore.getState().tickMonths(3);
       const recap = useGameStore.getState().lastRecap;
       expect(recap).not.toBeNull();
@@ -344,5 +356,30 @@ describe('useGameStore', () => {
       useGameStore.getState().retreatPhase();
       expect(useGameStore.getState().phase).toBe(1);
     });
+  });
+});
+
+describe('cost escalation gating by phase (v4 item 6)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('tickMonths in phase 3 (Pro Forma) advances months but does not add cost escalation', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    // Move to phase 3 (Site & Concept → Pro Forma)
+    useGameStore.getState().advancePhase(); // 1 -> 2
+    useGameStore.getState().advancePhase(); // 2 -> 3
+    expect(useGameStore.getState().phase).toBe(3);
+    useGameStore.getState().tickMonths(6);
+    expect(useGameStore.getState().monthsElapsed).toBe(6);
+    expect(useGameStore.getState().costEscalation).toBe(0);
+  });
+
+  it('tickMonths in phase 4 (Capital Stack) accrues cost escalation', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().advancePhase(); // 1->2
+    useGameStore.getState().advancePhase(); // 2->3
+    useGameStore.getState().advancePhase(); // 3->4
+    expect(useGameStore.getState().phase).toBe(4);
+    useGameStore.getState().tickMonths(12);
+    expect(useGameStore.getState().costEscalation).toBeGreaterThan(0);
   });
 });

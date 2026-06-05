@@ -25,7 +25,6 @@ export function ProForma() {
   const setCboPartner = useGameStore((s) => s.setCboPartner);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
-  const tickMonths = useGameStore((s) => s.tickMonths);
 
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
@@ -75,7 +74,6 @@ export function ProForma() {
   const totalUnitsAllocated = totalAffordable + (project.intent === 'mixed-income' ? (proForma.marketUnits ?? 0) : 0);
 
   function onAdvance() {
-    tickMonths(12);
     advancePhase();
   }
 
