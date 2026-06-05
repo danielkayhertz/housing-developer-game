@@ -145,11 +145,11 @@ describe('getReactions — failure path', () => {
     expect(reactions.some((r) => r.voice === 'Marcus Bell')).toBe(true);
   });
 
-  it('shelved-finance: Asha + Powell + advocate', () => {
+  it('shelved-finance: Asha + Cunningham + advocate', () => {
     const s = makeState({ outcome: 'shelved-finance' });
     const reactions = getReactions(s);
     expect(reactions.some((r) => r.voice === 'Asha Tran')).toBe(true);
-    expect(reactions.some((r) => r.voice === 'Ald. Powell')).toBe(true);
+    expect(reactions.some((r) => r.voice === 'Ald. Cunningham')).toBe(true);
     expect(reactions.some((r) => r.affiliation.includes('Housing Coalition'))).toBe(true);
   });
 

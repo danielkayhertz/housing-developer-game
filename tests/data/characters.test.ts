@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { carlosLines, frankLines, nailaLines, davidLines } from '../../src/data/characters';
+import { carlosLines, frankLines, nailaLines, davidLines, characters } from '../../src/data/characters';
 
 describe('v3 character lines', () => {
   it('Carlos Reyes has all required slots', () => {
@@ -25,5 +25,11 @@ describe('v3 character lines', () => {
 
   it('David Park has shelvedAro line', () => {
     expect(davidLines.shelvedAro).toBeTruthy();
+  });
+});
+
+describe('Powell character renamed to Cunningham', () => {
+  it("powell character's display name is 'Ald. Cunningham'", () => {
+    expect(characters.powell.name).toBe('Ald. Cunningham');
   });
 });

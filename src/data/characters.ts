@@ -12,7 +12,7 @@ export const characters: Record<CharacterId, Character> = {
   asha:   { id: 'asha', name: 'Asha Tran', emoji: '🧑‍💼', role: 'Your alderperson' },
   janelle:{ id: 'janelle', name: 'Janelle', emoji: '🏛️', role: 'IHDA reviewer' },
   david:  { id: 'david', name: 'David Park', emoji: '🏛️', role: 'Senior Analyst, Chicago Department of Housing' },
-  powell: { id: 'powell', name: 'Ald. Powell', emoji: '⚖️', role: 'Fiscal hawk' },
+  powell: { id: 'powell', name: 'Ald. Cunningham', emoji: '⚖️', role: 'Fiscal hawk' },
   reyes:  { id: 'reyes', name: 'Ald. Reyes', emoji: '📣', role: 'TIF reformer' },
   chen:   { id: 'chen', name: 'Ald. Chen', emoji: '🏢', role: 'Other-ward alder' },
 };
@@ -47,7 +47,7 @@ export const ashaLines = {
   closingMid: "Good work getting this over the finish line. Not perfect, but real affordable homes.",
   closingLow: "It's done. I'm glad for the units. Our relationship will need some rebuilding.",
   closingShelvedStack: "I'm sorry. The stack just never came together. Sometimes the numbers win.",
-  closingShelvedFinance: "I lost the room. Powell and Reyes made their play and I couldn't hold the coalition. I'm so sorry.",
+  closingShelvedFinance: "I lost the room. Cunningham and Reyes made their play and I couldn't hold the coalition. I'm so sorry.",
   closingShelvedAlder: "I couldn't make this work in my ward. I know that's not what you wanted to hear.",
   shelvedAlder: "I couldn't make this work in my ward. I know that's not what you wanted to hear.",
   closingShelvedCommunity: "The community engagement fell apart. Without the block club, I couldn't keep moving forward.",

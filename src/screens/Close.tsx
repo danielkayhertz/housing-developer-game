@@ -40,7 +40,7 @@ export function Close() {
 
   const failureMessage =
     outcome === 'shelved-stack' ? 'The stack never closed. Cost escalation pushed the gap past what could be filled, and the project was shelved.' :
-    outcome === 'shelved-finance' ? "Committee on Finance failed. Reyes and Powell teamed up; Asha couldn't hold the room. The coalition broke and the project was tabled." :
+    outcome === 'shelved-finance' ? "Committee on Finance failed. Reyes and Cunningham teamed up; Asha couldn't hold the room. The coalition broke and the project was tabled." :
     outcome === 'shelved-alder' ? 'Asha quietly told you she couldn\'t push it forward. The site was eventually sold to a market-rate developer.' :
     outcome === 'shelved-community' ? 'The community engagement collapsed at the meeting. The alder withdrew support and the project died.' :
     '';

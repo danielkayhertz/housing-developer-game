@@ -83,7 +83,7 @@ const STEP_CHOICES: Record<number, { key: StepChoiceKey; title: string; descript
     { key: 'zoning-accept', title: 'Accept conditions', description: "Take Committee's height cap & unit-mix conditions.", consequences: '−8 alder · ±0 community · TDC +$1.4M' },
   ],
   4: [
-    { key: 'finance-reframe', title: 'Reframe the cost', description: 'Make the per-unit-of-impact case. Make Powell own his comparison.', consequences: '−2 alder · ±0 community' },
+    { key: 'finance-reframe', title: 'Reframe the cost', description: 'Make the per-unit-of-impact case. Make Cunningham own his comparison.', consequences: '−2 alder · ±0 community' },
     { key: 'finance-concede', title: 'Concede TIF/HED reduction', description: 'Reduce ask to defuse Reyes. Reopens gap.', consequences: '+5 alder · gap reopens' },
     { key: 'finance-stakeholders', title: 'Bring stakeholders', description: 'Coalition testimony. Powerful but spends community support.', consequences: '±0 alder · −15 community' },
   ],
@@ -228,7 +228,7 @@ export function Entitlement() {
           {currentStep === 4 && (
             <div className="grid grid-cols-3 gap-2 my-3">
               <div className="bg-panel border-l-2 border-gap p-2 text-xs">
-                <b>Ald. Powell:</b> "{financeAttackLines.tooExpensive(800_000)}"
+                <b>Ald. Cunningham:</b> "{financeAttackLines.tooExpensive(800_000)}"
               </div>
               {hasTif && (
                 <div className="bg-panel border-l-2 border-gap p-2 text-xs">
