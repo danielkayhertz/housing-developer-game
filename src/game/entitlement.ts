@@ -46,6 +46,13 @@ export function applyChoice(
     case 'community-coalition':
       return { ...base, alderDelta: 4, communityDelta: 10 };
 
+    case 'community-jp-full-parking':
+      return { ...base, alderDelta: 12, communityDelta: 15, tdcDelta: 30_000 };
+    case 'community-jp-traffic-data':
+      return { ...base, alderDelta: 5, communityDelta: 6, tdcDelta: 15_000 };
+    case 'community-jp-refuse-parking':
+      return { ...base, alderDelta: -5, communityDelta: -10, tdcDelta: 0 };
+
     case 'zoning-hold':
       return { ...base, alderDelta: -14, communityDelta: -4 };
     case 'zoning-shrink':

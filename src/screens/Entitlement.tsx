@@ -46,6 +46,27 @@ const MULTILINGUAL_CHOICE: { key: StepChoiceKey; title: string; description: str
   consequences: '+15 community · +3 mo',
 };
 
+const JP_STEP2_CHOICES: { key: StepChoiceKey; title: string; description: string; consequences: string }[] = [
+  {
+    key: 'community-jp-full-parking',
+    title: 'Accept the parking ask',
+    description: 'Provide structured parking matching the neighborhood expectation.',
+    consequences: '+12 alder · +15 community · +$30k/u TDC',
+  },
+  {
+    key: 'community-jp-traffic-data',
+    title: 'Show traffic data, offer minimal parking',
+    description: 'Smaller parking + impact study to address neighborhood concerns.',
+    consequences: '+5 alder · +6 community · +$15k/u TDC',
+  },
+  {
+    key: 'community-jp-refuse-parking',
+    title: 'Refuse / minimal parking',
+    description: "Make the case for transit-oriented development. Risk pushback.",
+    consequences: '−5 alder · −10 community',
+  },
+];
+
 const STEP_CHOICES: Record<number, { key: StepChoiceKey; title: string; description: string; consequences: string }[]> = {
   1: BASE_STEP1_CHOICES,
   2: [
@@ -227,7 +248,10 @@ export function Entitlement() {
 
           <div className="grid grid-cols-3 gap-2 mt-3">
             {(() => {
-              const baseChoices = STEP_CHOICES[currentStep] ?? [];
+              const baseChoices =
+                currentStep === 2 && n.hooks.jeffersonParkParkingChoice
+                  ? JP_STEP2_CHOICES
+                  : STEP_CHOICES[currentStep] ?? [];
               const choices =
                 currentStep === 1 && n.hooks.albanyParkMultilingualChoice
                   ? [...baseChoices, MULTILINGUAL_CHOICE]

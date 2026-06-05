@@ -295,42 +295,49 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     };
   }),
 
-  takeEntitlementStep: (choice, step, ctx = {}) => set((s) => {
+  takeEntitlementStep: (choice, step, ctx = {}) => {
+    const s = get();
     const consequence = applyChoice(choice, ctx);
-    let newCommunity = Math.max(0, Math.min(100, s.entitlement.communitySupport + consequence.communityDelta));
-
-    // Albany Park multilingual-skip cap
-    const n = s.project.neighborhood ? getNeighborhood(s.project.neighborhood) : null;
-    if (n?.hooks.albanyParkMultilingualChoice) {
-      const skippedMultilingual = s.entitlement.pastChoices.some(
-        (c) => c.step === 1 && c.choice !== 'preapp-multilingual'
-      );
-      if (skippedMultilingual) {
-        newCommunity = Math.min(50, newCommunity);
-      }
+    if (consequence.tdcDelta) {
+      get().addCostEscalation(consequence.tdcDelta * s.project.units);
     }
+    set((s) => {
+      const consequence = applyChoice(choice, ctx);
+      let newCommunity = Math.max(0, Math.min(100, s.entitlement.communitySupport + consequence.communityDelta));
 
-    return {
-      entitlement: {
-        ...s.entitlement,
-        currentStep: Math.min(4, (s.entitlement.currentStep + 1)) as EntitlementStep,
-        pastChoices: [
-          ...s.entitlement.pastChoices,
-          {
-            step,
-            choice,
-            alderDelta: consequence.alderDelta,
-            communityDelta: consequence.communityDelta,
-            shrinkBy: consequence.shrinkBy,
-            tdcDelta: consequence.tdcDelta,
-          },
-        ],
-        alderGoodwill: Math.max(0, Math.min(100, s.entitlement.alderGoodwill + consequence.alderDelta)),
-        communitySupport: newCommunity,
-        projectShrinkBy: s.entitlement.projectShrinkBy + consequence.shrinkBy,
-      },
-    };
-  }),
+      // Albany Park multilingual-skip cap
+      const n = s.project.neighborhood ? getNeighborhood(s.project.neighborhood) : null;
+      if (n?.hooks.albanyParkMultilingualChoice) {
+        const skippedMultilingual = s.entitlement.pastChoices.some(
+          (c) => c.step === 1 && c.choice !== 'preapp-multilingual'
+        );
+        if (skippedMultilingual) {
+          newCommunity = Math.min(50, newCommunity);
+        }
+      }
+
+      return {
+        entitlement: {
+          ...s.entitlement,
+          currentStep: Math.min(4, (s.entitlement.currentStep + 1)) as EntitlementStep,
+          pastChoices: [
+            ...s.entitlement.pastChoices,
+            {
+              step,
+              choice,
+              alderDelta: consequence.alderDelta,
+              communityDelta: consequence.communityDelta,
+              shrinkBy: consequence.shrinkBy,
+              tdcDelta: consequence.tdcDelta,
+            },
+          ],
+          alderGoodwill: Math.max(0, Math.min(100, s.entitlement.alderGoodwill + consequence.alderDelta)),
+          communitySupport: newCommunity,
+          projectShrinkBy: s.entitlement.projectShrinkBy + consequence.shrinkBy,
+        },
+      };
+    });
+  },
 
   addCostEscalation: (delta) => set((s) => ({ costEscalation: s.costEscalation + delta })),
 
