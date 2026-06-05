@@ -1,4 +1,5 @@
 import { SourceProfile } from '../game/types';
+import { TooltipTerm } from './TooltipTerm';
 
 type Status = 'available' | 'applied' | 'awarded' | 'locked' | 'secured';
 
@@ -26,7 +27,7 @@ export function SourceCard({ source, status, awardedAmount, complexityWarning, s
       <div className={`absolute top-1 right-1 ${s.badgeClass} text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold`}>
         {s.label}
       </div>
-      <div className="text-base">{source.emoji} <b>{source.name}</b></div>
+      <div className="text-base">{source.emoji} <b><TooltipTerm term={source.name}>{source.name}</TooltipTerm></b></div>
       <div className="text-muted text-[11px]">{source.shortDescription}</div>
       <div className="mt-2">
         {awardedAmount !== undefined ? (

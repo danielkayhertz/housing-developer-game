@@ -13,6 +13,7 @@ import { janelleLines, davidLines, marcusLines, characters } from '../data/chara
 import { ReviseSubScreen } from '../components/ReviseSubScreen';
 import { AmiBand, FinishLevel, SourceId, COMPLEXITY_PENALTY_THRESHOLD, REVISION_SOFT_PENALTY, GAP_ADVANCE_THRESHOLD } from '../game/types';
 import { JargonScreenScope } from '../components/JargonScreenScope';
+import { TooltipTerm } from '../components/TooltipTerm';
 
 export function CapitalStack() {
   const project = useGameStore((s) => s.project);
@@ -217,7 +218,7 @@ export function CapitalStack() {
         <div className="bg-bg border-2 border-accent rounded-lg p-4 mb-3">
           <div className="flex justify-between items-center">
             <div>
-              <div className="text-xs uppercase tracking-wider text-accent font-bold">9% LIHTC — IHDA QAP scoring</div>
+              <div className="text-xs uppercase tracking-wider text-accent font-bold">9% <TooltipTerm term="LIHTC">LIHTC</TooltipTerm> — IHDA <TooltipTerm term="QAP">QAP</TooltipTerm> scoring</div>
               <div className="text-sm mt-1">Score: <b>{lihtcScore} / 100</b> · Est. award probability: <b>{(lihtcOdds * 100).toFixed(0)}%</b></div>
               <div className="text-xs text-muted mt-1">
                 {lihtcScore < 50 ? janelleLines.qapScoreLow : lihtcScore < 75 ? janelleLines.qapScoreMid : janelleLines.qapScoreHigh}
@@ -393,7 +394,7 @@ function CutCostsSubScreen({ onDone }: { onDone: () => void }) {
       </div>
 
       <div className="bg-bg p-3 rounded-lg text-sm tabular flex justify-between">
-        <span className="text-muted">Live TDC preview</span>
+        <span className="text-muted">Live <TooltipTerm term="TDC">TDC</TooltipTerm> preview</span>
         <b>${(tdc / 1_000_000).toFixed(1)}M</b>
       </div>
     </ReviseSubScreen>
