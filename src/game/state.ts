@@ -108,7 +108,25 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     } else {
       next = Math.min(7, s.phase + 1) as Phase;
     }
-    set({ phase: next });
+
+    // Hook firings on Phase 6 entry
+    let entitlement = s.entitlement;
+    if (next === 6 && s.phase !== 6) {
+      const n = s.project.neighborhood ? getNeighborhood(s.project.neighborhood) : null;
+      if (n?.hooks.pilsenDeepThirtyAmiBonus) {
+        const affordable = s.proForma.amiBreakdown[30] + s.proForma.amiBreakdown[60] + s.proForma.amiBreakdown[80];
+        const totalUnits = affordable + s.proForma.marketUnits;
+        const thirtyShare = totalUnits > 0 ? s.proForma.amiBreakdown[30] / totalUnits : 0;
+
+        if (thirtyShare >= 0.20) {
+          entitlement = { ...entitlement, communitySupport: Math.min(100, entitlement.communitySupport + 15) };
+        } else if (thirtyShare < 0.10) {
+          entitlement = { ...entitlement, communitySupport: Math.max(0, entitlement.communitySupport - 10) };
+        }
+      }
+    }
+
+    set({ phase: next, entitlement });
     track('phase_advanced', { to: next });
   },
 
