@@ -8,7 +8,9 @@ import {
   NeighborhoodId,
   Intent,
   FinishLevel,
+  GameState,
 } from './types';
+import { weightedAvgAmi } from './proForma';
 
 /** Maximum LIHTC equity award regardless of hard cost. */
 const LIHTC_AWARD_CAP = 24_000_000;
@@ -93,4 +95,21 @@ export function estimatedAwardProbability(score: number): number {
   } else {
     return LIHTC_BASELINE_WIN_RATE + ((score - 50) / 50) * (0.70 - LIHTC_BASELINE_WIN_RATE);
   }
+}
+
+export function computeQapScore(state: GameState): { score: number; odds: number } {
+  if (!state.project.neighborhood) {
+    return { score: 0, odds: 0 };
+  }
+  const score = computeLihtcScore({
+    weightedAvgAmi: weightedAvgAmi(state.proForma.amiBreakdown),
+    hasCboPartner: state.project.hasCboPartner,
+    hasLeverageCommitments: state.stack.awarded.length >= 2,
+    neighborhood: state.project.neighborhood,
+    intent: state.project.intent,
+    marketUnits: state.proForma.marketUnits ?? 0,
+    finishLevel: state.proForma.finishLevel,
+  });
+  const odds = estimatedAwardProbability(score);
+  return { score, odds };
 }

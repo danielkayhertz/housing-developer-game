@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { sources, getSource } from '../data/sources';
-import { computeTdc, computeNoi, computeSupportableDebt, weightedAvgAmi } from '../game/proForma';
-import { complexityPenalty, computeLihtcAward, computeLihtcScore, estimatedAwardProbability, totalCommitted } from '../game/capitalStack';
+import { computeTdc, computeNoi, computeSupportableDebt } from '../game/proForma';
+import { complexityPenalty, computeLihtcAward, computeQapScore, totalCommitted } from '../game/capitalStack';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
 import { StackBar } from '../components/StackBar';
@@ -16,6 +16,7 @@ import { JargonScreenScope } from '../components/JargonScreenScope';
 import { TooltipTerm } from '../components/TooltipTerm';
 
 export function CapitalStack() {
+  const state = useGameStore((s) => s);
   const project = useGameStore((s) => s.project);
   const proForma = useGameStore((s) => s.proForma);
   const costEscalation = useGameStore((s) => s.costEscalation);
@@ -58,16 +59,7 @@ export function CapitalStack() {
   const penalty = complexityPenalty(penaltyEligibleCount, project.units);
   const gap = Math.max(0, tdcTotal + penalty - committed);
 
-  const lihtcScore = computeLihtcScore({
-    weightedAvgAmi: weightedAvgAmi(proForma.amiBreakdown),
-    hasCboPartner: project.hasCboPartner,
-    hasLeverageCommitments: stack.awarded.length >= 2,
-    neighborhood: project.neighborhood,
-    intent: project.intent,
-    marketUnits: proForma.marketUnits ?? 0,
-    finishLevel: proForma.finishLevel,
-  });
-  const lihtcOdds = estimatedAwardProbability(lihtcScore);
+  const { score: lihtcScore, odds: lihtcOdds } = computeQapScore(state);
 
   const affordableUnits = (Object.values(proForma.amiBreakdown) as number[]).reduce((s, v) => s + v, 0);
   const totalUnits = affordableUnits + proForma.marketUnits;

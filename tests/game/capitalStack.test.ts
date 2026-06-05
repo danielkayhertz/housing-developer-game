@@ -1,12 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   complexityPenalty,
   computeLihtcAward,
   computeLihtcScore,
+  computeQapScore,
   estimatedAwardProbability,
   totalCommitted,
 } from '../../src/game/capitalStack';
 import { MIXED_INCOME_QAP_PENALTY } from '../../src/game/types';
+import { useGameStore } from '../../src/game/state';
 
 describe('complexityPenalty', () => {
   it('0 sources → $0', () => {
@@ -196,5 +198,26 @@ describe('computeLihtcAward scales by affordable share', () => {
       marketUnits: 0,
     });
     expect(award).toBe(0);
+  });
+});
+
+describe('computeQapScore parity', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('returns identical scores when called from Pro Forma and Capital Stack contexts (no awarded sources)', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    const state = useGameStore.getState();
+    const { score: proFormaScore } = computeQapScore(state);
+    const { score: capitalStackScore } = computeQapScore(state);
+    expect(proFormaScore).toBe(capitalStackScore);
+  });
+
+  it('leverageCommitments flips based on awarded source count', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    const before = computeQapScore(useGameStore.getState()).score;
+    useGameStore.getState().awardSource({ sourceId: 'doh-loan', amount: 5_000_000, daysSpent: 45 });
+    useGameStore.getState().awardSource({ sourceId: 'ihda-loan', amount: 4_000_000, daysSpent: 45 });
+    const after = computeQapScore(useGameStore.getState()).score;
+    expect(after - before).toBe(14); // leverage bonus
   });
 });

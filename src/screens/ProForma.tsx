@@ -7,7 +7,7 @@ import { CharacterIntroCard } from '../components/CharacterIntroCard';
 import { JargonScreenScope } from '../components/JargonScreenScope';
 import { TooltipTerm } from '../components/TooltipTerm';
 import { marcusLines, janelleLines, characters } from '../data/characters';
-import { computeLihtcScore, estimatedAwardProbability } from '../game/capitalStack';
+import { computeQapScore } from '../game/capitalStack';
 import { AmiBand, FinishLevel, BuildingType, HARD_COST_PER_UNIT, LAND_COST_BUILDING_MULTIPLIER, SOFT_COST_RATIO, CONTINGENCY_RATIO, MIXED_INCOME_QAP_PENALTY } from '../game/types';
 
 function titleCase(t: BuildingType): string {
@@ -15,6 +15,7 @@ function titleCase(t: BuildingType): string {
 }
 
 export function ProForma() {
+  const state = useGameStore((s) => s);
   const project = useGameStore((s) => s.project);
   const proForma = useGameStore((s) => s.proForma);
   const costEscalation = useGameStore((s) => s.costEscalation);
@@ -64,16 +65,7 @@ export function ProForma() {
   const gap = computeGap({ tdc: tdcTotal, costEscalation: 0, supportableDebt: debt.amount });
   const avgAmi = weightedAvgAmi(proForma.amiBreakdown);
   const eligible = isLihtcEligible(proForma.amiBreakdown);
-  const projectedQapScore = computeLihtcScore({
-    weightedAvgAmi: avgAmi,
-    hasCboPartner: project.hasCboPartner,
-    hasLeverageCommitments: true,
-    neighborhood: project.neighborhood,
-    intent: project.intent,
-    marketUnits: proForma.marketUnits ?? 0,
-    finishLevel: proForma.finishLevel,
-  });
-  const projectedQapOdds = estimatedAwardProbability(projectedQapScore);
+  const { score: projectedQapScore, odds: projectedQapOdds } = computeQapScore(state);
   const projectedQapLine =
     projectedQapScore < 50 ? janelleLines.qapScoreLow :
     projectedQapScore < 75 ? janelleLines.qapScoreMid :
