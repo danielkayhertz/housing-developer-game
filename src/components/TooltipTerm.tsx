@@ -22,7 +22,7 @@ export function TooltipTerm({ term, children }: Props) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!entry && process.env.NODE_ENV !== 'production') {
+    if (!entry && import.meta.env.DEV) {
       console.warn(`TooltipTerm: no glossary entry for "${term}"`);
     }
   }, [entry, term]);
