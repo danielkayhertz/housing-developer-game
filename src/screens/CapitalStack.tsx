@@ -164,7 +164,17 @@ export function CapitalStack() {
           avatar={characters.david.emoji}
           name={characters.david.name}
           role={characters.david.role}
-          body={<p>{davidLines.capitalStackIntro}</p>}
+          body={
+            <>
+              <p>{davidLines.capitalStackIntro}</p>
+              {project.buildingType === 'walkup' && (
+                <p className="text-sm italic text-muted mt-2">{davidLines.capitalStackQuipWalkup}</p>
+              )}
+              {project.buildingType === 'larger' && (
+                <p className="text-sm italic text-muted mt-2">{davidLines.capitalStackQuipLarger}</p>
+              )}
+            </>
+          }
         />
       </div>
 
