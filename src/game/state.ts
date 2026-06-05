@@ -29,14 +29,14 @@ const initialState: GameState = {
   costEscalation: 0,
   project: {
     neighborhood: null,
-    units: 60,
+    units: 50, // v3: midrise default 50
     buildingType: 'midrise',
     intent: 'all-affordable',
     hasCboPartner: false,
     cboTimePaid: false,
   },
   proForma: {
-    amiBreakdown: { 30: 12, 60: 36, 80: 12 },
+    amiBreakdown: { 30: 10, 60: 30, 80: 10 }, // v3: midrise default 50
     marketUnits: 0,
     finishLevel: 'standard',
     opexRatio: 0.38,

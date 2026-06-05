@@ -96,6 +96,20 @@ describe('useGameStore', () => {
     expect(useGameStore.getState().project.neighborhood).toBe(null);
   });
 
+  it('initial units = 50 (midrise default)', () => {
+    useGameStore.getState().reset();
+    expect(useGameStore.getState().project.units).toBe(50);
+  });
+
+  it('initial AMI breakdown sums to 50 with 20/60/20 ratio', () => {
+    useGameStore.getState().reset();
+    const b = useGameStore.getState().proForma.amiBreakdown;
+    expect(b[30]).toBe(10);
+    expect(b[60]).toBe(30);
+    expect(b[80]).toBe(10);
+    expect(b[30] + b[60] + b[80]).toBe(50);
+  });
+
   it('starts with hasCboPartner=false and cboTimePaid=false', () => {
     const s = useGameStore.getState();
     expect(s.project.hasCboPartner).toBe(false);
