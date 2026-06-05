@@ -119,18 +119,29 @@ export function SiteAndConcept() {
 
           {/* Intent */}
           <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">4. Intent</div>
-          <div className="grid grid-cols-2 gap-2 mb-6">
-            {(['all-affordable', 'mixed-income'] as Intent[]).map((i) => (
-              <button
-                key={i}
-                onClick={() => setIntent(i)}
-                className={`p-2 text-xs rounded border-2 transition ${
-                  project.intent === i ? 'bg-bg border-accent' : 'bg-panel border-line hover:border-accent'
-                } ${i === 'mixed-income' ? 'opacity-60' : ''}`}
-              >
-                {i === 'all-affordable' ? 'All-affordable (LIHTC) · MVP' : 'Mixed-income (v2)'}
-              </button>
-            ))}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div
+              className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                project.intent === 'all-affordable'
+                  ? 'border-accent bg-accent/10'
+                  : 'border-line hover:border-accent/50'
+              }`}
+              onClick={() => setIntent('all-affordable')}
+            >
+              <div className="font-semibold mb-1">All-affordable</div>
+              <div className="text-xs text-muted">100% affordable units across 30/60/80 AMI bands.</div>
+            </div>
+            <div
+              className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                project.intent === 'mixed-income'
+                  ? 'border-accent bg-accent/10'
+                  : 'border-line hover:border-accent/50'
+              }`}
+              onClick={() => setIntent('mixed-income')}
+            >
+              <div className="font-semibold mb-1">Mixed-income</div>
+              <div className="text-xs text-muted">Allocate some units at market rate; cross-subsidy from market rents.</div>
+            </div>
           </div>
 
           {/* CBO partner */}

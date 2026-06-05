@@ -6,7 +6,7 @@ import { Header } from '../components/Header';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
 import { marcusLines, janelleLines, characters } from '../data/characters';
 import { computeLihtcScore, estimatedAwardProbability } from '../game/capitalStack';
-import { AmiBand, FinishLevel, BuildingType, HARD_COST_PER_UNIT, LAND_COST_BUILDING_MULTIPLIER, SOFT_COST_RATIO, CONTINGENCY_RATIO } from '../game/types';
+import { AmiBand, FinishLevel, BuildingType, HARD_COST_PER_UNIT, LAND_COST_BUILDING_MULTIPLIER, SOFT_COST_RATIO, CONTINGENCY_RATIO, MIXED_INCOME_QAP_PENALTY } from '../game/types';
 
 function titleCase(t: BuildingType): string {
   return { walkup: 'Walk-up', midrise: 'Mid-rise', larger: 'Larger' }[t];
@@ -66,8 +66,8 @@ export function ProForma() {
     hasCboPartner: project.hasCboPartner,
     hasLeverageCommitments: true,
     neighborhood: project.neighborhood,
-    intent: 'all-affordable',
-    marketUnits: 0,
+    intent: project.intent,
+    marketUnits: proForma.marketUnits ?? 0,
   });
   const projectedQapOdds = estimatedAwardProbability(projectedQapScore);
   const projectedQapLine =
@@ -245,6 +245,12 @@ export function ProForma() {
                 <div className="text-lg font-bold tabular">{(projectedQapOdds * 100).toFixed(0)}%</div>
               </div>
             </div>
+            {project.intent === 'mixed-income' && (proForma.marketUnits ?? 0) > 0 && project.neighborhood !== 'englewood' && (
+              <div className="mt-2 flex justify-between text-xs text-red-700">
+                <span>Mixed-income outside Englewood penalty</span>
+                <span className="font-mono font-semibold">−{MIXED_INCOME_QAP_PENALTY} pts</span>
+              </div>
+            )}
             <div className="text-xs text-muted italic mt-1">Projection assumes you assemble a typical stack on the next screen.</div>
             <div className="text-xs text-muted mt-2"><b>{characters.janelle.emoji} {characters.janelle.name}:</b> "{projectedQapLine}"</div>
           </div>
