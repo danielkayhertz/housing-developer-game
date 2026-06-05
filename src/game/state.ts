@@ -21,6 +21,7 @@ import {
 } from './types';
 import { applyChoice } from './entitlement';
 import { computeEffectiveGap } from './gapResolution';
+import { getNeighborhood } from '../data/neighborhoods';
 
 const initialState: GameState = {
   phase: 1,
@@ -109,7 +110,17 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     track('phase_advanced', { to: next });
   },
 
-  selectNeighborhood: (id) => set((s) => ({ project: { ...s.project, neighborhood: id } })),
+  selectNeighborhood: (id) => {
+    const n = getNeighborhood(id);
+    set((s) => ({
+      project: { ...s.project, neighborhood: id },
+      entitlement: {
+        ...s.entitlement,
+        alderGoodwill: n.startingAlderGoodwill,
+        communitySupport: n.startingCommunitySupport,
+      },
+    }));
+  },
 
   setUnits: (n) => set((s) => {
     const totalAffordable = Object.values(s.proForma.amiBreakdown).reduce((a, b) => a + b, 0);

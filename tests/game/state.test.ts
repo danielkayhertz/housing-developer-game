@@ -1,6 +1,38 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useGameStore } from '../../src/game/state';
 
+describe('selectNeighborhood reads per-neighborhood starting values', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('Englewood select sets 75/50', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    const s = useGameStore.getState();
+    expect(s.entitlement.alderGoodwill).toBe(75);
+    expect(s.entitlement.communitySupport).toBe(50);
+  });
+
+  it('Jefferson Park select sets 35/30', () => {
+    useGameStore.getState().selectNeighborhood('jefferson-park');
+    const s = useGameStore.getState();
+    expect(s.entitlement.alderGoodwill).toBe(35);
+    expect(s.entitlement.communitySupport).toBe(30);
+  });
+
+  it('Pilsen select sets 65/35', () => {
+    useGameStore.getState().selectNeighborhood('pilsen');
+    const s = useGameStore.getState();
+    expect(s.entitlement.alderGoodwill).toBe(65);
+    expect(s.entitlement.communitySupport).toBe(35);
+  });
+
+  it('Albany Park select sets 60/45', () => {
+    useGameStore.getState().selectNeighborhood('albany-park');
+    const s = useGameStore.getState();
+    expect(s.entitlement.alderGoodwill).toBe(60);
+    expect(s.entitlement.communitySupport).toBe(45);
+  });
+});
+
 describe('useGameStore', () => {
   beforeEach(() => {
     useGameStore.getState().reset();
