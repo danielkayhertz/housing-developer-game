@@ -49,6 +49,7 @@ export const ashaLines = {
   closingShelvedStack: "I'm sorry. The stack just never came together. Sometimes the numbers win.",
   closingShelvedFinance: "I lost the room. Powell and Reyes made their play and I couldn't hold the coalition. I'm so sorry.",
   closingShelvedAlder: "I couldn't make this work in my ward. I know that's not what you wanted to hear.",
+  shelvedAlder: "I couldn't make this work in my ward. I know that's not what you wanted to hear.",
   closingShelvedCommunity: "The community engagement fell apart. Without the block club, I couldn't keep moving forward.",
 };
 

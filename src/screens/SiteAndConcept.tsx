@@ -4,7 +4,7 @@ import { computeTdc } from '../game/proForma';
 import { resolveEntitlementPath } from '../game/entitlement';
 import { Header } from '../components/Header';
 import { CharacterBubble } from '../components/CharacterBubble';
-import { NeighborhoodId, BuildingType, Intent, AlderTone } from '../game/types';
+import { NeighborhoodId, BuildingType, AlderTone } from '../game/types';
 
 function tonePillClass(tone: AlderTone): string {
   const base = 'text-xs font-semibold px-2 py-0.5 rounded-full';
