@@ -1,9 +1,11 @@
+import React from 'react';
 import { useGameStore } from '../game/state';
 import { resolveEntitlementPath, EntitlementPath } from '../game/entitlement';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
 import { Meter } from '../components/Meter';
 import { JargonScreenScope } from '../components/JargonScreenScope';
+import { TooltipTerm } from '../components/TooltipTerm';
 import { ChoiceCard } from '../components/ChoiceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { ashaLines, financeAttackLines } from '../data/characters';
@@ -170,7 +172,9 @@ export function Entitlement() {
       {/* Path */}
       <div className="bg-panel border border-line rounded-lg p-3 mb-3 text-xs">
         <b>Path:</b>{' '}
-        {path === 'pd' ? 'Planned Development' : path === 'zma' ? 'Zoning Map Amendment' : 'By-right'}{' '}·{' '}
+        <TooltipTerm term={path === 'by-right' ? 'By-right' : path === 'zma' ? 'ZMA' : 'PD'}>
+          {path === 'by-right' ? 'By-right' : path.toUpperCase()}
+        </TooltipTerm>{' '}·{' '}
         {path === 'by-right'
           ? 'Pre-app → Community → Committee on Finance → Council (narrative)'
           : 'Pre-app → Community → Committee on Zoning → Committee on Finance → Council (narrative)'}
@@ -242,7 +246,7 @@ export function Entitlement() {
           {/* Density variance condition banner for larger buildings at zoning step */}
           {currentStep === 3 && project.buildingType === 'larger' && (
             <div className="bg-yellow-50 border border-yellow-200 text-yellow-900 rounded-lg p-3 mb-3 text-sm">
-              <strong>Density variance condition.</strong> Committee will impose a height-modulation
+              <strong><TooltipTerm term="Density variance">Density variance</TooltipTerm> condition.</strong> Committee will impose a height-modulation
               condition: +${((DENSITY_VARIANCE_TDC_PER_UNIT * project.units) / 1_000_000).toFixed(2)}M TDC,
               +{DENSITY_VARIANCE_MONTHS} mo review.
             </div>
@@ -266,10 +270,14 @@ export function Entitlement() {
                 const hard = hardPerU * project.units;
                 const escThisStep = hard * (COST_ESCALATION_PER_YEAR / 12) * months * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
                 const timeLabel = `+${months} mo · +$${(escThisStep / 1_000_000).toFixed(1)}M cost escalation`;
+                const cardTitle: React.ReactNode =
+                  c.key === 'preapp-formal-cbo'
+                    ? <>Formal w/ <TooltipTerm term="CBO">CBO</TooltipTerm> partner</>
+                    : c.title;
                 return (
                   <ChoiceCard
                     key={c.key}
-                    title={c.title}
+                    title={cardTitle}
                     description={c.description}
                     consequences={c.consequences}
                     timeLabel={timeLabel}

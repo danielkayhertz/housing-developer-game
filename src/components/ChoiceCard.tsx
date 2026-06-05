@@ -1,5 +1,7 @@
+import { type ReactNode } from 'react';
+
 interface ChoiceCardProps {
-  title: string;
+  title: ReactNode;
   description: string;
   consequences: string;
   timeLabel?: string;
