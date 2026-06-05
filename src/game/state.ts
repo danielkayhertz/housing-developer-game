@@ -18,6 +18,7 @@ import {
   CONTINGENCY_RATIO,
   LOWER_QUALITY_HARD_MULTIPLIER,
   GAP_ADVANCE_THRESHOLD,
+  UNIT_DEFAULTS_BY_BUILDING_TYPE,
 } from './types';
 import { applyChoice } from './entitlement';
 import { computeEffectiveGap } from './gapResolution';
@@ -137,7 +138,11 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     };
   }),
 
-  setBuildingType: (t) => set((s) => ({ project: { ...s.project, buildingType: t } })),
+  setBuildingType: (t) => {
+    const newUnits = UNIT_DEFAULTS_BY_BUILDING_TYPE[t];
+    get().setUnits(newUnits);          // existing setUnits rebalances AMI proportionally
+    set((s) => ({ project: { ...s.project, buildingType: t } }));
+  },
   setIntent: (i) => set((s) => ({ project: { ...s.project, intent: i } })),
 
   setCboPartner: (value) => {
