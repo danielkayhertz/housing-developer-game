@@ -36,6 +36,8 @@ export function applyChoice(
       return { ...base, alderDelta: 5, communityDelta: 6 };
     case 'preapp-public':
       return { ...base, alderDelta: -3, communityDelta: 4 };
+    case 'preapp-multilingual':
+      return { ...base, alderDelta: 0, communityDelta: 15 };
 
     case 'community-data':
       return { ...base, alderDelta: 3, communityDelta: 4 };

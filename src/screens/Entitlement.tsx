@@ -33,12 +33,21 @@ const STEP_DURATIONS: Record<number, number> = {
 
 const STEP_NAMES = ['', 'Pre-app intake', 'Community meeting', 'Committee on Zoning', 'Committee on Finance'];
 
+const BASE_STEP1_CHOICES: { key: StepChoiceKey; title: string; description: string; consequences: string }[] = [
+  { key: 'preapp-quiet', title: 'Quiet alder meeting', description: 'Just you and Asha. Low-key, no public attention yet.', consequences: '+2 alder · ±0 community' },
+  { key: 'preapp-formal-cbo', title: 'Formal w/ CBO partner', description: 'Bring a community development partner to the first conversation.', consequences: '+5 alder · +6 community' },
+  { key: 'preapp-public', title: 'Public pre-launch w/ press', description: 'Announce intentions broadly. Bold; reads as committed.', consequences: '−3 alder · +4 community' },
+];
+
+const MULTILINGUAL_CHOICE: { key: StepChoiceKey; title: string; description: string; consequences: string } = {
+  key: 'preapp-multilingual',
+  title: 'Multilingual community outreach',
+  description: 'Lead with door-knocking and printed materials in the languages your future residents speak.',
+  consequences: '+15 community · +3 mo',
+};
+
 const STEP_CHOICES: Record<number, { key: StepChoiceKey; title: string; description: string; consequences: string }[]> = {
-  1: [
-    { key: 'preapp-quiet', title: 'Quiet alder meeting', description: 'Just you and Asha. Low-key, no public attention yet.', consequences: '+2 alder · ±0 community' },
-    { key: 'preapp-formal-cbo', title: 'Formal w/ CBO partner', description: 'Bring a community development partner to the first conversation.', consequences: '+5 alder · +6 community' },
-    { key: 'preapp-public', title: 'Public pre-launch w/ press', description: 'Announce intentions broadly. Bold; reads as committed.', consequences: '−3 alder · +4 community' },
-  ],
+  1: BASE_STEP1_CHOICES,
   2: [
     { key: 'community-data', title: 'Data-led', description: 'Lead with rent, jobs, taxes. Facts, charts, evidence.', consequences: '+3 alder · +4 community' },
     { key: 'community-story', title: 'Story-led', description: 'Resident testimonials. Make it about people, not numbers.', consequences: '−2 alder · +12 community' },
@@ -91,6 +100,10 @@ export function Entitlement() {
       addCostEscalation(conditionCost);
       tickMonths(DENSITY_VARIANCE_MONTHS);
     }
+
+    // Multilingual outreach adds 3 months of extra community engagement time
+    const extraMonths = choice === 'preapp-multilingual' ? 3 : 0;
+    if (extraMonths > 0) tickMonths(extraMonths);
 
     tickMonths(months);
   }
@@ -213,23 +226,32 @@ export function Entitlement() {
           )}
 
           <div className="grid grid-cols-3 gap-2 mt-3">
-            {(STEP_CHOICES[currentStep] ?? []).map((c) => {
-              const months = STEP_DURATIONS[currentStep] ?? 0;
-              const hardPerU = HARD_COST_PER_UNIT[project.buildingType] * FINISH_MULTIPLIER[proForma.finishLevel];
-              const hard = hardPerU * project.units;
-              const escThisStep = hard * (COST_ESCALATION_PER_YEAR / 12) * months * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
-              const timeLabel = `+${months} mo · +$${(escThisStep / 1_000_000).toFixed(1)}M cost escalation`;
-              return (
-                <ChoiceCard
-                  key={c.key}
-                  title={c.title}
-                  description={c.description}
-                  consequences={c.consequences}
-                  timeLabel={timeLabel}
-                  onClick={() => onChoose(c.key)}
-                />
-              );
-            })}
+            {(() => {
+              const baseChoices = STEP_CHOICES[currentStep] ?? [];
+              const choices =
+                currentStep === 1 && n.hooks.albanyParkMultilingualChoice
+                  ? [...baseChoices, MULTILINGUAL_CHOICE]
+                  : baseChoices;
+              return choices.map((c) => {
+                const baseDurationMonths = STEP_DURATIONS[currentStep] ?? 0;
+                const extraMonths = c.key === 'preapp-multilingual' ? 3 : 0;
+                const months = baseDurationMonths + extraMonths;
+                const hardPerU = HARD_COST_PER_UNIT[project.buildingType] * FINISH_MULTIPLIER[proForma.finishLevel];
+                const hard = hardPerU * project.units;
+                const escThisStep = hard * (COST_ESCALATION_PER_YEAR / 12) * months * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
+                const timeLabel = `+${months} mo · +$${(escThisStep / 1_000_000).toFixed(1)}M cost escalation`;
+                return (
+                  <ChoiceCard
+                    key={c.key}
+                    title={c.title}
+                    description={c.description}
+                    consequences={c.consequences}
+                    timeLabel={timeLabel}
+                    onClick={() => onChoose(c.key)}
+                  />
+                );
+              });
+            })()}
           </div>
 
           <div className="mt-3">
