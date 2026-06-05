@@ -65,6 +65,7 @@ export function CapitalStack() {
     neighborhood: project.neighborhood,
     intent: project.intent,
     marketUnits: proForma.marketUnits ?? 0,
+    finishLevel: proForma.finishLevel,
   });
   const lihtcOdds = estimatedAwardProbability(lihtcScore);
 

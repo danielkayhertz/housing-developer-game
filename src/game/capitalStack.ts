@@ -7,6 +7,7 @@ import {
   MIXED_INCOME_QAP_PENALTY,
   NeighborhoodId,
   Intent,
+  FinishLevel,
 } from './types';
 
 /** Maximum LIHTC equity award regardless of hard cost. */
@@ -54,6 +55,7 @@ export function computeLihtcScore(input: {
   neighborhood: NeighborhoodId;
   intent: Intent;
   marketUnits: number;
+  finishLevel: FinishLevel;
 }): number {
   let score = 24; // base
 
@@ -76,7 +78,10 @@ export function computeLihtcScore(input: {
     score -= MIXED_INCOME_QAP_PENALTY;
   }
 
-  return Math.min(100, Math.round(score));
+  if (input.finishLevel === 'basic') score -= 12;
+  if (input.finishLevel === 'elevated') score += 14;
+
+  return Math.min(100, Math.max(0, Math.round(score)));
 }
 
 export function estimatedAwardProbability(score: number): number {

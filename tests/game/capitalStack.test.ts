@@ -39,6 +39,7 @@ describe('computeLihtcScore', () => {
       neighborhood: 'englewood',
       intent: 'all-affordable',
       marketUnits: 0,
+      finishLevel: 'standard',
     });
     expect(score).toBeGreaterThanOrEqual(60);
     expect(score).toBeLessThanOrEqual(90);
@@ -52,6 +53,7 @@ describe('computeLihtcScore', () => {
       neighborhood: 'englewood',
       intent: 'all-affordable',
       marketUnits: 0,
+      finishLevel: 'standard',
     });
     expect(score).toBeLessThan(50);
   });
@@ -62,6 +64,7 @@ describe('computeLihtcScore: mixed-income QAP penalty', () => {
     weightedAvgAmi: 58,
     hasCboPartner: true,
     hasLeverageCommitments: true,
+    finishLevel: 'standard' as const,
   };
 
   it('all-affordable: no penalty anywhere', () => {
@@ -110,6 +113,29 @@ describe('totalCommitted', () => {
       { sourceId: 'doh-loan', amount: 5_000_000, daysSpent: 45 },
     ]);
     expect(total).toBe(27_000_000);
+  });
+});
+
+describe('computeLihtcScore: finish-level deltas', () => {
+  const base = {
+    weightedAvgAmi: 55,
+    hasCboPartner: false,
+    hasLeverageCommitments: false,
+    neighborhood: 'englewood' as const,
+    intent: 'all-affordable' as const,
+    marketUnits: 0,
+  };
+
+  it('basic finishings subtract 12 QAP points', () => {
+    const standard = computeLihtcScore({ ...base, finishLevel: 'standard' });
+    const basic = computeLihtcScore({ ...base, finishLevel: 'basic' });
+    expect(standard - basic).toBe(12);
+  });
+
+  it('elevated finishings add 14 QAP points', () => {
+    const standard = computeLihtcScore({ ...base, finishLevel: 'standard' });
+    const elevated = computeLihtcScore({ ...base, finishLevel: 'elevated' });
+    expect(elevated - standard).toBe(14);
   });
 });
 

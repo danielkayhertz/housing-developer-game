@@ -71,6 +71,7 @@ export function ProForma() {
     neighborhood: project.neighborhood,
     intent: project.intent,
     marketUnits: proForma.marketUnits ?? 0,
+    finishLevel: proForma.finishLevel,
   });
   const projectedQapOdds = estimatedAwardProbability(projectedQapScore);
   const projectedQapLine =
@@ -97,6 +98,31 @@ export function ProForma() {
       </button>
       <Header />
       <h2 className="text-2xl mt-6 mb-4">Pro Forma</h2>
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="bg-gap text-white p-4 rounded-lg">
+          <div className="text-xs uppercase tracking-wider opacity-80">Gap to close in the capital stack</div>
+          <div className="text-3xl font-bold tabular">${(gap / 1_000_000).toFixed(1)}M</div>
+          <div className="text-xs opacity-80 mt-1">{((gap / tdcTotal) * 100).toFixed(0)}% of TDC. Normal for affordable.</div>
+        </div>
+        <div className="bg-panel border border-line rounded-lg p-3">
+          <div className="text-xs uppercase tracking-wider text-accent font-bold">{characters.janelle.emoji} 9% <TooltipTerm term="LIHTC">LIHTC</TooltipTerm> — projected <TooltipTerm term="QAP">QAP</TooltipTerm> score</div>
+          <div className="mt-2 flex justify-between items-baseline">
+            <div className="text-3xl font-bold tabular">{projectedQapScore} <span className="text-muted text-base">/ 100</span></div>
+            <div className="text-right">
+              <div className="text-xs uppercase text-muted tracking-wider">Est. award probability</div>
+              <div className="text-lg font-bold tabular">{(projectedQapOdds * 100).toFixed(0)}%</div>
+            </div>
+          </div>
+          {project.intent === 'mixed-income' && (proForma.marketUnits ?? 0) > 0 && project.neighborhood !== 'englewood' && (
+            <div className="mt-2 flex justify-between text-xs text-red-700">
+              <span>Mixed-income outside Englewood penalty</span>
+              <span className="font-mono font-semibold">−{MIXED_INCOME_QAP_PENALTY} pts</span>
+            </div>
+          )}
+          <div className="text-xs text-muted italic mt-1">Live projection — score reflects current levers.</div>
+          <div className="text-xs text-muted mt-2"><b>{characters.janelle.emoji} {characters.janelle.name}:</b> "{projectedQapLine}"</div>
+        </div>
+      </div>
       <div className="grid grid-cols-2 gap-4">
         {/* LEFT — levers */}
         <div className="space-y-3">
@@ -258,31 +284,6 @@ export function ProForma() {
               <div className="flex justify-between"><span>NOI (annual)</span><b>${(noi / 1000).toFixed(0)}k</b></div>
               <div className="flex justify-between"><span>Supportable debt <span className="text-caution text-xs">({debt.binding}-limited)</span></span><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
             </div>
-          </div>
-
-          <div className="bg-gap text-white p-4 rounded-lg">
-            <div className="text-xs uppercase tracking-wider opacity-80">Gap to close in the capital stack</div>
-            <div className="text-3xl font-bold tabular">${(gap / 1_000_000).toFixed(1)}M</div>
-            <div className="text-xs opacity-80 mt-1">{((gap / tdcTotal) * 100).toFixed(0)}% of TDC. Normal for affordable.</div>
-          </div>
-
-          <div className="bg-panel border border-line rounded-lg p-3">
-            <div className="text-xs uppercase tracking-wider text-accent font-bold">{characters.janelle.emoji} 9% <TooltipTerm term="LIHTC">LIHTC</TooltipTerm> — projected <TooltipTerm term="QAP">QAP</TooltipTerm> score</div>
-            <div className="mt-2 flex justify-between items-baseline">
-              <div className="text-3xl font-bold tabular">{projectedQapScore} <span className="text-muted text-base">/ 100</span></div>
-              <div className="text-right">
-                <div className="text-xs uppercase text-muted tracking-wider">Est. award probability</div>
-                <div className="text-lg font-bold tabular">{(projectedQapOdds * 100).toFixed(0)}%</div>
-              </div>
-            </div>
-            {project.intent === 'mixed-income' && (proForma.marketUnits ?? 0) > 0 && project.neighborhood !== 'englewood' && (
-              <div className="mt-2 flex justify-between text-xs text-red-700">
-                <span>Mixed-income outside Englewood penalty</span>
-                <span className="font-mono font-semibold">−{MIXED_INCOME_QAP_PENALTY} pts</span>
-              </div>
-            )}
-            <div className="text-xs text-muted italic mt-1">Projection assumes you assemble a typical stack on the next screen.</div>
-            <div className="text-xs text-muted mt-2"><b>{characters.janelle.emoji} {characters.janelle.name}:</b> "{projectedQapLine}"</div>
           </div>
 
           <button
