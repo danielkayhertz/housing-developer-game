@@ -115,7 +115,7 @@ export const sources: SourceProfile[] = [
     id: 'deferred-dev-fee',
     name: 'Deferred Developer Fee',
     emoji: '📒',
-    shortDescription: 'Capped at ~3% of TDC; no time cost',
+    shortDescription: 'Capped at min(3% TDC, $1.5M); no time cost',
     daysToProcess: 0,
     amountRange: null,
     alderGoodwillCost: 0,

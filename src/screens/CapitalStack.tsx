@@ -73,6 +73,11 @@ export function CapitalStack() {
 
   function onApply(sourceId: SourceId) {
     const src = getSource(sourceId);
+    if (sourceId === 'deferred-dev-fee') {
+      const amount = Math.round(Math.min(0.03 * tdcTotal, 1_500_000) / 1000) * 1000;
+      awardSource({ sourceId, amount, daysSpent: 0 });
+      return;
+    }
     if (!src.amountRange) return;
     const amount = (src.amountRange.min + src.amountRange.max) / 2;
     awardSource({ sourceId, amount, daysSpent: src.daysToProcess });

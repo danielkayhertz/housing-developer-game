@@ -221,3 +221,13 @@ describe('computeQapScore parity', () => {
     expect(after - before).toBe(14); // leverage bonus
   });
 });
+
+describe('deferred developer fee amount (v4 item 9)', () => {
+  it('computes min(3% of TDC, $1.5M)', () => {
+    function compute(tdc: number) {
+      return Math.round(Math.min(0.03 * tdc, 1_500_000) / 1000) * 1000;
+    }
+    expect(compute(20_000_000)).toBe(600_000);   // 3% of 20M = 600k, under cap
+    expect(compute(100_000_000)).toBe(1_500_000); // 3% of 100M = 3M, capped at 1.5M
+  });
+});
