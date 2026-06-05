@@ -65,6 +65,8 @@ export function ProForma() {
     hasCboPartner: project.hasCboPartner,
     hasLeverageCommitments: true,
     neighborhood: project.neighborhood,
+    intent: 'all-affordable',
+    marketUnits: 0,
   });
   const projectedQapOdds = estimatedAwardProbability(projectedQapScore);
   const projectedQapLine =

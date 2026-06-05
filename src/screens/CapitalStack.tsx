@@ -61,6 +61,8 @@ export function CapitalStack() {
     hasCboPartner: project.hasCboPartner,
     hasLeverageCommitments: stack.awarded.length >= 2,
     neighborhood: project.neighborhood,
+    intent: 'all-affordable',
+    marketUnits: 0,
   });
   const lihtcOdds = estimatedAwardProbability(lihtcScore);
 

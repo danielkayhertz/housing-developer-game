@@ -5,6 +5,7 @@ import {
   estimatedAwardProbability,
   totalCommitted,
 } from '../../src/game/capitalStack';
+import { MIXED_INCOME_QAP_PENALTY } from '../../src/game/types';
 
 describe('complexityPenalty', () => {
   it('0 sources → $0', () => {
@@ -35,6 +36,8 @@ describe('computeLihtcScore', () => {
       hasCboPartner: true,
       hasLeverageCommitments: true,
       neighborhood: 'englewood',
+      intent: 'all-affordable',
+      marketUnits: 0,
     });
     expect(score).toBeGreaterThanOrEqual(60);
     expect(score).toBeLessThanOrEqual(90);
@@ -46,8 +49,42 @@ describe('computeLihtcScore', () => {
       hasCboPartner: false,
       hasLeverageCommitments: false,
       neighborhood: 'englewood',
+      intent: 'all-affordable',
+      marketUnits: 0,
     });
     expect(score).toBeLessThan(50);
+  });
+});
+
+describe('computeLihtcScore: mixed-income QAP penalty', () => {
+  const base = {
+    weightedAvgAmi: 58,
+    hasCboPartner: true,
+    hasLeverageCommitments: true,
+  };
+
+  it('all-affordable: no penalty anywhere', () => {
+    const englewood = computeLihtcScore({ ...base, intent: 'all-affordable', marketUnits: 0, neighborhood: 'englewood' });
+    const pilsen = computeLihtcScore({ ...base, intent: 'all-affordable', marketUnits: 0, neighborhood: 'pilsen' });
+    expect(englewood).toBe(pilsen);  // identical scoring
+  });
+
+  it('mixed-income with 0 market units: no penalty (treated as all-affordable for scoring)', () => {
+    const scored = computeLihtcScore({ ...base, intent: 'mixed-income', marketUnits: 0, neighborhood: 'pilsen' });
+    const allAff = computeLihtcScore({ ...base, intent: 'all-affordable', marketUnits: 0, neighborhood: 'pilsen' });
+    expect(scored).toBe(allAff);
+  });
+
+  it('mixed-income with market units, non-Englewood: −12 penalty', () => {
+    const allAff = computeLihtcScore({ ...base, intent: 'all-affordable', marketUnits: 0, neighborhood: 'pilsen' });
+    const mixed = computeLihtcScore({ ...base, intent: 'mixed-income', marketUnits: 6, neighborhood: 'pilsen' });
+    expect(allAff - mixed).toBe(MIXED_INCOME_QAP_PENALTY);
+  });
+
+  it('mixed-income with market units in Englewood: no penalty (exemption)', () => {
+    const allAff = computeLihtcScore({ ...base, intent: 'all-affordable', marketUnits: 0, neighborhood: 'englewood' });
+    const mixed = computeLihtcScore({ ...base, intent: 'mixed-income', marketUnits: 6, neighborhood: 'englewood' });
+    expect(mixed).toBe(allAff);
   });
 });
 

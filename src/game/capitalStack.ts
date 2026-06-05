@@ -3,7 +3,9 @@ import {
   COMPLEXITY_PENALTY_THRESHOLD,
   COMPLEXITY_PENALTY_PER_UNIT,
   LIHTC_BASELINE_WIN_RATE,
+  MIXED_INCOME_QAP_PENALTY,
   NeighborhoodId,
+  Intent,
 } from './types';
 
 export function complexityPenalty(sourceCount: number, units: number): number {
@@ -20,6 +22,8 @@ export function computeLihtcScore(input: {
   hasCboPartner: boolean;
   hasLeverageCommitments: boolean;
   neighborhood: NeighborhoodId;
+  intent: Intent;
+  marketUnits: number;
 }): number {
   let score = 24; // base
 
@@ -32,6 +36,14 @@ export function computeLihtcScore(input: {
 
   if (input.neighborhood === 'englewood' || input.neighborhood === 'pilsen') {
     score += 10;
+  }
+
+  if (
+    input.intent === 'mixed-income' &&
+    input.marketUnits > 0 &&
+    input.neighborhood !== 'englewood'
+  ) {
+    score -= MIXED_INCOME_QAP_PENALTY;
   }
 
   return Math.min(100, Math.round(score));
