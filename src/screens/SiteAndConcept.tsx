@@ -5,6 +5,7 @@ import { resolveEntitlementPath } from '../game/entitlement';
 import { Header } from '../components/Header';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { JargonScreenScope } from '../components/JargonScreenScope';
+import { TooltipTerm } from '../components/TooltipTerm';
 import { NeighborhoodId, BuildingType, AlderTone } from '../game/types';
 
 function tonePillClass(tone: AlderTone): string {
@@ -143,11 +144,14 @@ export function SiteAndConcept() {
             >
               <div className="font-semibold mb-1">Mixed-income</div>
               <div className="text-xs text-muted">Allocate some units at market rate; cross-subsidy from market rents.</div>
+              <div className="text-xs text-muted mt-1">
+                Some affordability still required under the <TooltipTerm term="ARO">ARO</TooltipTerm>.
+              </div>
             </div>
           </div>
 
           {/* CBO partner */}
-          <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">5. CBO partner</div>
+          <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">5. <TooltipTerm term="CBO">CBO</TooltipTerm> partner</div>
           <div className="grid grid-cols-2 gap-2 mb-6">
             <button
               onClick={() => setCboPartner(true)}
