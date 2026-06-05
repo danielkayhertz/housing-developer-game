@@ -13,6 +13,8 @@ import {
   SOFT_COST_RATIO,
   CONTINGENCY_RATIO,
   COST_ESCALATION_PER_YEAR,
+  DENSITY_VARIANCE_TDC_PER_UNIT,
+  DENSITY_VARIANCE_MONTHS,
 } from '../game/types';
 
 export const stepsByPath: Record<EntitlementPath, number[]> = {
@@ -60,6 +62,7 @@ export function Entitlement() {
   const proForma = useGameStore((s) => s.proForma);
   const takeStep = useGameStore((s) => s.takeEntitlementStep);
   const tickMonths = useGameStore((s) => s.tickMonths);
+  const addCostEscalation = useGameStore((s) => s.addCostEscalation);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
   const setOutcome = useGameStore((s) => s.setOutcome);
@@ -80,6 +83,14 @@ export function Entitlement() {
   function onChoose(choice: StepChoiceKey) {
     const months = currentStep != null ? (STEP_DURATIONS[currentStep] ?? 0) : 0;
     takeStep(choice, currentStep ?? 1);
+
+    // Larger building: auto-apply density variance condition at zoning step
+    if (currentStep === 3 && project.buildingType === 'larger') {
+      const conditionCost = DENSITY_VARIANCE_TDC_PER_UNIT * project.units;
+      addCostEscalation(conditionCost);
+      tickMonths(DENSITY_VARIANCE_MONTHS);
+    }
+
     tickMonths(months);
   }
 
@@ -177,6 +188,15 @@ export function Entitlement() {
                   <b>Ald. Chen:</b> "{financeAttackLines.hedWardJealousy}"
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Density variance condition banner for larger buildings at zoning step */}
+          {currentStep === 3 && project.buildingType === 'larger' && (
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-900 rounded-lg p-3 mb-3 text-sm">
+              <strong>Density variance condition.</strong> Committee will impose a height-modulation
+              condition: +${((DENSITY_VARIANCE_TDC_PER_UNIT * project.units) / 1_000_000).toFixed(2)}M TDC,
+              +{DENSITY_VARIANCE_MONTHS} mo review.
             </div>
           )}
 

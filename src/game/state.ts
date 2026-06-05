@@ -86,6 +86,7 @@ interface StoreActions {
   applyGapAction: (action: 'askSubsidy' | 'redesignSmaller' | 'lowerQuality') => void;
   tickMonths: (n: number) => void;
   takeEntitlementStep: (choice: StepChoiceKey, step: number, ctx?: { shrinkBy?: number }) => void;
+  addCostEscalation: (delta: number) => void;
   setOutcome: (o: GameState['outcome']) => void;
   shelveProject: () => void;
   clearRecap: () => void;
@@ -291,6 +292,8 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
       },
     };
   }),
+
+  addCostEscalation: (delta) => set((s) => ({ costEscalation: s.costEscalation + delta })),
 
   setOutcome: (o) => set({ outcome: o }),
 
