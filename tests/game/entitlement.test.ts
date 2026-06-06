@@ -74,3 +74,23 @@ describe('preapp-public penalty (v4 item 11)', () => {
     expect(c.communityDelta).toBe(-5);
   });
 });
+
+describe('community meeting choices overhaul (v4 item 12)', () => {
+  it('community-none returns alder -20, community -25', () => {
+    const c = applyChoice('community-none');
+    expect(c.alderDelta).toBe(-20);
+    expect(c.communityDelta).toBe(-25);
+  });
+
+  it('community-story returns alder 0, community +12', () => {
+    const c = applyChoice('community-story');
+    expect(c.alderDelta).toBe(0);
+    expect(c.communityDelta).toBe(12);
+  });
+
+  it('community-coalition unchanged: +4/+10', () => {
+    const c = applyChoice('community-coalition');
+    expect(c.alderDelta).toBe(4);
+    expect(c.communityDelta).toBe(10);
+  });
+});

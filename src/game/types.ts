@@ -76,7 +76,7 @@ export type EntitlementStep = 1 | 2 | 3 | 4;
 export type StepChoiceKey =
   | 'preapp-quiet' | 'preapp-formal-cbo' | 'preapp-public'
   | 'preapp-multilingual'                                                                        // Albany Park
-  | 'community-data' | 'community-story' | 'community-coalition'
+  | 'community-none' | 'community-story' | 'community-coalition'
   | 'community-jp-full-parking' | 'community-jp-traffic-data' | 'community-jp-refuse-parking'  // Jefferson Park
   | 'zoning-hold' | 'zoning-shrink' | 'zoning-accept'
   | 'finance-reframe' | 'finance-concede' | 'finance-stakeholders';

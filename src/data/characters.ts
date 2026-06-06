@@ -32,7 +32,7 @@ export const ashaLines = {
   preappQuiet: 'I appreciate the heads up. A quieter rollout works for me — let\'s see how the block club takes it.',
   preappFormalCBO: 'Bringing a CBO partner in early is the right move. The community will read it as respect.',
   preappPublic: 'A public pre-launch is bold. I hope you\'re ready for the calls I\'ll get on Monday.',
-  communityData: 'Data-led works on me. It might not land for everyone in the room, though.',
+  communityNone: "No meeting? OK. The block club will hear about this from somewhere else, and not from us. Brace yourself.",
   communityStory: 'The story-led pitch is the right read for Englewood. People want to feel seen.',
   communityCoalition: 'Coalition-led is strong. Make sure the coalition partners feel led, not used.',
   zoningHold: 'If we hold at the original size, I\'ll need to lean on my chair vote at Committee. Doable.',

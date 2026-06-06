@@ -39,10 +39,10 @@ export function applyChoice(
     case 'preapp-multilingual':
       return { ...base, alderDelta: 0, communityDelta: 15 };
 
-    case 'community-data':
-      return { ...base, alderDelta: 3, communityDelta: 4 };
+    case 'community-none':
+      return { ...base, alderDelta: -20, communityDelta: -25 };
     case 'community-story':
-      return { ...base, alderDelta: -2, communityDelta: 12 };
+      return { ...base, alderDelta: 0, communityDelta: 12 };
     case 'community-coalition':
       return { ...base, alderDelta: 4, communityDelta: 10 };
 

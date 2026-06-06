@@ -36,6 +36,7 @@ const STEP_DURATIONS: Record<number, number> = {
 
 const CHOICE_DURATION_OVERRIDES: Partial<Record<StepChoiceKey, number>> = {
   'preapp-public': 0,
+  'community-none': 0,
 };
 
 function durationFor(step: number, choice: StepChoiceKey): number {
@@ -81,8 +82,8 @@ const JP_STEP2_CHOICES: { key: StepChoiceKey; title: string; description: string
 const STEP_CHOICES: Record<number, { key: StepChoiceKey; title: string; description: string; consequences: string }[]> = {
   1: BASE_STEP1_CHOICES,
   2: [
-    { key: 'community-data', title: 'Data-led', description: 'Lead with rent, jobs, taxes. Facts, charts, evidence.', consequences: '+3 alder · +4 community' },
-    { key: 'community-story', title: 'Story-led', description: 'Resident testimonials. Make it about people, not numbers.', consequences: '−2 alder · +12 community' },
+    { key: 'community-none', title: 'No meeting', description: 'Skip community engagement. Faster, but the block club hears about it from rumors.', consequences: '−20 alder · −25 community' },
+    { key: 'community-story', title: 'Story-led', description: 'Resident testimonials. Make it about people, not numbers.', consequences: '±0 alder · +12 community' },
     { key: 'community-coalition', title: 'Coalition-led', description: 'Clergy, CBO, advocates speak first. Show breadth of support.', consequences: '+4 alder · +10 community' },
   ],
   3: [
