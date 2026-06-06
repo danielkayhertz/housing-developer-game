@@ -4,7 +4,7 @@ import { gapActions, GapActionKey } from '../data/gapResolution';
 import { Header } from '../components/Header';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { JargonScreenScope } from '../components/JargonScreenScope';
-import { ashaLines } from '../data/characters';
+import { ashaLines, davidLines } from '../data/characters';
 import { GAP_ADVANCE_THRESHOLD, MIN_UNITS_FLOOR, type AmiBand } from '../game/types';
 import { LiveGapRow } from '../components/LiveGapRow';
 import { TooltipTerm } from '../components/TooltipTerm';
@@ -14,7 +14,6 @@ export function GapResolution() {
   const applyGapAction = useGameStore((s) => s.applyGapAction);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
-  const shelveProject = useGameStore((s) => s.shelveProject);
   const setAmiUnit = useGameStore((s) => s.setAmiUnit);
   const proForma = useGameStore((s) => s.proForma);
   const projectUnits = useGameStore((s) => s.project.units);
@@ -128,17 +127,18 @@ export function GapResolution() {
       </button>
 
       {!canAdvance && allExhausted && (
-        <>
-          <button
-            onClick={shelveProject}
-            className="w-full mt-2 bg-gap text-white py-3 rounded-lg font-bold"
-          >
-            Shelve the project
-          </button>
-          <div className="mt-2">
-            <CharacterBubble characterId="asha" line={ashaLines.gapResolutionShelve} whisper />
+        <div className="bg-bg border-2 border-gap rounded-lg p-4 mt-4">
+          <div className="text-xs uppercase tracking-wider text-gap font-bold">▶ Out of moves</div>
+          <div className="mt-3">
+            <CharacterBubble characterId="david" line={davidLines.gapResolutionExhausted} />
           </div>
-        </>
+          <button
+            onClick={() => useGameStore.getState().reset()}
+            className="w-full mt-3 bg-gap text-white py-3 rounded-lg font-bold"
+          >
+            Start over
+          </button>
+        </div>
       )}
     </div>
     </JargonScreenScope>

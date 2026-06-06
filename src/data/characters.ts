@@ -66,6 +66,7 @@ export const davidLines = {
   capitalStackQuipWalkup: "You chose Walk-up — lowest hard cost per unit, but a smaller building means LIHTC has less to work with. Watch the gap percentage.",
   capitalStackQuipLarger: "You chose Larger — that's why the hard cost per unit is at the top of the band. Worth it if you can stack the gap.",
   shelvedAro: "The ARO requires 20% affordability anyway. We're not going to subsidize that.",
+  gapResolutionExhausted: "We've tried a bunch of different things, but this project isn't penciling. Start over.",
 };
 
 export const carlosLines = {

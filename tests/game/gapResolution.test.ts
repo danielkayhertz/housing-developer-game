@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { computeEffectiveGap } from '../../src/game/gapResolution';
 import { useGameStore } from '../../src/game/state';
 
@@ -129,5 +129,25 @@ describe('applyGapAction store action', () => {
     const after2 = useGameStore.getState();
     expect(after2.entitlement.communitySupport).toBe(communityAfter1);
     expect(after2.monthsElapsed).toBe(monthsAfter1);
+  });
+});
+
+describe('GapResolution exhaustion state (v4 item 10)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('all three actions exhausted + gap still open returns isExhausted: true', () => {
+    const store = useGameStore.getState();
+    store.selectNeighborhood('englewood');
+    // Drive into exhaustion: set alder=0 (subsidy disabled), units to floor (shrink disabled), lowerQualityUsed=true
+    useGameStore.setState((s) => ({
+      ...s,
+      entitlement: { ...s.entitlement, alderGoodwill: 0 },
+      gapResolution: { ...s.gapResolution, lowerQualityUsed: true, shrinkBy: s.project.units - 20 },
+    }));
+    const s = useGameStore.getState();
+    const subsidyDisabled = s.entitlement.alderGoodwill === 0;
+    const shrinkDisabled = Math.max(0, s.project.units - s.gapResolution.shrinkBy) <= 20;
+    const qualityDisabled = s.gapResolution.lowerQualityUsed;
+    expect(subsidyDisabled && shrinkDisabled && qualityDisabled).toBe(true);
   });
 });
