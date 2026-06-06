@@ -5,7 +5,9 @@ import { Header } from '../components/Header';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { JargonScreenScope } from '../components/JargonScreenScope';
 import { ashaLines } from '../data/characters';
-import { GAP_ADVANCE_THRESHOLD, MIN_UNITS_FLOOR } from '../game/types';
+import { GAP_ADVANCE_THRESHOLD, MIN_UNITS_FLOOR, type AmiBand } from '../game/types';
+import { LiveGapRow } from '../components/LiveGapRow';
+import { TooltipTerm } from '../components/TooltipTerm';
 
 export function GapResolution() {
   const state = useGameStore((s) => s);
@@ -13,6 +15,9 @@ export function GapResolution() {
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
   const shelveProject = useGameStore((s) => s.shelveProject);
+  const setAmiUnit = useGameStore((s) => s.setAmiUnit);
+  const proForma = useGameStore((s) => s.proForma);
+  const projectUnits = useGameStore((s) => s.project.units);
 
   if (!state.project.neighborhood) return null;
 
@@ -52,6 +57,37 @@ export function GapResolution() {
         <div className="text-3xl font-bold tabular">${(gap / 1_000_000).toFixed(1)}M</div>
         <div className="text-xs opacity-80 mt-1 tabular">
           {effectiveUnits} units · TDC ${(tdcAllIn / 1_000_000).toFixed(1)}M · committed ${(committed / 1_000_000).toFixed(1)}M
+        </div>
+      </div>
+
+      <div className="bg-panel border border-line rounded-lg p-3 mb-3">
+        <div className="text-xs uppercase tracking-wider text-accent font-bold">
+          Adjust <TooltipTerm term="AMI">AMI</TooltipTerm> mix
+        </div>
+        <div className="text-xs text-muted mt-1">
+          Deeper affordability means less rent and a bigger gap, but stronger impact.
+        </div>
+        {[30, 60, 80].map((ami) => {
+          const a = ami as AmiBand;
+          return (
+            <div key={ami} className="mt-2">
+              <div className="flex justify-between text-xs">
+                <span><b>{ami}% AMI</b></span>
+                <span><b>{proForma.amiBreakdown[a]} units</b></span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={projectUnits}
+                value={proForma.amiBreakdown[a]}
+                onChange={(e) => setAmiUnit(a, parseInt(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          );
+        })}
+        <div className="mt-2">
+          <LiveGapRow />
         </div>
       </div>
 
