@@ -21,13 +21,14 @@ export interface ChoiceConsequence {
   communityDelta: number;
   tdcDelta: number;
   shrinkBy: number;
+  extraSubsidyDelta?: number;
 }
 
 export function applyChoice(
   choice: StepChoiceKey,
   ctx: { shrinkBy?: number; concessionAmount?: number } = {},
 ): ChoiceConsequence {
-  const base: ChoiceConsequence = { alderDelta: 0, communityDelta: 0, tdcDelta: 0, shrinkBy: 0 };
+  const base: ChoiceConsequence = { alderDelta: 0, communityDelta: 0, tdcDelta: 0, shrinkBy: 0, extraSubsidyDelta: 0 };
 
   switch (choice) {
     case 'preapp-quiet':
@@ -63,7 +64,7 @@ export function applyChoice(
     case 'finance-reframe':
       return { ...base, alderDelta: -2, communityDelta: 0 };
     case 'finance-concede':
-      return { ...base, alderDelta: 5, communityDelta: 0 };
+      return { ...base, alderDelta: 5, communityDelta: 0, extraSubsidyDelta: -3_000_000 };
     case 'finance-stakeholders':
       return { ...base, alderDelta: 0, communityDelta: -15 };
 

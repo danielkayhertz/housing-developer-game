@@ -94,3 +94,10 @@ describe('community meeting choices overhaul (v4 item 12)', () => {
     expect(c.communityDelta).toBe(10);
   });
 });
+
+describe('finance-concede reopens gap (v4 item 14)', () => {
+  it('finance-concede returns extraSubsidyDelta: -3,000,000', () => {
+    const c = applyChoice('finance-concede');
+    expect(c.extraSubsidyDelta).toBe(-3_000_000);
+  });
+});

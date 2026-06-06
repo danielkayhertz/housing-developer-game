@@ -132,6 +132,29 @@ describe('applyGapAction store action', () => {
   });
 });
 
+describe('finance-concede reopens gap via state (v4 item 14)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('after finance-concede, extraSubsidy decreases by $3M', () => {
+    const store = useGameStore.getState();
+    store.selectNeighborhood('englewood');
+    useGameStore.setState((s) => ({
+      ...s,
+      gapResolution: { ...s.gapResolution, extraSubsidy: 5_000_000 },
+    }));
+    store.takeEntitlementStep('finance-concede', 4);
+    expect(useGameStore.getState().gapResolution.extraSubsidy).toBe(2_000_000);
+  });
+
+  it('extraSubsidy floor is 0 (cannot go negative)', () => {
+    const store = useGameStore.getState();
+    store.selectNeighborhood('englewood');
+    // extraSubsidy starts at 0
+    store.takeEntitlementStep('finance-concede', 4);
+    expect(useGameStore.getState().gapResolution.extraSubsidy).toBe(0);
+  });
+});
+
 describe('GapResolution exhaustion state (v4 item 10)', () => {
   beforeEach(() => useGameStore.getState().reset());
 

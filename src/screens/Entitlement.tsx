@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGameStore } from '../game/state';
 import { resolveEntitlementPath, EntitlementPath } from '../game/entitlement';
+import { computeEffectiveGap } from '../game/gapResolution';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
 import { Meter } from '../components/Meter';
@@ -8,6 +9,7 @@ import { JargonScreenScope } from '../components/JargonScreenScope';
 import { TooltipTerm } from '../components/TooltipTerm';
 import { ChoiceCard } from '../components/ChoiceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
+import { GapCloseModal } from '../components/GapCloseModal';
 import { ashaLines, financeAttackLines } from '../data/characters';
 import {
   StepChoiceKey,
@@ -19,6 +21,7 @@ import {
   DENSITY_VARIANCE_TDC_PER_UNIT,
   DENSITY_VARIANCE_MONTHS,
   ARO_FLOOR_AFFORDABLE_SHARE,
+  GAP_ADVANCE_THRESHOLD,
 } from '../game/types';
 
 export const stepsByPath: Record<EntitlementPath, number[]> = {
@@ -109,6 +112,7 @@ export function Entitlement() {
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
   const setOutcome = useGameStore((s) => s.setOutcome);
+  const fullState = useGameStore((s) => s);
 
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
@@ -122,6 +126,9 @@ export function Entitlement() {
   const stepsCompleted = entitlement.pastChoices.length;
   const allStepsComplete = stepsCompleted >= stepsForPath.length;
   const currentStep = stepsForPath[stepsCompleted] ?? null;
+
+  const cofGapOpen =
+    currentStep === 4 && computeEffectiveGap(fullState).gap > GAP_ADVANCE_THRESHOLD;
 
   function onChoose(choice: StepChoiceKey) {
     const months = currentStep != null ? durationFor(currentStep, choice) : 0;
@@ -154,7 +161,7 @@ export function Entitlement() {
     }
 
     if (entitlement.alderGoodwill < 20) {
-      setOutcome('shelved-alder');
+      setOutcome('shelved-finance');
     } else if (entitlement.communitySupport < 25) {
       setOutcome('shelved-community');
     } else {
@@ -219,8 +226,20 @@ export function Entitlement() {
         </div>
       )}
 
+      {/* CoF gap-gate */}
+      {cofGapOpen && (
+        <div className="bg-bg border-2 border-gap rounded-lg p-4 mb-3">
+          <div className="text-xs uppercase tracking-wider text-gap font-bold">
+            ▶ Gap reopened — close before the vote
+          </div>
+          <div className="mt-3">
+            <GapCloseModal context="cof" onClose={() => {}} />
+          </div>
+        </div>
+      )}
+
       {/* Active step */}
-      {!allStepsComplete && currentStep != null && (
+      {!cofGapOpen && !allStepsComplete && currentStep != null && (
         <div className="bg-bg border-2 border-caution rounded-lg p-4 mb-3">
           <div className="text-xs uppercase tracking-wider text-caution font-bold">
             ▶ Step {currentStep} — {STEP_NAMES[currentStep]}

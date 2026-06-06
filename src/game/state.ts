@@ -300,6 +300,14 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     if (consequence.tdcDelta) {
       get().addCostEscalation(consequence.tdcDelta * s.project.units);
     }
+    if (consequence.extraSubsidyDelta) {
+      set((s) => ({
+        gapResolution: {
+          ...s.gapResolution,
+          extraSubsidy: Math.max(0, s.gapResolution.extraSubsidy + consequence.extraSubsidyDelta!),
+        },
+      }));
+    }
     set((s) => {
       const consequence = applyChoice(choice, ctx);
       let newCommunity = Math.max(0, Math.min(100, s.entitlement.communitySupport + consequence.communityDelta));
