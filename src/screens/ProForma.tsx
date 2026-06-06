@@ -109,7 +109,7 @@ export function ProForma() {
               <span className="font-mono font-semibold">−{MIXED_INCOME_QAP_PENALTY} pts</span>
             </div>
           )}
-          <div className="text-xs text-muted italic mt-1">Live projection — score reflects current levers.</div>
+          <div className="text-xs text-muted italic mt-1">Pre-stack estimate — score will rise as you add leverage commitments.</div>
           <div className="text-xs text-muted mt-2"><b>{characters.janelle.emoji} {characters.janelle.name}:</b> "{projectedQapLine}"</div>
         </div>
       </div>

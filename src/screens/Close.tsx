@@ -15,6 +15,7 @@ export function Close() {
   const proForma = useGameStore((s) => s.proForma);
   const stack = useGameStore((s) => s.stack);
   const entitlement = useGameStore((s) => s.entitlement);
+  const gapResolution = useGameStore((s) => s.gapResolution);
   const outcome = useGameStore((s) => s.outcome);
   const monthsElapsed = useGameStore((s) => s.monthsElapsed);
   const costEscalation = useGameStore((s) => s.costEscalation);
@@ -23,7 +24,7 @@ export function Close() {
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
   const closed = outcome === 'closed';
-  const finalUnits = Math.max(1, project.units - entitlement.projectShrinkBy);
+  const finalUnits = Math.max(1, project.units - entitlement.projectShrinkBy - gapResolution.shrinkBy);
 
   const tdcParts = computeTdc({
     neighborhood: project.neighborhood,

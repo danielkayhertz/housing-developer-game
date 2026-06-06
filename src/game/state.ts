@@ -316,7 +316,6 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
       }));
     }
     set((s) => {
-      const consequence = applyChoice(choice, ctx);
       let newCommunity = Math.max(0, Math.min(100, s.entitlement.communitySupport + consequence.communityDelta));
 
       // Albany Park multilingual-skip cap
