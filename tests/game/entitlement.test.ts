@@ -66,3 +66,11 @@ describe('isPathFailed', () => {
     expect(isPathFailed({ alderGoodwill: 50, communitySupport: 60 })).toBe(null);
   });
 });
+
+describe('preapp-public penalty (v4 item 11)', () => {
+  it('preapp-public returns alder -10, community -5', () => {
+    const c = applyChoice('preapp-public');
+    expect(c.alderDelta).toBe(-10);
+    expect(c.communityDelta).toBe(-5);
+  });
+});

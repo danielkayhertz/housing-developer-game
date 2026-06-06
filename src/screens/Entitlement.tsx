@@ -34,12 +34,20 @@ const STEP_DURATIONS: Record<number, number> = {
   4: 3,  // finance committee
 };
 
+const CHOICE_DURATION_OVERRIDES: Partial<Record<StepChoiceKey, number>> = {
+  'preapp-public': 0,
+};
+
+function durationFor(step: number, choice: StepChoiceKey): number {
+  return CHOICE_DURATION_OVERRIDES[choice] ?? STEP_DURATIONS[step] ?? 0;
+}
+
 const STEP_NAMES = ['', 'Pre-app intake', 'Community meeting', 'Committee on Zoning', 'Committee on Finance'];
 
 const BASE_STEP1_CHOICES: { key: StepChoiceKey; title: string; description: string; consequences: string }[] = [
   { key: 'preapp-quiet', title: 'Quiet alder meeting', description: 'Just you and Asha. Low-key, no public attention yet.', consequences: '+2 alder · ±0 community' },
   { key: 'preapp-formal-cbo', title: 'Formal w/ CBO partner', description: 'Bring a community development partner to the first conversation.', consequences: '+5 alder · +6 community' },
-  { key: 'preapp-public', title: 'Public pre-launch w/ press', description: 'Announce intentions broadly. Bold; reads as committed.', consequences: '−3 alder · +4 community' },
+  { key: 'preapp-public', title: 'Public pre-launch w/ press', description: 'Announce intentions broadly. Bold; reads as committed.', consequences: '−10 alder · −5 community' },
 ];
 
 const MULTILINGUAL_CHOICE: { key: StepChoiceKey; title: string; description: string; consequences: string } = {
@@ -115,7 +123,7 @@ export function Entitlement() {
   const currentStep = stepsForPath[stepsCompleted] ?? null;
 
   function onChoose(choice: StepChoiceKey) {
-    const months = currentStep != null ? (STEP_DURATIONS[currentStep] ?? 0) : 0;
+    const months = currentStep != null ? durationFor(currentStep, choice) : 0;
     takeStep(choice, currentStep ?? 1);
 
     // Larger building: auto-apply density variance condition at zoning step
@@ -263,7 +271,7 @@ export function Entitlement() {
                   ? [...baseChoices, MULTILINGUAL_CHOICE]
                   : baseChoices;
               return choices.map((c) => {
-                const baseDurationMonths = STEP_DURATIONS[currentStep] ?? 0;
+                const baseDurationMonths = CHOICE_DURATION_OVERRIDES[c.key] ?? (STEP_DURATIONS[currentStep] ?? 0);
                 const extraMonths = c.key === 'preapp-multilingual' ? 3 : 0;
                 const months = baseDurationMonths + extraMonths;
                 const hardPerU = HARD_COST_PER_UNIT[project.buildingType] * FINISH_MULTIPLIER[proForma.finishLevel];
