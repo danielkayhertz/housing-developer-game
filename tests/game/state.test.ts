@@ -243,15 +243,6 @@ describe('useGameStore', () => {
     expect(s.entitlement.communitySupport).toBe(0);
   });
 
-  it('shelveProject sets outcome to shelved-stack and phase to 7', () => {
-    useGameStore.getState().reset();
-    useGameStore.getState().selectNeighborhood('englewood');
-    useGameStore.getState().shelveProject();
-    const s = useGameStore.getState();
-    expect(s.outcome).toBe('shelved-stack');
-    expect(s.phase).toBe(7);
-  });
-
   it('advancePhase from phase 4 with large gap routes to phase 5 (GapResolution)', () => {
     useGameStore.getState().reset();
     useGameStore.getState().selectNeighborhood('englewood');

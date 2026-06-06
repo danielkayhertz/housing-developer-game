@@ -88,7 +88,6 @@ interface StoreActions {
   takeEntitlementStep: (choice: StepChoiceKey, step: number, ctx?: { shrinkBy?: number }) => void;
   addCostEscalation: (delta: number) => void;
   setOutcome: (o: GameState['outcome']) => void;
-  shelveProject: () => void;
   clearRecap: () => void;
   retreatPhase: () => void;
 }
@@ -342,8 +341,6 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
   addCostEscalation: (delta) => set((s) => ({ costEscalation: s.costEscalation + delta })),
 
   setOutcome: (o) => set({ outcome: o }),
-
-  shelveProject: () => set({ outcome: 'shelved-stack', phase: 7 }),
 
   clearRecap: () => set({ lastRecap: null }),
 
