@@ -109,6 +109,7 @@ export interface GameState {
   project: {
     neighborhood: NeighborhoodId | null;
     units: number;
+    initialUnits: number | null;
     buildingType: BuildingType;
     intent: Intent;
     hasCboPartner: boolean;

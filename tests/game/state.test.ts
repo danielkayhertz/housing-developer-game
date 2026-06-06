@@ -374,3 +374,31 @@ describe('cost escalation gating by phase (v4 item 6)', () => {
     expect(useGameStore.getState().costEscalation).toBeGreaterThan(0);
   });
 });
+
+describe('initialUnits snapshot (v4 item 15)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('is null until Site & Concept exit', () => {
+    expect(useGameStore.getState().project.initialUnits).toBeNull();
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().advancePhase(); // 1 -> 2 (Site & Concept)
+    expect(useGameStore.getState().project.initialUnits).toBeNull();
+  });
+
+  it('is captured on Site & Concept -> Pro Forma transition', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.getState().advancePhase(); // 1 -> 2
+    useGameStore.getState().advancePhase(); // 2 -> 3
+    expect(useGameStore.getState().project.initialUnits).toBe(60);
+  });
+
+  it('stays fixed when units change after snapshot', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.getState().advancePhase(); // 1 -> 2
+    useGameStore.getState().advancePhase(); // 2 -> 3
+    useGameStore.getState().setUnits(40);
+    expect(useGameStore.getState().project.initialUnits).toBe(60);
+  });
+});

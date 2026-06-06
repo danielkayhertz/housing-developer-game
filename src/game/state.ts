@@ -31,6 +31,7 @@ const initialState: GameState = {
   project: {
     neighborhood: null,
     units: 50, // v3: midrise default 50
+    initialUnits: null,
     buildingType: 'midrise',
     intent: 'all-affordable',
     hasCboPartner: false,
@@ -108,6 +109,12 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
       next = Math.min(7, s.phase + 1) as Phase;
     }
 
+    // Snapshot units on Site & Concept → Pro Forma transition (Phase 2 → 3)
+    let project = s.project;
+    if (s.phase === 2 && next === 3 && project.initialUnits === null) {
+      project = { ...project, initialUnits: project.units };
+    }
+
     // Hook firings on Phase 6 entry
     let entitlement = s.entitlement;
     if (next === 6 && s.phase !== 6) {
@@ -133,7 +140,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
       }
     }
 
-    set({ phase: next, entitlement });
+    set({ phase: next, entitlement, project });
     track('phase_advanced', { to: next });
   },
 

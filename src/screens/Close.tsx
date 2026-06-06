@@ -68,11 +68,27 @@ export function Close() {
           <div className="text-xs uppercase tracking-wider text-accent font-bold">Your project · shareable</div>
           <h3 className="text-xl mt-1">{n.emoji} The {n.name} {project.buildingType}</h3>
 
-          <div className="grid grid-cols-4 gap-2 mt-3 text-center">
+          <div className="grid grid-cols-3 gap-2 mt-3 text-center">
             <div><div className="text-xs uppercase text-muted">Units</div><div className="text-xl font-bold tabular">{finalUnits}</div></div>
             <div><div className="text-xs uppercase text-muted">Wtd avg <TooltipTerm term="AMI">AMI</TooltipTerm></div><div className="text-xl font-bold tabular">{Math.round(weightedAvgAmi(proForma.amiBreakdown))}%</div></div>
             <div><div className="text-xs uppercase text-muted">Final TDC</div><div className="text-xl font-bold tabular">${(tdcTotal / 1_000_000).toFixed(1)}M</div></div>
             <div><div className="text-xs uppercase text-muted">Per unit</div><div className="text-xl font-bold tabular">${(tdcTotal / finalUnits / 1000).toFixed(0)}k</div></div>
+            <div>
+              <div className="text-xs uppercase text-muted">Cost escalation</div>
+              <div className="text-xl font-bold tabular text-caution">
+                {costEscalation > 0 ? `+$${(costEscalation / 1_000_000).toFixed(1)}M` : '—'}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs uppercase text-muted">Units lost</div>
+              <div className="text-xl font-bold tabular text-caution">
+                {(() => {
+                  const initial = project.initialUnits ?? finalUnits;
+                  const delta = initial - finalUnits;
+                  return delta > 0 ? `−${delta} vs. plan` : '—';
+                })()}
+              </div>
+            </div>
           </div>
 
           <div className="text-xs uppercase tracking-wider text-accent font-bold mt-4 mb-1">Affordability</div>
