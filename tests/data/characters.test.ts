@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { carlosLines, frankLines, nailaLines, davidLines, characters } from '../../src/data/characters';
+import { carlosLines, frankLines, nailaLines, davidLines, characters, getNeighborhoodAlderId } from '../../src/data/characters';
 
 describe('v3 character lines', () => {
   it('Carlos Reyes has all required slots', () => {
@@ -31,5 +31,38 @@ describe('v3 character lines', () => {
 describe('Powell character renamed to Cunningham', () => {
   it("powell character's display name is 'Ald. Cunningham'", () => {
     expect(characters.powell.name).toBe('Ald. Cunningham');
+  });
+});
+
+describe('v5 — new neighborhood alder characters', () => {
+  it('characters map includes carlos / frank / naila with non-empty fields', () => {
+    for (const id of ['carlos', 'frank', 'naila'] as const) {
+      expect(characters[id], `characters.${id}`).toBeDefined();
+      expect(characters[id].name, `characters.${id}.name`).toBeTruthy();
+      expect(characters[id].emoji, `characters.${id}.emoji`).toBeTruthy();
+      expect(characters[id].role, `characters.${id}.role`).toBeTruthy();
+    }
+  });
+
+  it('alder names all carry the "Alder" prefix', () => {
+    expect(characters.asha.name).toMatch(/^Alder /);
+    expect(characters.carlos.name).toMatch(/^Alder /);
+    expect(characters.frank.name).toMatch(/^Alder /);
+    expect(characters.naila.name).toMatch(/^Alder /);
+  });
+});
+
+describe('getNeighborhoodAlderId', () => {
+  it('returns asha for englewood', () => {
+    expect(getNeighborhoodAlderId('englewood')).toBe('asha');
+  });
+  it('returns carlos for pilsen', () => {
+    expect(getNeighborhoodAlderId('pilsen')).toBe('carlos');
+  });
+  it('returns frank for jefferson-park', () => {
+    expect(getNeighborhoodAlderId('jefferson-park')).toBe('frank');
+  });
+  it('returns naila for albany-park', () => {
+    expect(getNeighborhoodAlderId('albany-park')).toBe('naila');
   });
 });

@@ -1,4 +1,9 @@
-export type CharacterId = 'marcus' | 'asha' | 'janelle' | 'david' | 'powell' | 'reyes' | 'chen';
+import type { NeighborhoodId } from '../game/types';
+
+export type CharacterId =
+  | 'marcus' | 'asha' | 'janelle' | 'david'
+  | 'powell' | 'reyes' | 'chen'
+  | 'carlos' | 'frank' | 'naila';
 
 export interface Character {
   id: CharacterId;
@@ -9,12 +14,15 @@ export interface Character {
 
 export const characters: Record<CharacterId, Character> = {
   marcus: { id: 'marcus', name: 'Marcus Bell', emoji: '🏦', role: 'Construction Lender, Loop Federal Bank' },
-  asha:   { id: 'asha', name: 'Asha Tran', emoji: '🧑‍💼', role: 'Your alderperson' },
+  asha:   { id: 'asha', name: 'Alder Asha Tran', emoji: '🧑‍💼', role: 'Your alderperson' },
   janelle:{ id: 'janelle', name: 'Janelle', emoji: '🏛️', role: 'IHDA reviewer' },
   david:  { id: 'david', name: 'David Park', emoji: '🏛️', role: 'Senior Analyst, Chicago Department of Housing' },
   powell: { id: 'powell', name: 'Ald. Cunningham', emoji: '⚖️', role: 'Fiscal hawk' },
   reyes:  { id: 'reyes', name: 'Ald. Reyes', emoji: '📣', role: 'TIF reformer' },
   chen:   { id: 'chen', name: 'Ald. Chen', emoji: '🏢', role: 'Other-ward alder' },
+  carlos: { id: 'carlos', name: 'Alder Carlos Reyes', emoji: '📣', role: 'Alder · Pilsen' },
+  frank:  { id: 'frank',  name: 'Alder Frank Kovac',  emoji: '🏙️', role: 'Alder · Jefferson Park' },
+  naila:  { id: 'naila',  name: 'Alder Naila Hassan', emoji: '🤝', role: 'Alder · Albany Park' },
 };
 
 export const marcusLines = {
@@ -104,3 +112,13 @@ export const financeAttackLines = {
   tifCorrupt: 'That\'s exactly the pattern we promised to stop. Englewood TIF is drained dry as it is.',
   hedWardJealousy: 'Why is HED money going to a ward that\'s already getting TIF? My residents would like a turn.',
 };
+
+export function getNeighborhoodAlderId(n: NeighborhoodId): CharacterId {
+  const map: Record<NeighborhoodId, CharacterId> = {
+    englewood: 'asha',
+    pilsen: 'carlos',
+    'jefferson-park': 'frank',
+    'albany-park': 'naila',
+  };
+  return map[n];
+}
