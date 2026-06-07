@@ -1,5 +1,6 @@
 import { useGameStore } from '../game/state';
 import { formatElapsed } from '../util/formatElapsed';
+import { characters } from '../data/characters';
 
 export function RecapCard() {
   const lastRecap = useGameStore((s) => s.lastRecap);
@@ -21,6 +22,16 @@ export function RecapCard() {
             <b className="text-gap tabular">+${(lastRecap.escalationAdded / 1_000_000).toFixed(2)}M</b>
           </div>
         </div>
+        {lastRecap.narrative && (
+          <div className="mt-3 border-t border-line pt-3 text-xs">
+            <b>
+              {characters[lastRecap.narrative.characterId as keyof typeof characters].emoji}
+              {' '}
+              {characters[lastRecap.narrative.characterId as keyof typeof characters].name}:
+            </b>{' '}
+            <i className="text-muted">{lastRecap.narrative.line}</i>
+          </div>
+        )}
         <button
           onClick={clearRecap}
           className="w-full mt-4 bg-accent text-white py-2 rounded font-bold"
