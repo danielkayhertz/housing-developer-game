@@ -2,6 +2,7 @@ import { useGameStore } from '../game/state';
 import { neighborhoods, getNeighborhood } from '../data/neighborhoods';
 import { computeTdc } from '../game/proForma';
 import { resolveEntitlementPath } from '../game/entitlement';
+import { getNeighborhoodAlderId } from '../data/characters';
 import { Header } from '../components/Header';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { JargonScreenScope } from '../components/JargonScreenScope';
@@ -163,7 +164,7 @@ export function SiteAndConcept() {
                 <li><b>Connected Communities Ordinance:</b> Eligible (TOD)</li>
               </ul>
               <div className="mt-4">
-                <CharacterBubble characterId="asha" line={n.alderGreeting} />
+                <CharacterBubble characterId={getNeighborhoodAlderId(n.id)} line={n.alderGreeting} />
               </div>
               {n.status === 'stub' && (
                 <div className="mt-4 p-3 bg-bg border-l-2 border-caution rounded text-xs">
