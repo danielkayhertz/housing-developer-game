@@ -1,5 +1,5 @@
 import { GameState, NeighborhoodId } from '../game/types';
-import { weightedAvgAmi, computeTdc } from '../game/proForma';
+import { weightedAvgAmi, computeTdc, getEffectiveUnits } from '../game/proForma';
 import {
   ashaLines,
   carlosLines,
@@ -89,7 +89,7 @@ function successReactions(state: GameState): Reaction[] {
   if (!state.project.neighborhood) return [];
 
   const neighborhood = state.project.neighborhood;
-  const finalUnits = Math.max(1, state.project.units - state.entitlement.projectShrinkBy);
+  const finalUnits = Math.max(1, getEffectiveUnits(state));
   const tdcParts = computeTdc({
     neighborhood,
     units: finalUnits,

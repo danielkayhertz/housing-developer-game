@@ -1,15 +1,12 @@
 import {
   GameState,
-  HARD_COST_PER_UNIT,
-  FINISH_MULTIPLIER,
   SOFT_COST_RATIO,
   CONTINGENCY_RATIO,
-  LOWER_QUALITY_HARD_MULTIPLIER,
   REVISION_SOFT_PENALTY,
 } from './types';
 import { getNeighborhood } from '../data/neighborhoods';
 import { getSource } from '../data/sources';
-import { computeNoi, computeSupportableDebt } from './proForma';
+import { computeNoi, computeSupportableDebt, getEffectiveUnits, effectiveHardPerUnit } from './proForma';
 import { complexityPenalty, totalCommitted } from './capitalStack';
 
 export interface EffectiveGapBreakdown {
@@ -42,15 +39,11 @@ export function computeEffectiveGap(state: GameState): EffectiveGapBreakdown {
   }
 
   const n = getNeighborhood(state.project.neighborhood);
-  const effectiveUnits = Math.max(0, state.project.units - state.gapResolution.shrinkBy);
-  const qualityMul = state.gapResolution.lowerQualityUsed ? LOWER_QUALITY_HARD_MULTIPLIER : 1;
-  const effectiveHardPerUnit =
-    HARD_COST_PER_UNIT[state.project.buildingType] *
-    FINISH_MULTIPLIER[state.proForma.finishLevel] *
-    qualityMul;
+  const effectiveUnits = getEffectiveUnits(state);
+  const hardPerUnit = effectiveHardPerUnit(state);
 
   const land = n.landCostPerUnit * effectiveUnits;
-  const hard = effectiveHardPerUnit * effectiveUnits;
+  const hard = hardPerUnit * effectiveUnits;
   const soft = hard * SOFT_COST_RATIO;
   const contingency = hard * CONTINGENCY_RATIO;
   const tdcBase = land + hard + soft + contingency;
@@ -87,7 +80,7 @@ export function computeEffectiveGap(state: GameState): EffectiveGapBreakdown {
   const gap = Math.max(0, tdcAllIn - committed);
 
   return {
-    effectiveUnits, effectiveHardPerUnit, land, hard, soft, contingency,
+    effectiveUnits, effectiveHardPerUnit: hardPerUnit, land, hard, soft, contingency,
     tdcBase, costEscalation: state.costEscalation, revisionPenalty, complexity,
     tdcAllIn, bankLoan: debt.amount, awardedTotal, extraSubsidy, committed, gap,
   };

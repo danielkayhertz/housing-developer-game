@@ -50,11 +50,11 @@ describe('computeEffectiveGap', () => {
     expect(after).toBe(3 * 150_000);
   });
 
-  it('floors units at 0 when shrinkBy exceeds project.units', () => {
+  it('floors units at MIN_UNITS_FLOOR when shrinkBy exceeds project.units', () => {
     freshEnglewood60();
     useGameStore.setState((s) => ({ gapResolution: { ...s.gapResolution, shrinkBy: 999 } }));
     const { effectiveUnits } = computeEffectiveGap(useGameStore.getState());
-    expect(effectiveUnits).toBe(0);
+    expect(effectiveUnits).toBe(20); // MIN_UNITS_FLOOR
   });
 });
 
