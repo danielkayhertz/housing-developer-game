@@ -231,3 +231,22 @@ describe('deferred developer fee amount (v4 item 9)', () => {
     expect(compute(100_000_000)).toBe(1_500_000); // 3% of 100M = 3M, capped at 1.5M
   });
 });
+
+describe('LIHTC odds quantization (v5 item 13)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('odds × 100 is always an integer for representative states', () => {
+    const states = [
+      () => { useGameStore.getState().selectNeighborhood('englewood'); },
+      () => { useGameStore.getState().selectNeighborhood('pilsen'); useGameStore.getState().setFinishLevel('elevated'); },
+      () => { useGameStore.getState().selectNeighborhood('jefferson-park'); useGameStore.getState().setFinishLevel('basic'); },
+    ];
+    for (const setup of states) {
+      useGameStore.getState().reset();
+      setup();
+      const { odds } = computeQapScore(useGameStore.getState());
+      expect(Number.isInteger(Math.round(odds * 100))).toBe(true);
+      expect(Math.abs(odds * 100 - Math.round(odds * 100))).toBeLessThan(1e-9);
+    }
+  });
+});

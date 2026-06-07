@@ -110,6 +110,8 @@ export function computeQapScore(state: GameState): { score: number; odds: number
     marketUnits: state.proForma.marketUnits ?? 0,
     finishLevel: state.proForma.finishLevel,
   });
-  const odds = estimatedAwardProbability(score);
+  const rawOdds = estimatedAwardProbability(score);
+  // Quantize to whole-percent so display percentage = used probability.
+  const odds = Math.round(rawOdds * 100) / 100;
   return { score, odds };
 }
