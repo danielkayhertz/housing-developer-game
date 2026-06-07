@@ -448,7 +448,7 @@ function QapOddsSubScreen({
       </div>
 
       <div className="bg-panel border border-line rounded-lg p-3">
-        <div className="text-xs uppercase tracking-wider text-accent font-bold">CBO partner</div>
+        <div className="text-xs uppercase tracking-wider text-accent font-bold">Community Partner</div>
         <div className="flex gap-2 mt-2">
           <button
             onClick={() => setCboPartner(true)}

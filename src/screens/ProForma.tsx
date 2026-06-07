@@ -183,7 +183,7 @@ export function ProForma() {
 
           <div className="bg-panel border border-line rounded-lg p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold">
-              Lever 3 — <TooltipTerm term="CBO">CBO</TooltipTerm> partner
+              Lever 3 — Community Partner (<TooltipTerm term="CBO">CBO</TooltipTerm>)
             </div>
             <div className="grid grid-cols-2 gap-2 mt-2">
               <button
