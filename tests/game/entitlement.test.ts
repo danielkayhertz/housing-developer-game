@@ -110,3 +110,20 @@ describe('finance-concede reopens gap (v4 item 14)', () => {
     expect(c.extraSubsidyDelta).toBe(-3_000_000);
   });
 });
+
+import { isCommitteeFailed } from '../../src/game/entitlement';
+
+describe('isCommitteeFailed (v5 item 14)', () => {
+  it('returns "alder" when alderGoodwill < 50', () => {
+    expect(isCommitteeFailed({ alderGoodwill: 49, communitySupport: 80 })).toBe('alder');
+  });
+  it('returns "community" when alderGoodwill >= 50 and communitySupport < 30', () => {
+    expect(isCommitteeFailed({ alderGoodwill: 60, communitySupport: 29 })).toBe('community');
+  });
+  it('prefers alder when both are below threshold', () => {
+    expect(isCommitteeFailed({ alderGoodwill: 30, communitySupport: 20 })).toBe('alder');
+  });
+  it('returns null when both pass', () => {
+    expect(isCommitteeFailed({ alderGoodwill: 50, communitySupport: 30 })).toBe(null);
+  });
+});

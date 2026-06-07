@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../game/state';
-import { resolveEntitlementPath, EntitlementPath } from '../game/entitlement';
+import { resolveEntitlementPath, EntitlementPath, isCommitteeFailed } from '../game/entitlement';
 import { computeEffectiveGap } from '../game/gapResolution';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
@@ -145,6 +145,18 @@ export function Entitlement() {
     if (extraMonths > 0) tickMonths(extraMonths);
 
     tickMonths(months);
+
+    // Committee gate: if the step we just completed was CoZ (3) or CoF (4),
+    // check failure thresholds and set outcome immediately.
+    if (currentStep === 3 || currentStep === 4) {
+      const ent = useGameStore.getState().entitlement;
+      const failure = isCommitteeFailed(ent);
+      if (failure === 'alder') {
+        setOutcome('shelved-finance');
+      } else if (failure === 'community') {
+        setOutcome('shelved-community');
+      }
+    }
   }
 
   function onComplete() {
@@ -159,13 +171,8 @@ export function Entitlement() {
       return;
     }
 
-    if (entitlement.alderGoodwill < 20) {
-      setOutcome('shelved-finance');
-    } else if (entitlement.communitySupport < 25) {
-      setOutcome('shelved-community');
-    } else {
-      setOutcome('closed');
-    }
+    // No end-of-entitlement alder/community check — failure gates fire at CoZ/CoF.
+    setOutcome('closed');
     advancePhase();
   }
 

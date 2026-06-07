@@ -88,3 +88,12 @@ export function isPathFailed(input: {
   if (input.communitySupport < 25) return 'community';
   return null;
 }
+
+export function isCommitteeFailed(input: {
+  alderGoodwill: number;
+  communitySupport: number;
+}): 'alder' | 'community' | null {
+  if (input.alderGoodwill < 50) return 'alder';
+  if (input.communitySupport < 30) return 'community';
+  return null;
+}
