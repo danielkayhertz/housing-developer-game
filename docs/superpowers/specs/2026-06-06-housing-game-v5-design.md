@@ -184,7 +184,7 @@ This is the largest phase. Four sub-pieces compose:
     return null;
   }
   ```
-- `src/screens/Entitlement.tsx` — in `onChoose`, after `takeStep(...)` and the side-effect calls, read `useGameStore.getState().entitlement` and check `isCommitteeFailed` IF the step just completed was 3 or 4. On fail: `setOutcome('shelved-finance' | 'shelved-community')` then `advancePhase()` — but show the failure narrative panel first (see Item 12).
+- `src/screens/Entitlement.tsx` — in `onChoose`, after `takeStep(...)` and the side-effect calls, read `useGameStore.getState().entitlement` and check `isCommitteeFailed` IF the step just completed was 3 or 4. On fail: call `setOutcome('shelved-finance' | 'shelved-community')` ONLY. Do NOT call `advancePhase` here — the failure narrative panel (Item 12) renders on next render and advances phase when the player clicks "See your result".
 - Remove the end-of-entitlement alder<20/community<25 check inside `onComplete`. After the change, `onComplete` only runs when the project survived both committees, so the ARO check stays but the goodwill/support checks go away.
 **State/type changes:** None.
 **Complexity:** M
@@ -220,22 +220,21 @@ This is the largest phase. Four sub-pieces compose:
 **Behavior:** When a project fails at CoZ or CoF, the player must not see "the City Council passed the ordinance 41–9" before reaching the Close screen.
 **Root cause:** The `allStepsComplete` block in `Entitlement.tsx` unconditionally renders the "Council vote (narrative)" panel saying the ordinance passed, before checking thresholds.
 **Fix:**
-- The Phase 5 Item 14 committee gates short-circuit the flow before `allStepsComplete` can render. So the existing `allStepsComplete` panel will only render for projects that passed both committees → its existing "passed 41–9" narrative stays correct.
-- For the new failure case (committee gate failed), add a parallel branch in `Entitlement.tsx`:
+- Gate the existing `allStepsComplete` "passed 41–9" panel on `outcome === 'in-progress'`, so it does not render if a committee gate has set outcome to `shelved-finance` or `shelved-community`. (For the by-right path, CoF is the last step; `allStepsComplete` becomes true the same render that `setOutcome('shelved-finance')` runs — without this gate, the "passed 41–9" panel would render alongside the failure.)
+- For the new failure case, add a parallel branch in `Entitlement.tsx` that renders whenever `outcome === 'shelved-finance' || outcome === 'shelved-community'`:
   ```tsx
-  {outcome === 'shelved-finance' && !allStepsComplete && (
+  {(outcome === 'shelved-finance' || outcome === 'shelved-community') && (
     <div className="bg-bg p-4 rounded-lg text-sm">
-      <b>Committee on {currentStep === 3 ? 'Zoning' : 'Finance'} (narrative):</b><br/>
-      <i className="text-muted">
-        With aldermanic support below the line, Ald. {alderName} pulled the ordinance.
-        No vote was held. Without committee backing, the project cannot advance to Council.
-      </i>
+      <b>Committee on {lastFailedStep === 3 ? 'Zoning' : 'Finance'} (narrative):</b><br/>
+      <i className="text-muted">{failureNarrative}</i>
       <button onClick={() => advancePhase()} className="...">See your result →</button>
     </div>
   )}
   ```
-  (Same shape for `'shelved-community'` with alternate copy: "The block club's opposition was visible enough that the alder pulled the ordinance before a vote.")
-- Because the committee gate calls `setOutcome` THEN renders, the failure panel is what the player sees on the next render; they click "See your result" and `advancePhase` moves to the Close screen.
+  `lastFailedStep` is derived from the most recent `pastChoices` entry. `failureNarrative` text:
+  - `shelved-finance`: "With aldermanic support below the line, Ald. {alderName} pulled the ordinance. No vote was held. Without committee backing, the project cannot advance to Council."
+  - `shelved-community`: "The block club's opposition was visible enough that Ald. {alderName} pulled the ordinance before a vote. The project cannot advance without community backing."
+- The active-step box and other step UI also need to hide when `outcome !== 'in-progress'` so the failure panel is the only thing showing.
 **Files:** `src/screens/Entitlement.tsx`.
 **Complexity:** S
 **Tests:** Component test: CoZ choice with alder=45 → failure panel renders, "passed 41–9" panel does not render.
