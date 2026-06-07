@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { sources, getSource } from '../data/sources';
 import { computeTdcFromState, getEffectiveUnits, computeNoi, computeSupportableDebt } from '../game/proForma';
-import { complexityPenalty, computeLihtcAward, computeQapScore, totalCommitted } from '../game/capitalStack';
+import { complexityPenalty, computeLihtcAward, computeQapScore } from '../game/capitalStack';
+import { computeEffectiveGap } from '../game/gapResolution';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
 import { StackBar } from '../components/StackBar';
@@ -51,10 +52,9 @@ export function CapitalStack() {
     noi, dscr: 1.20, annualRate: 0.065, amortYears: 30, ltv: 0.80, stabilizedValue,
   });
 
-  const committed = totalCommitted(stack.awarded) + debt.amount;
   const penaltyEligibleCount = stack.awarded.filter((a) => getSource(a.sourceId).usesComplexityPenalty).length;
   const penalty = complexityPenalty(penaltyEligibleCount, getEffectiveUnits(state));
-  const gap = Math.max(0, tdcTotal + penalty - committed);
+  const gap = computeEffectiveGap(state).gap;
 
   const { score: lihtcScore, odds: lihtcOdds } = computeQapScore(state);
 
