@@ -63,6 +63,7 @@ const initialState: GameState = {
     communitySupport: 50,
     projectShrinkBy: 0,
     conditionsImposed: [],
+    designUpgrade: false,
   },
   outcome: 'in-progress',
   lastRecap: null,

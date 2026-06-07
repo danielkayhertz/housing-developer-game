@@ -139,6 +139,7 @@ export interface GameState {
     communitySupport: number;
     projectShrinkBy: number;
     conditionsImposed: string[];
+    designUpgrade: boolean;
   };
 
   gapResolution: {

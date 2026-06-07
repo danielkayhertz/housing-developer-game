@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import {
   computeTdc,
   computeNoi,
@@ -6,7 +6,11 @@ import {
   computeGap,
   weightedAvgAmi,
   isLihtcEligible,
+  getEffectiveUnits,
+  effectiveHardPerUnit,
 } from '../../src/game/proForma';
+import { useGameStore } from '../../src/game/state';
+import { HARD_COST_PER_UNIT, FINISH_MULTIPLIER, MIN_UNITS_FLOOR, LOWER_QUALITY_HARD_MULTIPLIER } from '../../src/game/types';
 
 describe('computeTdc', () => {
   it('Englewood mid-rise standard finish, 60 units → ~$36.2M', () => {
@@ -105,5 +109,86 @@ describe('computeGap', () => {
       supportableDebt: 5_700_000,
     });
     expect(gap).toBeCloseTo(39_372_000, -3);
+  });
+});
+
+describe('getEffectiveUnits (v5 item 7)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('returns project.units when no shrinks', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    expect(getEffectiveUnits(useGameStore.getState())).toBe(60);
+  });
+
+  it('subtracts entitlement.projectShrinkBy', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.setState((s) => ({ entitlement: { ...s.entitlement, projectShrinkBy: 12 } }));
+    expect(getEffectiveUnits(useGameStore.getState())).toBe(48);
+  });
+
+  it('subtracts gapResolution.shrinkBy', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.setState((s) => ({ gapResolution: { ...s.gapResolution, shrinkBy: 10 } }));
+    expect(getEffectiveUnits(useGameStore.getState())).toBe(50);
+  });
+
+  it('subtracts both shrinks', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(60);
+    useGameStore.setState((s) => ({
+      entitlement: { ...s.entitlement, projectShrinkBy: 12 },
+      gapResolution: { ...s.gapResolution, shrinkBy: 10 },
+    }));
+    expect(getEffectiveUnits(useGameStore.getState())).toBe(38);
+  });
+
+  it('floors at MIN_UNITS_FLOOR', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().setUnits(25);
+    useGameStore.setState((s) => ({
+      entitlement: { ...s.entitlement, projectShrinkBy: 50 },
+    }));
+    expect(getEffectiveUnits(useGameStore.getState())).toBe(MIN_UNITS_FLOOR);
+  });
+});
+
+describe('effectiveHardPerUnit (v5 item 10 / phase 5)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('matches HARD_COST_PER_UNIT × FINISH_MULTIPLIER when no flags set', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    const state = useGameStore.getState();
+    const expected = HARD_COST_PER_UNIT[state.project.buildingType] * FINISH_MULTIPLIER[state.proForma.finishLevel];
+    expect(effectiveHardPerUnit(state)).toBeCloseTo(expected);
+  });
+
+  it('multiplies by 1.15 when entitlement.designUpgrade is true', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState((s) => ({ entitlement: { ...s.entitlement, designUpgrade: true } }));
+    const state = useGameStore.getState();
+    const base = HARD_COST_PER_UNIT[state.project.buildingType] * FINISH_MULTIPLIER[state.proForma.finishLevel];
+    expect(effectiveHardPerUnit(state)).toBeCloseTo(base * 1.15);
+  });
+
+  it('multiplies by LOWER_QUALITY_HARD_MULTIPLIER when lowerQualityUsed is true', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState((s) => ({ gapResolution: { ...s.gapResolution, lowerQualityUsed: true } }));
+    const state = useGameStore.getState();
+    const base = HARD_COST_PER_UNIT[state.project.buildingType] * FINISH_MULTIPLIER[state.proForma.finishLevel];
+    expect(effectiveHardPerUnit(state)).toBeCloseTo(base * 0.9);
+  });
+
+  it('stacks both multipliers when both flags set', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState((s) => ({
+      entitlement: { ...s.entitlement, designUpgrade: true },
+      gapResolution: { ...s.gapResolution, lowerQualityUsed: true },
+    }));
+    const state = useGameStore.getState();
+    const base = HARD_COST_PER_UNIT[state.project.buildingType] * FINISH_MULTIPLIER[state.proForma.finishLevel];
+    expect(effectiveHardPerUnit(state)).toBeCloseTo(base * 1.15 * 0.9);
   });
 });

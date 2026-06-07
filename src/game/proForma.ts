@@ -2,12 +2,15 @@ import {
   AmiBand,
   BuildingType,
   FinishLevel,
+  GameState,
   NeighborhoodId,
   HARD_COST_PER_UNIT,
   FINISH_MULTIPLIER,
   SOFT_COST_RATIO,
   CONTINGENCY_RATIO,
   LAND_COST_BUILDING_MULTIPLIER,
+  MIN_UNITS_FLOOR,
+  LOWER_QUALITY_HARD_MULTIPLIER,
 } from './types';
 import { getNeighborhood } from '../data/neighborhoods';
 import { rentAtAmi } from '../data/amiRents';
@@ -95,4 +98,20 @@ export function computeGap(input: {
   supportableDebt: number;
 }): number {
   return Math.max(0, input.tdc + input.costEscalation - input.supportableDebt);
+}
+
+export function getEffectiveUnits(state: GameState): number {
+  return Math.max(
+    MIN_UNITS_FLOOR,
+    state.project.units - state.entitlement.projectShrinkBy - state.gapResolution.shrinkBy
+  );
+}
+
+export function effectiveHardPerUnit(state: GameState): number {
+  return (
+    HARD_COST_PER_UNIT[state.project.buildingType]
+    * FINISH_MULTIPLIER[state.proForma.finishLevel]
+    * (state.entitlement.designUpgrade ? 1.15 : 1)
+    * (state.gapResolution.lowerQualityUsed ? LOWER_QUALITY_HARD_MULTIPLIER : 1)
+  );
 }
