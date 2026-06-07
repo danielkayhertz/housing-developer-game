@@ -112,6 +112,7 @@ export function Entitlement() {
   const retreatPhase = useGameStore((s) => s.retreatPhase);
   const setOutcome = useGameStore((s) => s.setOutcome);
   const fullState = useGameStore((s) => s);
+  const outcome = fullState.outcome;
 
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
@@ -244,7 +245,7 @@ export function Entitlement() {
       )}
 
       {/* CoF gap-gate */}
-      {cofGapOpen && (
+      {cofGapOpen && outcome === 'in-progress' && (
         <div className="bg-bg border-2 border-gap rounded-lg p-4 mb-3">
           <div className="text-xs uppercase tracking-wider text-gap font-bold">
             ▶ Gap reopened — close before the vote
@@ -256,7 +257,7 @@ export function Entitlement() {
       )}
 
       {/* Active step */}
-      {!cofGapOpen && !allStepsComplete && currentStep != null && (
+      {!cofGapOpen && !allStepsComplete && currentStep != null && outcome === 'in-progress' && (
         <div className="bg-bg border-2 border-caution rounded-lg p-4 mb-3">
           <div className="text-xs uppercase tracking-wider text-caution font-bold">
             ▶ Step {currentStep} — {STEP_NAMES[currentStep]}
@@ -365,7 +366,28 @@ export function Entitlement() {
         </div>
       )}
 
-      {allStepsComplete && (
+      {(outcome === 'shelved-finance' || outcome === 'shelved-community') && (
+        <div className="bg-bg p-4 rounded-lg text-sm">
+          <b>Committee on {(() => {
+            const last = entitlement.pastChoices[entitlement.pastChoices.length - 1];
+            return last && last.step === 3 ? 'Zoning' : 'Finance';
+          })()} (narrative):</b>
+          <br />
+          <i className="text-muted">
+            {outcome === 'shelved-finance'
+              ? `With aldermanic support below the line, Ald. ${n.alderName} pulled the ordinance. No vote was held. Without committee backing, the project cannot advance to Council.`
+              : `The block club's opposition was visible enough that Ald. ${n.alderName} pulled the ordinance before a vote. The project cannot advance without community backing.`}
+          </i>
+          <button
+            onClick={advancePhase}
+            className="block w-full mt-4 bg-accent text-white py-3 rounded-lg font-bold"
+          >
+            See your result →
+          </button>
+        </div>
+      )}
+
+      {allStepsComplete && outcome === 'in-progress' && (
         <div className="bg-bg p-4 rounded-lg text-sm">
           <b>Council vote (narrative):</b><br/>
           <i className="text-muted">On a Wednesday in March, the City Council passed the ordinance 41–9. Asha posted on Instagram from the floor.</i>

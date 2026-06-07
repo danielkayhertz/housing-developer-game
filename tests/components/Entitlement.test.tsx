@@ -80,3 +80,40 @@ describe('Entitlement committee failure gates (v5 item 14)', () => {
     expect(useGameStore.getState().outcome).toBe('in-progress');
   });
 });
+
+describe('Entitlement failure narrative panel (v5 item 12)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('failure panel renders when outcome is shelved-finance', () => {
+    setupAtCoZ();
+    useGameStore.setState((s) => ({
+      entitlement: { ...s.entitlement, alderGoodwill: 45, communitySupport: 60 },
+    }));
+    render(<Entitlement />);
+    fireEvent.click(screen.getByText(/Hold the line/));
+    // Re-render after state change
+    expect(screen.getByText(/pulled the ordinance/)).toBeInTheDocument();
+    expect(screen.queryByText(/passed the ordinance/)).toBeNull();
+  });
+
+  it('"passed 41-9" completion panel does NOT render when outcome is shelved-finance', () => {
+    setupAtCoZ();
+    useGameStore.setState((s) => ({
+      entitlement: {
+        ...s.entitlement,
+        alderGoodwill: 45,
+        communitySupport: 60,
+        // Simulate having finished all steps (e.g. by-right CoF failure edge case)
+        pastChoices: [
+          { step: 1, choice: 'preapp-quiet', alderDelta: 2, communityDelta: 0 },
+          { step: 2, choice: 'community-story', alderDelta: 0, communityDelta: 12 },
+          { step: 4, choice: 'finance-reframe', alderDelta: -2, communityDelta: 0 },
+        ],
+      },
+      outcome: 'shelved-finance',
+    }));
+    render(<Entitlement />);
+    expect(screen.queryByText(/passed the ordinance 41–9/)).toBeNull();
+    expect(screen.getByText(/pulled the ordinance/)).toBeInTheDocument();
+  });
+});
