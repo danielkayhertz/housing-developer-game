@@ -13,8 +13,6 @@ import { GapCloseModal } from '../components/GapCloseModal';
 import { ashaLines, financeAttackLines } from '../data/characters';
 import {
   StepChoiceKey,
-  HARD_COST_PER_UNIT,
-  FINISH_MULTIPLIER,
   SOFT_COST_RATIO,
   CONTINGENCY_RATIO,
   COST_ESCALATION_PER_YEAR,
@@ -23,6 +21,7 @@ import {
   ARO_FLOOR_AFFORDABLE_SHARE,
   GAP_ADVANCE_THRESHOLD,
 } from '../game/types';
+import { effectiveHardPerUnit, getEffectiveUnits } from '../game/proForma';
 
 export const stepsByPath: Record<EntitlementPath, number[]> = {
   'by-right': [1, 2, 4],
@@ -298,8 +297,8 @@ export function Entitlement() {
                 const baseDurationMonths = CHOICE_DURATION_OVERRIDES[c.key] ?? (STEP_DURATIONS[currentStep] ?? 0);
                 const extraMonths = c.key === 'preapp-multilingual' ? 3 : 0;
                 const months = baseDurationMonths + extraMonths;
-                const hardPerU = HARD_COST_PER_UNIT[project.buildingType] * FINISH_MULTIPLIER[proForma.finishLevel];
-                const hard = hardPerU * project.units;
+                const hardPerU = effectiveHardPerUnit(fullState);
+                const hard = hardPerU * getEffectiveUnits(fullState);
                 const escThisStep = hard * (COST_ESCALATION_PER_YEAR / 12) * months * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
                 const timeLabel = `+${months} mo · +$${(escThisStep / 1_000_000).toFixed(1)}M cost escalation`;
                 const cardTitle: React.ReactNode =

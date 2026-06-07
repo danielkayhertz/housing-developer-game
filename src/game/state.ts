@@ -22,6 +22,7 @@ import {
 } from './types';
 import { applyChoice } from './entitlement';
 import { computeEffectiveGap } from './gapResolution';
+import { getEffectiveUnits } from './proForma';
 import { getNeighborhood } from '../data/neighborhoods';
 
 const initialState: GameState = {
@@ -306,7 +307,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     const s = get();
     const consequence = applyChoice(choice, ctx);
     if (consequence.tdcDelta) {
-      get().addCostEscalation(consequence.tdcDelta * s.project.units);
+      get().addCostEscalation(consequence.tdcDelta * getEffectiveUnits(s));
     }
     if (consequence.extraSubsidyDelta) {
       set((s) => ({

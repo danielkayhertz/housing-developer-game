@@ -19,6 +19,12 @@ export function resolveEntitlementPath(input: {
 export interface ChoiceConsequence {
   alderDelta: number;
   communityDelta: number;
+  /**
+   * Per-unit cost delta in dollars. `takeEntitlementStep` multiplies by
+   * `getEffectiveUnits(state)` when accruing to costEscalation. To express
+   * a flat dollar amount, divide by an expected unit count or model as a
+   * dedicated state field (see entitlement.designUpgrade).
+   */
   tdcDelta: number;
   shrinkBy: number;
   extraSubsidyDelta?: number;
