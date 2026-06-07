@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { sources, getSource } from '../data/sources';
-import { computeTdc, computeNoi, computeSupportableDebt } from '../game/proForma';
+import { computeTdcFromState, getEffectiveUnits, computeNoi, computeSupportableDebt } from '../game/proForma';
 import { complexityPenalty, computeLihtcAward, computeQapScore, totalCommitted } from '../game/capitalStack';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
@@ -36,12 +36,7 @@ export function CapitalStack() {
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
 
-  const tdcParts = computeTdc({
-    neighborhood: project.neighborhood,
-    units: project.units,
-    buildingType: project.buildingType,
-    finishLevel: proForma.finishLevel,
-  });
+  const tdcParts = computeTdcFromState(state);
   const revisionPenalty = stack.lihtcRevisions * REVISION_SOFT_PENALTY;
   const tdcTotal = tdcParts.total + costEscalation + revisionPenalty;
   const noi = computeNoi({
@@ -58,7 +53,7 @@ export function CapitalStack() {
 
   const committed = totalCommitted(stack.awarded) + debt.amount;
   const penaltyEligibleCount = stack.awarded.filter((a) => getSource(a.sourceId).usesComplexityPenalty).length;
-  const penalty = complexityPenalty(penaltyEligibleCount, project.units);
+  const penalty = complexityPenalty(penaltyEligibleCount, getEffectiveUnits(state));
   const gap = Math.max(0, tdcTotal + penalty - committed);
 
   const { score: lihtcScore, odds: lihtcOdds } = computeQapScore(state);

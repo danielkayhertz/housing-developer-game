@@ -245,7 +245,7 @@ describe('LIHTC odds quantization (v5 item 13)', () => {
       useGameStore.getState().reset();
       setup();
       const { odds } = computeQapScore(useGameStore.getState());
-      expect(Number.isInteger(Math.round(odds * 100))).toBe(true);
+      expect(Number.isInteger(odds * 100)).toBe(true);
       expect(Math.abs(odds * 100 - Math.round(odds * 100))).toBeLessThan(1e-9);
     }
   });

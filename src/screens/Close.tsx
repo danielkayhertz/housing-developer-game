@@ -1,5 +1,5 @@
 import { useGameStore } from '../game/state';
-import { computeTdcFromState, weightedAvgAmi } from '../game/proForma';
+import { computeTdcFromState, getEffectiveUnits, weightedAvgAmi } from '../game/proForma';
 import { formatElapsed } from '../util/formatElapsed';
 import { totalCommitted } from '../game/capitalStack';
 import { computeImpactScore } from '../game/scoring';
@@ -12,13 +12,13 @@ import { getReactions } from '../data/closeReactions';
 
 export function Close() {
   const state = useGameStore((s) => s);
-  const { project, proForma, stack, entitlement, gapResolution, outcome, monthsElapsed, costEscalation } = state;
+  const { project, proForma, stack, outcome, monthsElapsed, costEscalation } = state;
   const reset = useGameStore((s) => s.reset);
 
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
   const closed = outcome === 'closed';
-  const finalUnits = Math.max(1, project.units - entitlement.projectShrinkBy - gapResolution.shrinkBy);
+  const finalUnits = getEffectiveUnits(state);
 
   const tdcParts = computeTdcFromState(state);
   const tdcTotal = tdcParts.total + costEscalation;
