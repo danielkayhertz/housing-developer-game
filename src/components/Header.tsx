@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { getNeighborhood } from '../data/neighborhoods';
-import { computeTdc } from '../game/proForma';
+import { computeTdc, getEffectiveUnits } from '../game/proForma';
 import { totalCommitted } from '../game/capitalStack';
 import { TimelinePill } from './TimelinePill';
 import { GlossaryPanel } from './GlossaryPanel';
@@ -9,19 +9,16 @@ import { REVISION_SOFT_PENALTY } from '../game/types';
 
 export function Header() {
   const [glossaryOpen, setGlossaryOpen] = useState(false);
-  const phase = useGameStore((s) => s.phase);
-  const project = useGameStore((s) => s.project);
-  const proForma = useGameStore((s) => s.proForma);
-  const stack = useGameStore((s) => s.stack);
-  const monthsElapsed = useGameStore((s) => s.monthsElapsed);
-  const costEscalation = useGameStore((s) => s.costEscalation);
+  const state = useGameStore((s) => s);
+  const { phase, project, proForma, stack, monthsElapsed, costEscalation } = state;
+  const effectiveUnits = getEffectiveUnits(state);
 
   if (!project.neighborhood) return null;
 
   const n = getNeighborhood(project.neighborhood);
   const tdcParts = computeTdc({
     neighborhood: project.neighborhood,
-    units: project.units,
+    units: effectiveUnits,
     buildingType: project.buildingType,
     finishLevel: proForma.finishLevel,
   });
@@ -36,7 +33,7 @@ export function Header() {
     <>
     <div className="bg-panel border border-line rounded-lg px-3 py-2 text-sm text-muted flex flex-wrap gap-3 items-center">
       <span>
-        {n.emoji} <b className="text-ink">{n.name}</b> · {project.units} units · {project.intent === 'all-affordable' ? 'all-affordable' : 'mixed-income'}
+        {n.emoji} <b className="text-ink">{n.name}</b> · {effectiveUnits} units · {project.intent === 'all-affordable' ? 'all-affordable' : 'mixed-income'}
       </span>
       <span>·</span>
       <span>
