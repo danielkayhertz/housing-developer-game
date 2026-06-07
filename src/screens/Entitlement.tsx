@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../game/state';
-import { resolveEntitlementPath, EntitlementPath, isCommitteeFailed } from '../game/entitlement';
+import { resolveEntitlementPath, EntitlementPath, isCommitteeFailed, resolveEntitlementRecapKey } from '../game/entitlement';
 import { computeEffectiveGap } from '../game/gapResolution';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
@@ -135,16 +135,18 @@ export function Entitlement() {
     takeStep(choice, currentStep ?? 1);
 
     // Larger building: auto-apply density variance condition at zoning step
+    let densityMonths = 0;
     if (currentStep === 3 && project.buildingType === 'larger') {
       const conditionCost = DENSITY_VARIANCE_TDC_PER_UNIT * project.units;
       addCostEscalation(conditionCost);
-      tickMonths(DENSITY_VARIANCE_MONTHS);
+      densityMonths = DENSITY_VARIANCE_MONTHS;
     }
 
     // Multilingual outreach adds 3 months of extra community engagement time
     const extraMonths = choice === 'preapp-multilingual' ? 3 : 0;
-    const narrative = resolveRecapNarrative(useGameStore.getState(), choice);
-    tickMonths(months + extraMonths, narrative ?? undefined);
+    const recapKey = resolveEntitlementRecapKey(project.buildingType, currentStep ?? 1, choice);
+    const narrative = resolveRecapNarrative(useGameStore.getState(), recapKey);
+    tickMonths(months + extraMonths + densityMonths, narrative ?? undefined);
 
     // Committee gate: if the step we just completed was CoZ (3) or CoF (4),
     // check failure thresholds and set outcome immediately.

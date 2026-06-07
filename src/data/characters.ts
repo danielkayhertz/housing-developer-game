@@ -158,6 +158,7 @@ export const recapNarratives: Record<string, RecapEntry> = {
   'zoning-hold': { category: 'alder', line: "Holding the line means making the case in committee, defending each unit count, each setback. My chair vote will carry it if I can keep my coalition." },
   'zoning-shrink': { category: 'alder', line: "Shrinking the project gave the block-club a win, which means they're not testifying against us. But the per-unit subsidy math just got worse." },
   'zoning-design-upgrade': { category: 'alder', line: "The committee wanted upgrades — better facade, better common spaces. The community likes the result. The hard cost is 15% higher than what you penciled." },
+  'densityVariance': { category: 'david', line: "The committee attached a density-variance condition — height modulation, a setback tweak, a façade study. It adds review months and pushes your hard costs up before you can advance to the vote." },
 
   // Finance committee
   'finance-reframe': { category: 'alder', line: "Making the per-unit-of-impact argument took preparation — pulling comp data, lining up testimony. It moved the conversation but Cunningham's not letting it go." },
