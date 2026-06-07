@@ -169,10 +169,13 @@ export const recapNarratives: Record<string, RecapEntry> = {
   'redesignSmaller': { category: 'david', line: "Resizing the project means new architectural drawings, revised pro forma, often a new MEP coordination pass. Six months, minimum." },
   'lowerQuality': { category: 'david', line: "Value-engineering the spec saves on hard costs but takes three months of redesign and resourcing. The block-club will notice." },
 
-  // LIHTC
-  'lihtcSubmit': { category: 'janelle', line: "QAP rounds happen once a year. Whether your application wins or loses, you wait twelve months before the next decision." },
-  'lihtcResubmit': { category: 'janelle', line: "Resubmitting without changes? You're betting the next QAP round's reviewers see things differently. Twelve more months." },
-  'lihtcRevise': { category: 'janelle', line: "Revising the application — deepening AMI mix, adding a CBO, retooling exhibits — and resubmitting. Twelve more months, plus the soft-cost of the rework." },
+  // LIHTC — outcome-aware
+  'lihtcSubmit-win': { category: 'janelle', line: "Your application scored above the cutoff — the AMI depth and the project readiness carried it. The 9% allocation is yours. The catch is the calendar: a full year passed waiting for the QAP round to resolve." },
+  'lihtcSubmit-loss': { category: 'janelle', line: "The round was competitive and your score landed under the cutoff. No allocation this cycle. To improve next time, deepen the AMI mix or add a CBO partner — and you've already lost twelve months." },
+  'lihtcResubmit-win': { category: 'janelle', line: "Resubmitting unchanged paid off — the reviewer pool shifted and your score cleared this year. Allocation secured, twelve months later." },
+  'lihtcResubmit-loss': { category: 'janelle', line: "Same application, same result — the score wasn't competitive enough and you lost another twelve months. Without changes, the next round is the same bet." },
+  'lihtcRevise-win': { category: 'janelle', line: "The revisions worked: deeper affordability, a stronger CBO letter, cleaner exhibits pushed you over the cutoff. Allocation awarded — at the cost of a year and the rework." },
+  'lihtcRevise-loss': { category: 'janelle', line: "Even with the revisions the round stayed out of reach this cycle. The reworked application is stronger for next time, but that's another twelve months gone." },
 
   // CBO partner first-time
   'cboFirstTime': { category: 'asha', line: "Bringing the CBO on board took six months of conversations, MOU drafting, and joint planning. It was the right call." },

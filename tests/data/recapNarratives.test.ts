@@ -32,10 +32,13 @@ describe('resolveRecapNarrative (v5 item 1)', () => {
     expect(r!.characterId).toBe('david');
   });
 
-  it('returns janelle-spoken narrative for lihtcSubmit', () => {
+  it('returns janelle-spoken narrative for lihtcSubmit win/loss', () => {
     useGameStore.getState().reset();
     useGameStore.getState().selectNeighborhood('englewood');
-    const r = resolveRecapNarrative(useGameStore.getState(), 'lihtcSubmit');
-    expect(r!.characterId).toBe('janelle');
+    const win = resolveRecapNarrative(useGameStore.getState(), 'lihtcSubmit-win');
+    const loss = resolveRecapNarrative(useGameStore.getState(), 'lihtcSubmit-loss');
+    expect(win!.characterId).toBe('janelle');
+    expect(loss!.characterId).toBe('janelle');
+    expect(win!.line).not.toBe(loss!.line);
   });
 });

@@ -86,7 +86,7 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     submitLihtc(win);
-    tickMonths(12, resolveRecapNarrative(state, 'lihtcSubmit') ?? undefined);
+    tickMonths(12, resolveRecapNarrative(state, win ? 'lihtcSubmit-win' : 'lihtcSubmit-loss') ?? undefined);
   }
 
   function onSubmitAgain() {
@@ -95,7 +95,7 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     resubmitLihtc(win);
-    tickMonths(12, resolveRecapNarrative(state, 'lihtcResubmit') ?? undefined);
+    tickMonths(12, resolveRecapNarrative(state, win ? 'lihtcResubmit-win' : 'lihtcResubmit-loss') ?? undefined);
   }
 
   function onResubmitFromRevise() {
@@ -104,7 +104,7 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     reviseLihtc(win);
-    tickMonths(12, resolveRecapNarrative(state, 'lihtcRevise') ?? undefined);
+    tickMonths(12, resolveRecapNarrative(state, win ? 'lihtcRevise-win' : 'lihtcRevise-loss') ?? undefined);
     setReviseMode('none');
   }
 
