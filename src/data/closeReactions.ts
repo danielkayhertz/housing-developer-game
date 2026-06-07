@@ -99,11 +99,8 @@ function successReactions(state: GameState): Reaction[] {
   const perUnitTdc = (tdcParts.total + state.costEscalation) / finalUnits;
   const avgAmi = weightedAvgAmi(state.proForma.amiBreakdown);
   const { alderGoodwill } = state.entitlement;
-  const pastChoiceKeys = state.entitlement.pastChoices.map((c) => c.choice);
-
-  // Block-club parking concern: larger building type OR zoning-accept choice
-  const parkingConcerned =
-    state.project.buildingType === 'larger' || pastChoiceKeys.includes('zoning-accept');
+  // Block-club parking concern: larger building type
+  const parkingConcerned = state.project.buildingType === 'larger';
 
   // Per-neighborhood alder
   const alderLines = alderLinesByNeighborhood(neighborhood);

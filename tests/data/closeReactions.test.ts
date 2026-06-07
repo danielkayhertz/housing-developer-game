@@ -12,6 +12,7 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
     project: {
       neighborhood: 'englewood',
       units: 60,
+      initialUnits: 60,
       buildingType: 'midrise',
       intent: 'all-affordable',
       hasCboPartner: false,
@@ -39,6 +40,7 @@ function makeState(overrides: Partial<GameState> = {}): GameState {
       communitySupport: 50,
       projectShrinkBy: 0,
       conditionsImposed: [],
+      designUpgrade: false,
     },
     outcome: 'closed',
   };
@@ -108,17 +110,7 @@ describe('getReactions — success path', () => {
     expect(bc.line).toContain('parking');
   });
 
-  it('Block Club parkingConcerned when zoning-accept choice made', () => {
-    const s = makeState({
-      entitlement: {
-        pastChoices: [{ step: 3, choice: 'zoning-accept', alderDelta: -5, communityDelta: 0, shrinkBy: 0 }],
-      },
-    });
-    const bc = getReactions(s).find((r) => r.affiliation.includes('block club'))!;
-    expect(bc.line).toContain('parking');
-  });
-
-  it('Block Club supportive for midrise without zoning-accept', () => {
+  it('Block Club supportive for midrise without larger building type', () => {
     const bc = getReactions(makeState()).find((r) => r.affiliation.includes('block club'))!;
     expect(bc.line).toContain('glad');
   });

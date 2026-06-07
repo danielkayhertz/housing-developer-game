@@ -91,7 +91,7 @@ const STEP_CHOICES: Record<number, { key: StepChoiceKey; title: string; descript
   3: [
     { key: 'zoning-hold', title: 'Hold the line', description: 'Keep current size. Make the case at Committee.', consequences: '−14 alder · −4 community · vote risk' },
     { key: 'zoning-shrink', title: 'Shrink the project (−12 units)', description: 'Concede unit count. Defuse NIMBY testimony.', consequences: '−6 alder · +15 community · TDC ↓ · impact ↓' },
-    { key: 'zoning-accept', title: 'Accept conditions', description: "Take Committee's height cap & unit-mix conditions.", consequences: '−8 alder · ±0 community · TDC +$1.4M' },
+    { key: 'zoning-design-upgrade', title: 'Increase design quality', description: "Committee imposes design upgrades — better facade, units, common spaces.", consequences: '±0 alder · +10 community · Hard costs +15%' },
   ],
   4: [
     { key: 'finance-reframe', title: 'Reframe the cost', description: 'Make the per-unit-of-impact case. Make Cunningham own his comparison.', consequences: '−2 alder · ±0 community' },

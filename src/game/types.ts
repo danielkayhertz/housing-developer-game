@@ -78,7 +78,7 @@ export type StepChoiceKey =
   | 'preapp-multilingual'                                                                        // Albany Park
   | 'community-none' | 'community-story' | 'community-coalition'
   | 'community-jp-full-parking' | 'community-jp-traffic-data' | 'community-jp-refuse-parking'  // Jefferson Park
-  | 'zoning-hold' | 'zoning-shrink' | 'zoning-accept'
+  | 'zoning-hold' | 'zoning-shrink' | 'zoning-design-upgrade'
   | 'finance-reframe' | 'finance-concede' | 'finance-stakeholders';
 
 export interface StepChoice {

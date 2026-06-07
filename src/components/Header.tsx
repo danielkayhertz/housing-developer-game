@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { getNeighborhood } from '../data/neighborhoods';
-import { computeTdc, getEffectiveUnits } from '../game/proForma';
+import { computeTdcFromState, getEffectiveUnits } from '../game/proForma';
 import { totalCommitted } from '../game/capitalStack';
 import { TimelinePill } from './TimelinePill';
 import { GlossaryPanel } from './GlossaryPanel';
@@ -16,12 +16,7 @@ export function Header() {
   if (!project.neighborhood) return null;
 
   const n = getNeighborhood(project.neighborhood);
-  const tdcParts = computeTdc({
-    neighborhood: project.neighborhood,
-    units: effectiveUnits,
-    buildingType: project.buildingType,
-    finishLevel: proForma.finishLevel,
-  });
+  const tdcParts = computeTdcFromState(state);
   const revisionPenalty = stack.lihtcRevisions * REVISION_SOFT_PENALTY;
   const tdcWithEscalation = tdcParts.total + costEscalation + revisionPenalty;
   const committed = totalCommitted(stack.awarded);

@@ -115,3 +115,17 @@ export function effectiveHardPerUnit(state: GameState): number {
     * (state.gapResolution.lowerQualityUsed ? LOWER_QUALITY_HARD_MULTIPLIER : 1)
   );
 }
+
+export function computeTdcFromState(state: GameState): { hard: number; land: number; soft: number; contingency: number; total: number } {
+  if (!state.project.neighborhood) {
+    return { hard: 0, land: 0, soft: 0, contingency: 0, total: 0 };
+  }
+  const units = getEffectiveUnits(state);
+  const hardPerUnit = effectiveHardPerUnit(state);
+  const hard = hardPerUnit * units;
+  const n = getNeighborhood(state.project.neighborhood);
+  const land = n.landCostPerUnit * LAND_COST_BUILDING_MULTIPLIER[state.project.buildingType] * units;
+  const soft = hard * SOFT_COST_RATIO;
+  const contingency = hard * CONTINGENCY_RATIO;
+  return { hard, land, soft, contingency, total: hard + land + soft + contingency };
+}

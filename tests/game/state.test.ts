@@ -375,6 +375,22 @@ describe('cost escalation gating by phase (v4 item 6)', () => {
   });
 });
 
+describe('setDesignUpgrade action (v5 item 10)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+  it('toggles entitlement.designUpgrade', () => {
+    useGameStore.getState().setDesignUpgrade(true);
+    expect(useGameStore.getState().entitlement.designUpgrade).toBe(true);
+    useGameStore.getState().setDesignUpgrade(false);
+    expect(useGameStore.getState().entitlement.designUpgrade).toBe(false);
+  });
+
+  it('takeEntitlementStep("zoning-design-upgrade", 3) sets designUpgrade=true', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.getState().takeEntitlementStep('zoning-design-upgrade', 3);
+    expect(useGameStore.getState().entitlement.designUpgrade).toBe(true);
+  });
+});
+
 describe('initialUnits snapshot (v4 item 15)', () => {
   beforeEach(() => useGameStore.getState().reset());
 

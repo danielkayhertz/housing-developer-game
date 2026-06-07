@@ -53,6 +53,15 @@ describe('applyChoice', () => {
   });
 });
 
+describe('zoning-design-upgrade choice (v5 item 10)', () => {
+  it('applies +10 community, ±0 alder, sets designUpgrade flag', () => {
+    const result = applyChoice('zoning-design-upgrade');
+    expect(result.alderDelta).toBe(0);
+    expect(result.communityDelta).toBe(10);
+    expect(result.designUpgrade).toBe(true);
+  });
+});
+
 describe('isPathFailed', () => {
   it('alder goodwill < 20 → alder withdrawal', () => {
     expect(isPathFailed({ alderGoodwill: 15, communitySupport: 60 })).toBe('alder');

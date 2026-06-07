@@ -28,6 +28,7 @@ export interface ChoiceConsequence {
   tdcDelta: number;
   shrinkBy: number;
   extraSubsidyDelta?: number;
+  designUpgrade?: boolean;
 }
 
 export function applyChoice(
@@ -64,8 +65,8 @@ export function applyChoice(
       return { ...base, alderDelta: -14, communityDelta: -4 };
     case 'zoning-shrink':
       return { ...base, alderDelta: -6, communityDelta: 15, shrinkBy: ctx.shrinkBy ?? 12 };
-    case 'zoning-accept':
-      return { ...base, alderDelta: -8, communityDelta: 0, tdcDelta: 1_400_000 };
+    case 'zoning-design-upgrade':
+      return { ...base, alderDelta: 0, communityDelta: 10, designUpgrade: true };
 
     case 'finance-reframe':
       return { ...base, alderDelta: -2, communityDelta: 0 };

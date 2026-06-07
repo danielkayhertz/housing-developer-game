@@ -12,17 +12,14 @@ import {
   EntitlementStep,
   SourceAward,
   COST_ESCALATION_PER_YEAR,
-  HARD_COST_PER_UNIT,
-  FINISH_MULTIPLIER,
   SOFT_COST_RATIO,
   CONTINGENCY_RATIO,
-  LOWER_QUALITY_HARD_MULTIPLIER,
   GAP_ADVANCE_THRESHOLD,
   UNIT_DEFAULTS_BY_BUILDING_TYPE,
 } from './types';
 import { applyChoice } from './entitlement';
 import { computeEffectiveGap } from './gapResolution';
-import { getEffectiveUnits } from './proForma';
+import { getEffectiveUnits, effectiveHardPerUnit } from './proForma';
 import { getNeighborhood } from '../data/neighborhoods';
 
 const initialState: GameState = {
@@ -89,6 +86,7 @@ interface StoreActions {
   applyGapAction: (action: 'askSubsidy' | 'redesignSmaller' | 'lowerQuality') => void;
   tickMonths: (n: number) => void;
   takeEntitlementStep: (choice: StepChoiceKey, step: number, ctx?: { shrinkBy?: number }) => void;
+  setDesignUpgrade: (value: boolean) => void;
   addCostEscalation: (delta: number) => void;
   setOutcome: (o: GameState['outcome']) => void;
   clearRecap: () => void;
@@ -290,10 +288,9 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
 
   tickMonths: (n: number) => set((s) => {
     if (!s.project.neighborhood) return {};
-    const qualityMul = s.gapResolution.lowerQualityUsed ? LOWER_QUALITY_HARD_MULTIPLIER : 1;
-    const effectiveUnits = Math.max(0, s.project.units - s.gapResolution.shrinkBy);
-    const hardPerU = HARD_COST_PER_UNIT[s.project.buildingType] * FINISH_MULTIPLIER[s.proForma.finishLevel] * qualityMul;
-    const hard = hardPerU * effectiveUnits;
+    const effUnits = getEffectiveUnits(s);
+    const hardPerU = effectiveHardPerUnit(s);
+    const hard = hardPerU * effUnits;
     const escalationPerMonth = hard * (COST_ESCALATION_PER_YEAR / 12) * (1 + SOFT_COST_RATIO + CONTINGENCY_RATIO);
     const escalationAdded = s.phase >= 4 ? escalationPerMonth * n : 0;
     return {
@@ -316,6 +313,9 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
           extraSubsidy: Math.max(0, s.gapResolution.extraSubsidy + consequence.extraSubsidyDelta!),
         },
       }));
+    }
+    if (consequence.designUpgrade) {
+      get().setDesignUpgrade(true);
     }
     set((s) => {
       let newCommunity = Math.max(0, Math.min(100, s.entitlement.communitySupport + consequence.communityDelta));
@@ -353,6 +353,10 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
       };
     });
   },
+
+  setDesignUpgrade: (value) => set((s) => ({
+    entitlement: { ...s.entitlement, designUpgrade: value },
+  })),
 
   addCostEscalation: (delta) => set((s) => ({ costEscalation: s.costEscalation + delta })),
 
