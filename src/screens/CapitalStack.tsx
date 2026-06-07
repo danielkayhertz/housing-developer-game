@@ -256,10 +256,6 @@ export function CapitalStack() {
         </div>
       )}
 
-      <div className="mb-3">
-        <CharacterBubble characterId="marcus" line={marcusLines.capitalStackBubble} />
-      </div>
-
       {/* Source grid */}
       <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">Funding sources</div>
       <div className="grid grid-cols-4 gap-2 mb-4">
