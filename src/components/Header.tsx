@@ -1,26 +1,22 @@
 import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { getNeighborhood } from '../data/neighborhoods';
-import { computeTdcFromState, getEffectiveUnits } from '../game/proForma';
-import { totalCommitted } from '../game/capitalStack';
+import { computeEffectiveGap } from '../game/gapResolution';
 import { TimelinePill } from './TimelinePill';
 import { GlossaryPanel } from './GlossaryPanel';
-import { REVISION_SOFT_PENALTY } from '../game/types';
 
 export function Header() {
   const [glossaryOpen, setGlossaryOpen] = useState(false);
   const state = useGameStore((s) => s);
-  const { phase, project, stack, monthsElapsed, costEscalation } = state;
-  const effectiveUnits = getEffectiveUnits(state);
+  const { phase, project, monthsElapsed, costEscalation } = state;
 
   if (!project.neighborhood) return null;
 
   const n = getNeighborhood(project.neighborhood);
-  const tdcParts = computeTdcFromState(state);
-  const revisionPenalty = stack.lihtcRevisions * REVISION_SOFT_PENALTY;
-  const tdcWithEscalation = tdcParts.total + costEscalation + revisionPenalty;
-  const committed = totalCommitted(stack.awarded);
-  const gap = Math.max(0, tdcWithEscalation - committed);
+  const eg = computeEffectiveGap(state);
+  const effectiveUnits = eg.effectiveUnits;
+  const tdcWithEscalation = eg.tdcAllIn;
+  const gap = eg.gap;
 
   const phaseNames = ['', 'Intro', 'Site & Concept', 'Pro Forma', 'Capital Stack', 'Gap Resolution', 'Entitlement', 'Close'];
 
