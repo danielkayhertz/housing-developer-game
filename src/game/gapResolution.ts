@@ -1,12 +1,10 @@
 import {
   GameState,
-  SOFT_COST_RATIO,
-  CONTINGENCY_RATIO,
   REVISION_SOFT_PENALTY,
 } from './types';
 import { getNeighborhood } from '../data/neighborhoods';
 import { getSource } from '../data/sources';
-import { computeNoi, computeSupportableDebt, getEffectiveUnits, effectiveHardPerUnit } from './proForma';
+import { computeNoi, computeSupportableDebt, getEffectiveUnits, effectiveHardPerUnit, computeTdcFromState } from './proForma';
 import { complexityPenalty, totalCommitted } from './capitalStack';
 
 export interface EffectiveGapBreakdown {
@@ -42,11 +40,12 @@ export function computeEffectiveGap(state: GameState): EffectiveGapBreakdown {
   const effectiveUnits = getEffectiveUnits(state);
   const hardPerUnit = effectiveHardPerUnit(state);
 
-  const land = n.landCostPerUnit * effectiveUnits;
-  const hard = hardPerUnit * effectiveUnits;
-  const soft = hard * SOFT_COST_RATIO;
-  const contingency = hard * CONTINGENCY_RATIO;
-  const tdcBase = land + hard + soft + contingency;
+  const tdc = computeTdcFromState(state);
+  const land = tdc.land;
+  const hard = tdc.hard;
+  const soft = tdc.soft;
+  const contingency = tdc.contingency;
+  const tdcBase = tdc.total;
 
   const revisionPenalty = state.stack.lihtcRevisions * REVISION_SOFT_PENALTY;
 
