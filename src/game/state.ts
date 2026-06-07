@@ -84,7 +84,7 @@ interface StoreActions {
   resubmitLihtc: (awarded: boolean) => void;
   reviseLihtc: (awarded: boolean) => void;
   applyGapAction: (action: 'askSubsidy' | 'redesignSmaller' | 'lowerQuality') => void;
-  tickMonths: (n: number) => void;
+  tickMonths: (n: number, narrative?: { characterId: string; line: string }) => void;
   takeEntitlementStep: (choice: StepChoiceKey, step: number, ctx?: { shrinkBy?: number }) => void;
   setDesignUpgrade: (value: boolean) => void;
   addCostEscalation: (delta: number) => void;
@@ -286,7 +286,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     }
   },
 
-  tickMonths: (n: number) => set((s) => {
+  tickMonths: (n: number, narrative?: { characterId: string; line: string }) => set((s) => {
     if (!s.project.neighborhood) return {};
     const effUnits = getEffectiveUnits(s);
     const hardPerU = effectiveHardPerUnit(s);
@@ -296,7 +296,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     return {
       monthsElapsed: s.monthsElapsed + n,
       costEscalation: s.costEscalation + escalationAdded,
-      ...(n >= 3 ? { lastRecap: { months: n, escalationAdded } } : {}),
+      ...(n >= 3 ? { lastRecap: { months: n, escalationAdded, narrative: narrative ?? null } } : {}),
     };
   }),
 

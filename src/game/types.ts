@@ -152,6 +152,7 @@ export interface GameState {
   lastRecap: {
     months: number;
     escalationAdded: number;
+    narrative: { characterId: string; line: string } | null;
   } | null;
 }
 

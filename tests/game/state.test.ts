@@ -418,3 +418,32 @@ describe('initialUnits snapshot (v4 item 15)', () => {
     expect(useGameStore.getState().project.initialUnits).toBe(60);
   });
 });
+
+describe('tickMonths with narrative (v5 item 1)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('tickMonths(9, narrative) sets lastRecap.narrative', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState({ phase: 4 } as any);
+    useGameStore.getState().tickMonths(9, { characterId: 'asha', line: 'Test narrative.' });
+    const recap = useGameStore.getState().lastRecap;
+    expect(recap).not.toBeNull();
+    expect(recap!.narrative).toEqual({ characterId: 'asha', line: 'Test narrative.' });
+  });
+
+  it('tickMonths(9) without narrative leaves narrative null', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState({ phase: 4 } as any);
+    useGameStore.getState().tickMonths(9);
+    const recap = useGameStore.getState().lastRecap;
+    expect(recap).not.toBeNull();
+    expect(recap!.narrative).toBeNull();
+  });
+
+  it('tickMonths(2, narrative) does NOT set lastRecap (under threshold)', () => {
+    useGameStore.getState().selectNeighborhood('englewood');
+    useGameStore.setState({ phase: 4 } as any);
+    useGameStore.getState().tickMonths(2, { characterId: 'asha', line: 'x' });
+    expect(useGameStore.getState().lastRecap).toBeNull();
+  });
+});
