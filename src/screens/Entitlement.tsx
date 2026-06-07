@@ -219,7 +219,11 @@ export function Entitlement() {
               <div key={i} className="bg-bg p-2 rounded">
                 <b>{i + 1}. {STEP_NAMES[c.step]}</b><br/>
                 <span className="text-muted">{c.choice}</span><br/>
-                <span className="text-equity">α{c.alderDelta >= 0 ? '+' : ''}{c.alderDelta} · c{c.communityDelta >= 0 ? '+' : ''}{c.communityDelta}</span>
+                <span className="text-equity">
+                  Alder {c.alderDelta === 0 ? '±0' : `${c.alderDelta > 0 ? '+' : ''}${c.alderDelta}`}
+                  {' · '}
+                  Community {c.communityDelta === 0 ? '±0' : `${c.communityDelta > 0 ? '+' : ''}${c.communityDelta}`}
+                </span>
               </div>
             ))}
           </div>
