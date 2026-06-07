@@ -70,7 +70,7 @@ export const janelleLines = {
 
 export const davidLines = {
   dohWelcome: 'DOH is on board with your profile. We\'ll need a coherent stack before final commitment — show me what else you\'re lining up.',
-  capitalStackIntro: 'Putting this together is what we call assembling the capital stack — soft loans, grants, tax credits, and equity stacked to your TDC. Three rules: every source closes more of the gap; every source takes time, and time is money (hard costs escalate ~5%/year); past 5 sources, complexity penalty kicks in at ~$20k/unit per extra source. The art is closing the gap with the smallest, fastest set of sources you can.',
+  capitalStackIntro: 'Putting this together is what we call assembling the capital stack — soft loans, grants, tax credits, and equity stacked to your TDC. Three rules: every source closes more of the gap; every source takes time, and time is money (hard costs escalate ~5%/year); past 5 sources, complexity penalty kicks in at ~$20k/unit per extra source, because of all the compliance and legal paperwork your staff and attorneys will need to deal with. The art is closing the gap with the smallest, fastest set of sources you can.',
   capitalStackQuipWalkup: "You chose Walk-up — lowest hard cost per unit, but a smaller building means LIHTC has less to work with. Watch the gap percentage.",
   capitalStackQuipLarger: "You chose Larger — that's why the hard cost per unit is at the top of the band. Worth it if you can stack the gap.",
   shelvedAro: "The ARO requires 20% affordability anyway. We're not going to subsidize that.",

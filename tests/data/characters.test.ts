@@ -66,3 +66,9 @@ describe('getNeighborhoodAlderId', () => {
     expect(getNeighborhoodAlderId('albany-park')).toBe('naila');
   });
 });
+
+describe('v5 — David Park complexity-penalty rationale', () => {
+  it('capitalStackIntro contains the compliance/legal explanation', () => {
+    expect(davidLines.capitalStackIntro).toContain('compliance and legal paperwork');
+  });
+});
