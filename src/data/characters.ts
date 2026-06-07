@@ -113,6 +113,13 @@ export const financeAttackLines = {
   hedWardJealousy: 'Why is HED money going to a ward that\'s already getting TIF? My residents would like a turn.',
 };
 
+export const entitlementIntroLines = {
+  withZoning:
+    "You've agreed with the Department of Housing on how to finance the project, but current zoning doesn't allow a building this big, so you'll need to get a zoning change from City Council. You'll also need Council to approve your financing. I expect you to work with the community to gain support. And of course this takes time, which can reopen your financing gap.",
+  withoutZoning:
+    "You've agreed with the Department of Housing on how to finance the project. You'll need Council to approve your financing. I expect you to work with the community to gain support. And of course this takes time, which can reopen your financing gap.",
+};
+
 export function getNeighborhoodAlderId(n: NeighborhoodId): CharacterId {
   const map: Record<NeighborhoodId, CharacterId> = {
     englewood: 'asha',

@@ -10,7 +10,7 @@ import { TooltipTerm } from '../components/TooltipTerm';
 import { ChoiceCard } from '../components/ChoiceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { GapCloseModal } from '../components/GapCloseModal';
-import { ashaLines, financeAttackLines } from '../data/characters';
+import { ashaLines, financeAttackLines, entitlementIntroLines, getNeighborhoodAlderId } from '../data/characters';
 import {
   StepChoiceKey,
   SOFT_COST_RATIO,
@@ -191,6 +191,13 @@ export function Entitlement() {
       <Header />
       <h2 className="text-2xl mt-6 mb-4">Entitlement</h2>
 
+      <div className="mb-3">
+        <CharacterBubble
+          characterId={getNeighborhoodAlderId(n.id)}
+          line={path !== 'by-right' ? entitlementIntroLines.withZoning : entitlementIntroLines.withoutZoning}
+        />
+      </div>
+
       {/* Path */}
       <div className="bg-panel border border-line rounded-lg p-3 mb-3 text-xs">
         <b>Path:</b>{' '}
@@ -254,6 +261,22 @@ export function Entitlement() {
           <div className="text-xs uppercase tracking-wider text-caution font-bold">
             ▶ Step {currentStep} — {STEP_NAMES[currentStep]}
           </div>
+
+          {currentStep === 2 && (
+            <p className="text-xs italic text-muted mt-2">
+              Today the project meets the neighborhood. The block club, CBOs, and longtime residents will get the first real look. How you run this room sets the tone for everything that follows.
+            </p>
+          )}
+          {currentStep === 3 && (
+            <p className="text-xs italic text-muted mt-2">
+              The zoning committee can approve or deny your zoning change—and without it, the project dies. Usually, aldermanic privilege gives your alder the deciding vote in favor — but only if you've kept their goodwill.
+            </p>
+          )}
+          {currentStep === 4 && (
+            <p className="text-xs italic text-muted mt-2">
+              Finance signs off on the public subsidy. Cunningham will hammer the cost-per-unit; Reyes will swing at TIF. You need the room to back you before the vote.
+            </p>
+          )}
 
           {/* Ghost row: by-right skips Committee on Zoning */}
           {path === 'by-right' && currentStep === 4 && (

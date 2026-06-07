@@ -16,6 +16,32 @@ function setupAtCoZ() {
   s.takeEntitlementStep('community-story', 2);
 }
 
+function setupAtEntitlement(opts: { buildingType?: 'walkup' | 'midrise' | 'larger'; units?: number; neighborhood?: 'englewood' | 'pilsen' | 'jefferson-park' | 'albany-park' } = {}) {
+  const s = useGameStore.getState();
+  s.reset();
+  s.selectNeighborhood(opts.neighborhood ?? 'englewood');
+  s.setUnits(opts.units ?? 50);
+  s.setBuildingType(opts.buildingType ?? 'midrise');
+  for (let i = 0; i < 5; i++) s.advancePhase();
+}
+
+describe('Entitlement alder intro framing (v5 item 8)', () => {
+  beforeEach(() => useGameStore.getState().reset());
+
+  it('ZMA path shows the zoning sentence', () => {
+    setupAtEntitlement({ buildingType: 'midrise' });  // midrise = ZMA
+    render(<Entitlement />);
+    expect(screen.getByText(/current zoning doesn't allow a building this big/)).toBeInTheDocument();
+  });
+
+  it('by-right path omits the zoning sentence', () => {
+    setupAtEntitlement({ buildingType: 'walkup', units: 24, neighborhood: 'englewood' });
+    render(<Entitlement />);
+    expect(screen.queryByText(/current zoning doesn't allow/)).toBeNull();
+    expect(screen.getByText(/You'll need Council to approve your financing/)).toBeInTheDocument();
+  });
+});
+
 describe('Entitlement committee failure gates (v5 item 14)', () => {
   beforeEach(() => useGameStore.getState().reset());
 
