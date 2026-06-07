@@ -21,6 +21,7 @@ import { applyChoice } from './entitlement';
 import { computeEffectiveGap } from './gapResolution';
 import { getEffectiveUnits, effectiveHardPerUnit } from './proForma';
 import { getNeighborhood } from '../data/neighborhoods';
+import { resolveRecapNarrative } from '../data/characters';
 
 const initialState: GameState = {
   phase: 1,
@@ -197,7 +198,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
     // tickMonths is a second set() call — two-step by design so communitySupport
     // and cboTimePaid are committed before the month counter advances.
     if (firstTimeOn) {
-      get().tickMonths(6);
+      get().tickMonths(6, resolveRecapNarrative(get(), 'cboFirstTime') ?? undefined);
     }
   },
 
@@ -257,7 +258,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
           alderGoodwill: Math.max(0, s.entitlement.alderGoodwill - 15),
         },
       });
-      get().tickMonths(9);
+      get().tickMonths(9, resolveRecapNarrative(get(), 'askSubsidy') ?? undefined);
     } else if (action === 'redesignSmaller') {
       set({
         gapResolution: {
@@ -269,7 +270,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
           communitySupport: Math.min(100, s.entitlement.communitySupport + 8),
         },
       });
-      get().tickMonths(6);
+      get().tickMonths(6, resolveRecapNarrative(get(), 'redesignSmaller') ?? undefined);
     } else if (action === 'lowerQuality') {
       if (s.gapResolution.lowerQualityUsed) return; // one-shot guard
       set({
@@ -282,7 +283,7 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
           communitySupport: Math.max(0, s.entitlement.communitySupport - 12),
         },
       });
-      get().tickMonths(3);
+      get().tickMonths(3, resolveRecapNarrative(get(), 'lowerQuality') ?? undefined);
     }
   },
 

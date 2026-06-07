@@ -9,7 +9,7 @@ import { StackBar } from '../components/StackBar';
 import { SourceCard } from '../components/SourceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
-import { janelleLines, davidLines, marcusLines, characters } from '../data/characters';
+import { janelleLines, davidLines, marcusLines, characters, resolveRecapNarrative } from '../data/characters';
 import { ReviseSubScreen } from '../components/ReviseSubScreen';
 import { LiveGapRow } from '../components/LiveGapRow';
 import { AmiBand, FinishLevel, SourceId, COMPLEXITY_PENALTY_THRESHOLD, REVISION_SOFT_PENALTY, GAP_ADVANCE_THRESHOLD } from '../game/types';
@@ -91,7 +91,7 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     submitLihtc(win);
-    tickMonths(12);
+    tickMonths(12, resolveRecapNarrative(state, 'lihtcSubmit') ?? undefined);
   }
 
   function onSubmitAgain() {
@@ -100,7 +100,7 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     resubmitLihtc(win);
-    tickMonths(12);
+    tickMonths(12, resolveRecapNarrative(state, 'lihtcResubmit') ?? undefined);
   }
 
   function onResubmitFromRevise() {
@@ -109,12 +109,12 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     reviseLihtc(win);
-    tickMonths(12);
+    tickMonths(12, resolveRecapNarrative(state, 'lihtcRevise') ?? undefined);
     setReviseMode('none');
   }
 
   function onExitCutCosts() {
-    tickMonths(3);
+    tickMonths(3, resolveRecapNarrative(state, 'cutCostsExit') ?? undefined);
     setReviseMode('none');
   }
 

@@ -10,7 +10,7 @@ import { TooltipTerm } from '../components/TooltipTerm';
 import { ChoiceCard } from '../components/ChoiceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { GapCloseModal } from '../components/GapCloseModal';
-import { ashaLines, financeAttackLines, entitlementIntroLines, getNeighborhoodAlderId } from '../data/characters';
+import { ashaLines, financeAttackLines, entitlementIntroLines, getNeighborhoodAlderId, resolveRecapNarrative } from '../data/characters';
 import {
   StepChoiceKey,
   SOFT_COST_RATIO,
@@ -143,9 +143,8 @@ export function Entitlement() {
 
     // Multilingual outreach adds 3 months of extra community engagement time
     const extraMonths = choice === 'preapp-multilingual' ? 3 : 0;
-    if (extraMonths > 0) tickMonths(extraMonths);
-
-    tickMonths(months);
+    const narrative = resolveRecapNarrative(useGameStore.getState(), choice);
+    tickMonths(months + extraMonths, narrative ?? undefined);
 
     // Committee gate: if the step we just completed was CoZ (3) or CoF (4),
     // check failure thresholds and set outcome immediately.
