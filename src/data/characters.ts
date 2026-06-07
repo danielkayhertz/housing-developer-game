@@ -1,4 +1,4 @@
-import type { NeighborhoodId } from '../game/types';
+import type { NeighborhoodId, GameState } from '../game/types';
 
 export type CharacterId =
   | 'marcus' | 'asha' | 'janelle' | 'david'
@@ -128,4 +128,73 @@ export function getNeighborhoodAlderId(n: NeighborhoodId): CharacterId {
     'albany-park': 'naila',
   };
   return map[n];
+}
+
+type RecapCategory = 'alder' | 'david' | 'janelle' | 'asha';
+
+interface RecapEntry {
+  category: RecapCategory;
+  line: string;
+}
+
+export const recapNarratives: Record<string, RecapEntry> = {
+  // Pre-application
+  'preapp-quiet': { category: 'alder', line: "We met privately over coffee. No reporters, no block-club. It bought us time but the rumor mill started anyway." },
+  'preapp-formal-cbo': { category: 'alder', line: "Bringing a CBO partner in early is the right move — letters of support, MOU drafts, joint press. It's how you build the kind of legitimacy that survives a contentious zoning hearing." },
+  'preapp-public': { category: 'alder', line: "The press release went out and my phone lit up. We had to spend the next half-year managing the political fallout before any productive conversation could happen." },
+  'preapp-multilingual': { category: 'alder', line: "Door-knocking in five languages, printing materials in Spanish, Arabic, Tagalog — this is how you actually reach people. It takes more time, but the trust pays back later." },
+
+  // Community meeting
+  'community-none': { category: 'alder', line: "Skipping the meeting bought time, but the block-club heard from the alder's chief of staff, and that conversation went poorly. We're starting CoZ in a hole." },
+  'community-story': { category: 'alder', line: "We did six listening sessions before the formal meeting. People wanted to be heard, and that takes calendar time. But they showed up for us at CoZ." },
+  'community-coalition': { category: 'alder', line: "Stacking the meeting with clergy, advocates, and CBO partners is a months-long coordination job. It signals breadth and quiets the loudest opponents." },
+
+  // Jefferson Park parking
+  'community-jp-full-parking': { category: 'alder', line: "Structured parking is expensive to design, expensive to build. The block-club is happier. The pro forma is not." },
+  'community-jp-traffic-data': { category: 'alder', line: "Traffic studies, transit-mode data, a smaller parking variance — defensible, evidence-based, time-consuming." },
+  'community-jp-refuse-parking': { category: 'alder', line: "Refusing parking is principled. It is also why the next eight months of the entitlement timeline are going to be hostile." },
+
+  // Zoning committee
+  'zoning-hold': { category: 'alder', line: "Holding the line means making the case in committee, defending each unit count, each setback. My chair vote will carry it if I can keep my coalition." },
+  'zoning-shrink': { category: 'alder', line: "Shrinking the project gave the block-club a win, which means they're not testifying against us. But the per-unit subsidy math just got worse." },
+  'zoning-design-upgrade': { category: 'alder', line: "The committee wanted upgrades — better facade, better common spaces. The community likes the result. The hard cost is 15% higher than what you penciled." },
+
+  // Finance committee
+  'finance-reframe': { category: 'alder', line: "Making the per-unit-of-impact argument took preparation — pulling comp data, lining up testimony. It moved the conversation but Cunningham's not letting it go." },
+  'finance-concede': { category: 'alder', line: "Conceding on TIF defused Reyes but reopened a $3M gap. The room calmed, but you have to fill that gap before the vote." },
+  'finance-stakeholders': { category: 'alder', line: "Bringing in coalition testimony moves the room. It also spends down community goodwill — they showed up for you and they'll expect something back." },
+
+  // Gap resolution
+  'askSubsidy': { category: 'david', line: "An additional ask of HOM or HOPWA takes nine months minimum — application, review, NEPA, approval. Your alder spent real political capital to keep the ask moving." },
+  'redesignSmaller': { category: 'david', line: "Resizing the project means new architectural drawings, revised pro forma, often a new MEP coordination pass. Six months, minimum." },
+  'lowerQuality': { category: 'david', line: "Value-engineering the spec saves on hard costs but takes three months of redesign and resourcing. The block-club will notice." },
+
+  // LIHTC
+  'lihtcSubmit': { category: 'janelle', line: "QAP rounds happen once a year. Whether your application wins or loses, you wait twelve months before the next decision." },
+  'lihtcResubmit': { category: 'janelle', line: "Resubmitting without changes? You're betting the next QAP round's reviewers see things differently. Twelve more months." },
+  'lihtcRevise': { category: 'janelle', line: "Revising the application — deepening AMI mix, adding a CBO, retooling exhibits — and resubmitting. Twelve more months, plus the soft-cost of the rework." },
+
+  // CBO partner first-time
+  'cboFirstTime': { category: 'asha', line: "Bringing the CBO on board took six months of conversations, MOU drafting, and joint planning. It was the right call." },
+
+  // Cut-costs sub-screen exit
+  'cutCostsExit': { category: 'david', line: "Re-pricing the value-engineering pass took three months. The bank's underwriting moved sideways while you worked." },
+};
+
+export function resolveRecapNarrative(
+  state: GameState,
+  key: string,
+): { characterId: string; line: string } | null {
+  const entry = recapNarratives[key];
+  if (!entry) return null;
+  let characterId: string;
+  switch (entry.category) {
+    case 'alder':
+      characterId = state.project.neighborhood ? getNeighborhoodAlderId(state.project.neighborhood) : 'asha';
+      break;
+    case 'asha':    characterId = 'asha'; break;
+    case 'david':   characterId = 'david'; break;
+    case 'janelle': characterId = 'janelle'; break;
+  }
+  return { characterId, line: entry.line };
 }
