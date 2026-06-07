@@ -10,7 +10,7 @@ import { REVISION_SOFT_PENALTY } from '../game/types';
 export function Header() {
   const [glossaryOpen, setGlossaryOpen] = useState(false);
   const state = useGameStore((s) => s);
-  const { phase, project, proForma, stack, monthsElapsed, costEscalation } = state;
+  const { phase, project, stack, monthsElapsed, costEscalation } = state;
   const effectiveUnits = getEffectiveUnits(state);
 
   if (!project.neighborhood) return null;

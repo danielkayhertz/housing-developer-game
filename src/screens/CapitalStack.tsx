@@ -9,7 +9,7 @@ import { StackBar } from '../components/StackBar';
 import { SourceCard } from '../components/SourceCard';
 import { CharacterBubble } from '../components/CharacterBubble';
 import { CharacterIntroCard } from '../components/CharacterIntroCard';
-import { janelleLines, davidLines, marcusLines, characters, resolveRecapNarrative } from '../data/characters';
+import { janelleLines, davidLines, characters, resolveRecapNarrative } from '../data/characters';
 import { ReviseSubScreen } from '../components/ReviseSubScreen';
 import { LiveGapRow } from '../components/LiveGapRow';
 import { AmiBand, FinishLevel, SourceId, COMPLEXITY_PENALTY_THRESHOLD, REVISION_SOFT_PENALTY, GAP_ADVANCE_THRESHOLD } from '../game/types';
