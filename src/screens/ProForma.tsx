@@ -133,6 +133,9 @@ export function ProForma() {
                 </button>
               ))}
             </div>
+            <p className="text-xs text-muted italic mt-2">
+              Better designs and nicer cabinets, countertops, and appliances will get you more points on the <TooltipTerm term="QAP">QAP</TooltipTerm> and make it more likely you'll get a <TooltipTerm term="LIHTC">LIHTC</TooltipTerm> award — but they also cost money.
+            </p>
           </div>
 
           <div className="bg-panel border border-line rounded-lg p-3">
@@ -179,6 +182,9 @@ export function ProForma() {
             <div className={`mt-3 p-2 rounded text-xs ${eligible ? 'bg-bg' : 'bg-gap text-white'}`}>
               Weighted avg: <b>{avgAmi.toFixed(0)}% AMI</b> · {eligible ? 'LIHTC-eligible ✓' : 'LIHTC ineligible — average exceeds 60%'}
             </div>
+            <p className="text-xs text-muted italic mt-2">
+              The more affordable your apartments, the better your <TooltipTerm term="QAP">QAP</TooltipTerm> score — but it will also reduce the size of the loan you can qualify for.
+            </p>
           </div>
 
           <div className="bg-panel border border-line rounded-lg p-3">
