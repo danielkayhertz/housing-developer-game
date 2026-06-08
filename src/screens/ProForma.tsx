@@ -1,5 +1,6 @@
 import { useGameStore } from '../game/state';
-import { computeTdc, computeNoi, computeSupportableDebt, computeGap, weightedAvgAmi, isLihtcEligible } from '../game/proForma';
+import { computeTdc, computeNoi, computeSupportableDebt, weightedAvgAmi, isLihtcEligible } from '../game/proForma';
+import { computeEffectiveGap } from '../game/gapResolution';
 import { getNeighborhood } from '../data/neighborhoods';
 import { rentAtAmi } from '../data/amiRents';
 import { Header } from '../components/Header';
@@ -61,7 +62,7 @@ export function ProForma() {
     const nMonths = amortYears * 12;
     return 12 * (i / (1 - Math.pow(1 + i, -nMonths)));
   })();
-  const gap = computeGap({ tdc: tdcTotal, costEscalation: 0, supportableDebt: debt.amount });
+  const gap = computeEffectiveGap(state).gap;
   const avgAmi = weightedAvgAmi(proForma.amiBreakdown);
   const eligible = isLihtcEligible(proForma.amiBreakdown);
   const { score: projectedQapScore, odds: projectedQapOdds } = computeQapScore(state);

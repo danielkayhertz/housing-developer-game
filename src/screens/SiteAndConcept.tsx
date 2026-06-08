@@ -103,11 +103,11 @@ export function SiteAndConcept() {
                 onClick={() => setBuildingType(t)}
                 className={`p-2 text-xs rounded border-2 transition ${
                   project.buildingType === t ? 'bg-bg border-accent' : 'bg-panel border-line hover:border-accent'
-                } ${t !== 'midrise' ? 'opacity-60' : ''}`}
+                }`}
               >
-                {t === 'walkup' && <><span>🏠 Walk-up</span><br/><small>2-3 story (v2)</small></>}
-                {t === 'midrise' && <><span>🏘️ Mid-rise</span><br/><small>4-5 story · MVP</small></>}
-                {t === 'larger' && <><span>🏢 Larger</span><br/><small>6-8 story (v2)</small></>}
+                {t === 'walkup' && <><span>🏠 Walk-up</span><br/><small>2-3 story</small></>}
+                {t === 'midrise' && <><span>🏘️ Mid-rise</span><br/><small>4-5 story</small></>}
+                {t === 'larger' && <><span>🏢 Larger</span><br/><small>6-8 story</small></>}
               </button>
             ))}
           </div>
@@ -166,11 +166,6 @@ export function SiteAndConcept() {
               <div className="mt-4">
                 <CharacterBubble characterId={getNeighborhoodAlderId(n.id)} line={n.alderGreeting} />
               </div>
-              {n.status === 'stub' && (
-                <div className="mt-4 p-3 bg-bg border-l-2 border-caution rounded text-xs">
-                  {n.name} is a v2 neighborhood. Pick Englewood for the full MVP experience.
-                </div>
-              )}
             </>
           ) : (
             <p className="text-muted text-sm">Pick a neighborhood to see the preview.</p>

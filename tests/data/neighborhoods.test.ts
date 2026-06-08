@@ -24,8 +24,9 @@ describe('v3 neighborhood data', () => {
     expect(n.startingCommunitySupport).toBe(35);
     expect(n.alderTone).toBe('yellow');
     expect(n.alderName).toBe('Carlos Reyes');
+    expect(n.emoji).toBe('🏘️');
     expect(n.landCostPerUnit).toBe(60_000);
-    expect(n.marketRentPerUnit).toBe(2_100);
+    expect(n.marketRentPerUnit).toBe(2_625);
     expect(n.tifAvailable).toBe(true);
     expect(n.hooks.pilsenDeepThirtyAmiBonus).toBe(true);
   });
@@ -37,7 +38,7 @@ describe('v3 neighborhood data', () => {
     expect(n.alderTone).toBe('red');
     expect(n.alderName).toBe('Frank Kovac');
     expect(n.landCostPerUnit).toBe(110_000);
-    expect(n.marketRentPerUnit).toBe(2_900);
+    expect(n.marketRentPerUnit).toBe(3_625);
     expect(n.tifAvailable).toBe(false);
     expect(n.hooks.jeffersonParkParkingChoice).toBe(true);
     expect(n.hooks.jeffersonParkSfrOnly).toBe(true);
@@ -50,7 +51,7 @@ describe('v3 neighborhood data', () => {
     expect(n.alderTone).toBe('yellow');
     expect(n.alderName).toBe('Naila Hassan');
     expect(n.landCostPerUnit).toBe(55_000);
-    expect(n.marketRentPerUnit).toBe(1_800);
+    expect(n.marketRentPerUnit).toBe(2_250);
     expect(n.tifAvailable).toBe(true);
     expect(n.hooks.albanyParkMultilingualChoice).toBe(true);
     expect(n.hooks.albanyParkCboAmplified).toBe(true);

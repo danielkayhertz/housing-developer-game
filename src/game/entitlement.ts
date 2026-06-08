@@ -97,3 +97,15 @@ export function isCommitteeFailed(input: {
   if (input.communitySupport < 30) return 'community';
   return null;
 }
+
+// Picks the recap-narrative key for an entitlement choice. A larger building at
+// the zoning step always triggers the committee's density-variance condition, so
+// that auto-imposed event takes precedence over the chosen step's narrative.
+export function resolveEntitlementRecapKey(
+  buildingType: BuildingType,
+  currentStep: number,
+  choice: StepChoiceKey,
+): string {
+  if (currentStep === 3 && buildingType === 'larger') return 'densityVariance';
+  return choice;
+}

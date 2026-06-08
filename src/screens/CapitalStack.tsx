@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useGameStore } from '../game/state';
 import { sources, getSource } from '../data/sources';
 import { computeTdcFromState, getEffectiveUnits, computeNoi, computeSupportableDebt } from '../game/proForma';
-import { complexityPenalty, computeLihtcAward, computeQapScore, totalCommitted } from '../game/capitalStack';
+import { complexityPenalty, computeLihtcAward, computeQapScore } from '../game/capitalStack';
+import { computeEffectiveGap } from '../game/gapResolution';
 import { getNeighborhood } from '../data/neighborhoods';
 import { Header } from '../components/Header';
 import { StackBar } from '../components/StackBar';
@@ -51,10 +52,9 @@ export function CapitalStack() {
     noi, dscr: 1.20, annualRate: 0.065, amortYears: 30, ltv: 0.80, stabilizedValue,
   });
 
-  const committed = totalCommitted(stack.awarded) + debt.amount;
   const penaltyEligibleCount = stack.awarded.filter((a) => getSource(a.sourceId).usesComplexityPenalty).length;
   const penalty = complexityPenalty(penaltyEligibleCount, getEffectiveUnits(state));
-  const gap = Math.max(0, tdcTotal + penalty - committed);
+  const gap = computeEffectiveGap(state).gap;
 
   const { score: lihtcScore, odds: lihtcOdds } = computeQapScore(state);
 
@@ -86,7 +86,7 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     submitLihtc(win);
-    tickMonths(12, resolveRecapNarrative(state, 'lihtcSubmit') ?? undefined);
+    tickMonths(12, resolveRecapNarrative(state, win ? 'lihtcSubmit-win' : 'lihtcSubmit-loss') ?? undefined);
   }
 
   function onSubmitAgain() {
@@ -95,7 +95,7 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     resubmitLihtc(win);
-    tickMonths(12, resolveRecapNarrative(state, 'lihtcResubmit') ?? undefined);
+    tickMonths(12, resolveRecapNarrative(state, win ? 'lihtcResubmit-win' : 'lihtcResubmit-loss') ?? undefined);
   }
 
   function onResubmitFromRevise() {
@@ -104,7 +104,7 @@ export function CapitalStack() {
       awardSource({ sourceId: '9-lihtc', amount: lihtcEquity, daysSpent: 280 });
     }
     reviseLihtc(win);
-    tickMonths(12, resolveRecapNarrative(state, 'lihtcRevise') ?? undefined);
+    tickMonths(12, resolveRecapNarrative(state, win ? 'lihtcRevise-win' : 'lihtcRevise-loss') ?? undefined);
     setReviseMode('none');
   }
 
