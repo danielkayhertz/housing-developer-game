@@ -10,7 +10,7 @@ export function RecapCard() {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-panel border border-line rounded-xl p-6 max-w-sm w-full mx-4">
+      <div className="card p-6 max-w-sm w-full mx-4">
         <div className="text-xs uppercase tracking-wider text-accent font-bold mb-3">What just happened</div>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
@@ -34,7 +34,7 @@ export function RecapCard() {
         )}
         <button
           onClick={clearRecap}
-          className="w-full mt-4 bg-accent text-white py-2 rounded font-bold"
+          className="w-full mt-4 btn-primary py-2"
         >
           Got it →
         </button>

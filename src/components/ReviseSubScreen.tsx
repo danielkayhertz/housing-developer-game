@@ -27,7 +27,7 @@ export function ReviseSubScreen({
       <button
         onClick={onPrimary}
         disabled={primaryDisabled}
-        className="w-full mt-4 bg-accent text-white py-3 rounded-lg font-bold disabled:opacity-40"
+        className="w-full mt-4 btn-primary py-3 disabled:opacity-40"
       >
         {primaryLabel}
       </button>

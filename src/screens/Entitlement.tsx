@@ -191,7 +191,7 @@ export function Entitlement() {
         ← Back
       </button>
       <Header />
-      <h2 className="text-2xl mt-6 mb-4">Entitlement</h2>
+      <h2 className="text-3xl mt-6 mb-4">Entitlement</h2>
 
       <div className="mb-3">
         <CharacterBubble
@@ -201,7 +201,7 @@ export function Entitlement() {
       </div>
 
       {/* Path */}
-      <div className="bg-panel border border-line rounded-lg p-3 mb-3 text-xs">
+      <div className="card p-3 mb-3 text-xs">
         <b>Path:</b>{' '}
         <TooltipTerm term={path === 'by-right' ? 'By-right' : path === 'zma' ? 'ZMA' : 'PD'}>
           {path === 'by-right' ? 'By-right' : path.toUpperCase()}
@@ -216,18 +216,20 @@ export function Entitlement() {
         <Meter
           label={`🧑‍💼 Ald. ${n.alderName}'s goodwill`}
           value={entitlement.alderGoodwill}
-          color="bg-equity"
+          color={entitlement.alderGoodwill >= 50 ? 'bg-equity' : 'bg-caution'}
+          threshold={50}
         />
         <Meter
           label="👥 Community support"
           value={entitlement.communitySupport}
           color={entitlement.communitySupport >= 50 ? 'bg-equity' : 'bg-caution'}
+          threshold={50}
         />
       </div>
 
       {/* Past steps */}
       {entitlement.pastChoices.length > 0 && (
-        <div className="bg-panel border border-line rounded-lg p-3 mb-3">
+        <div className="card p-3 mb-3">
           <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">Steps taken</div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             {entitlement.pastChoices.map((c, i) => (
@@ -381,7 +383,7 @@ export function Entitlement() {
           </i>
           <button
             onClick={advancePhase}
-            className="block w-full mt-4 bg-accent text-white py-3 rounded-lg font-bold"
+            className="block w-full mt-4 btn-primary py-3"
           >
             See your result →
           </button>
@@ -394,7 +396,7 @@ export function Entitlement() {
           <i className="text-muted">On a Wednesday in March, the City Council passed the ordinance 41–9. Asha posted on Instagram from the floor.</i>
           <button
             onClick={onComplete}
-            className="block w-full mt-4 bg-accent text-white py-3 rounded-lg font-bold"
+            className="block w-full mt-4 btn-primary py-3"
           >
             See your result →
           </button>

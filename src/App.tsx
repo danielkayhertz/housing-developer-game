@@ -13,13 +13,15 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-bg text-ink">
-      {phase === 1 && <IntroScreen />}
-      {phase === 2 && <SiteAndConcept />}
-      {phase === 3 && <ProForma />}
-      {phase === 4 && <CapitalStack />}
-      {phase === 5 && <GapResolution />}
-      {phase === 6 && <Entitlement />}
-      {phase === 7 && <Close />}
+      <div key={phase} className="reveal">
+        {phase === 1 && <IntroScreen />}
+        {phase === 2 && <SiteAndConcept />}
+        {phase === 3 && <ProForma />}
+        {phase === 4 && <CapitalStack />}
+        {phase === 5 && <GapResolution />}
+        {phase === 6 && <Entitlement />}
+        {phase === 7 && <Close />}
+      </div>
       <RecapCard />
     </div>
   );

@@ -22,7 +22,7 @@ export function Header() {
 
   return (
     <>
-    <div className="bg-panel border border-line rounded-lg px-3 py-2 text-sm text-muted flex flex-wrap gap-3 items-center">
+    <div className="card px-3 py-2 text-sm text-muted flex flex-wrap gap-3 items-center">
       <span>
         {n.emoji} <b className="text-ink">{n.name}</b> · {effectiveUnits} units · {project.intent === 'all-affordable' ? 'all-affordable' : 'mixed-income'}
       </span>

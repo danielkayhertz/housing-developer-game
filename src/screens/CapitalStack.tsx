@@ -133,7 +133,7 @@ export function CapitalStack() {
       <JargonScreenScope>
       <div className="max-w-6xl mx-auto p-6">
         <Header />
-        <h2 className="text-2xl mt-6 mb-4">Capital Stack — revise</h2>
+        <h2 className="text-3xl mt-6 mb-4">Capital Stack — revise</h2>
         <CutCostsSubScreen onDone={onExitCutCosts} />
       </div>
       </JargonScreenScope>
@@ -145,7 +145,7 @@ export function CapitalStack() {
       <JargonScreenScope>
       <div className="max-w-6xl mx-auto p-6">
         <Header />
-        <h2 className="text-2xl mt-6 mb-4">Capital Stack — revise</h2>
+        <h2 className="text-3xl mt-6 mb-4">Capital Stack — revise</h2>
         <QapOddsSubScreen
           projectedScore={lihtcScore}
           projectedOdds={lihtcOdds}
@@ -167,7 +167,7 @@ export function CapitalStack() {
         ← Back
       </button>
       <Header />
-      <h2 className="text-2xl mt-6 mb-4">Capital Stack</h2>
+      <h2 className="text-3xl mt-6 mb-4">Capital Stack</h2>
 
       <div className="mb-3">
         <CharacterIntroCard
@@ -189,7 +189,7 @@ export function CapitalStack() {
       </div>
 
       {/* Gap status */}
-      <div className="bg-panel border border-line rounded-lg p-3 mb-3">
+      <div className="card-stamp p-3 mb-3">
         <div className="flex justify-between items-baseline">
           <div>
             <span className="text-xs uppercase tracking-wider text-accent font-bold">Gap to close</span>
@@ -210,7 +210,7 @@ export function CapitalStack() {
 
       {/* LIHTC decision card */}
       {showLihtcDecision && !stack.lihtcSubmitted && (
-        <div className="bg-bg border-2 border-accent rounded-lg p-4 mb-3">
+        <div className="card-stamp p-4 mb-3">
           <div className="flex justify-between items-center">
             <div>
               <div className="text-xs uppercase tracking-wider text-accent font-bold">9% <TooltipTerm term="LIHTC">LIHTC</TooltipTerm> — IHDA <TooltipTerm term="QAP">QAP</TooltipTerm> scoring</div>
@@ -219,7 +219,7 @@ export function CapitalStack() {
                 {lihtcScore < 50 ? janelleLines.qapScoreLow : lihtcScore < 75 ? janelleLines.qapScoreMid : janelleLines.qapScoreHigh}
               </div>
             </div>
-            <button onClick={onSubmitLihtc} className="bg-accent text-white px-4 py-2 rounded font-bold">
+            <button onClick={onSubmitLihtc} className="btn-primary px-4 py-2">
               Submit this round →
             </button>
           </div>
@@ -243,7 +243,7 @@ export function CapitalStack() {
             </button>
             <button
               onClick={() => setReviseMode('qap-odds')}
-              className="bg-accent text-white px-3 py-2 rounded font-bold text-xs"
+              className="btn-primary px-3 py-2 text-xs"
             >
               ✎ Revise to increase QAP odds
             </button>
@@ -290,14 +290,14 @@ export function CapitalStack() {
       <div className="flex gap-2 mt-4">
         <button
           onClick={() => setReviseMode('cut-costs')}
-          className="flex-1 bg-panel border border-line hover:border-accent px-3 py-2 rounded text-sm font-bold"
+          className="flex-1 btn-secondary px-3 py-2 text-sm"
         >
           ↻ Revise to cut costs (+3 mo)
         </button>
       </div>
       <button
         onClick={advancePhase}
-        className="w-full mt-2 bg-accent text-white py-3 rounded-lg font-bold"
+        className="w-full mt-2 btn-primary py-3"
       >
         {canAdvance
           ? 'Stack closed — on to entitlement →'
@@ -326,7 +326,7 @@ function CutCostsSubScreen({ onDone }: { onDone: () => void }) {
       primaryLabel="Done — back to stack"
       onPrimary={onDone}
     >
-      <div className="bg-panel border border-line rounded-lg p-3">
+      <div className="card p-3">
         <div className="text-xs uppercase tracking-wider text-accent font-bold">Finish level</div>
         <div className="flex gap-2 mt-2">
           {(['basic', 'standard', 'elevated'] as FinishLevel[]).map((f) => (
@@ -345,7 +345,7 @@ function CutCostsSubScreen({ onDone }: { onDone: () => void }) {
         </div>
       </div>
 
-      <div className="bg-panel border border-line rounded-lg p-3">
+      <div className="card p-3">
         <div className="text-xs uppercase tracking-wider text-accent font-bold">Unit count</div>
         <div className="text-xs text-muted mt-1">Current: <b>{project.units} units</b></div>
         <input
@@ -358,7 +358,7 @@ function CutCostsSubScreen({ onDone }: { onDone: () => void }) {
         />
       </div>
 
-      <div className="bg-panel border border-line rounded-lg p-3">
+      <div className="card p-3">
         <div className="text-xs uppercase tracking-wider text-accent font-bold">AMI breakdown</div>
         <div className="text-xs text-muted mt-1">Total affordable: {totalAffordable} · target {project.units}</div>
         {[30, 60, 80].map((ami) => {
@@ -414,7 +414,7 @@ function QapOddsSubScreen({
       primaryDisabled={!distributionOk}
       onPrimary={onResubmit}
     >
-      <div className="bg-panel border border-line rounded-lg p-3">
+      <div className="card p-3">
         <div className="text-xs uppercase tracking-wider text-accent font-bold">Deepen affordability (AMI mix)</div>
         <div className="text-xs text-muted mt-1">Total affordable: {totalAffordable} · target {project.units}</div>
         {[30, 60, 80].map((ami) => {
@@ -438,7 +438,7 @@ function QapOddsSubScreen({
         })}
       </div>
 
-      <div className="bg-panel border border-line rounded-lg p-3">
+      <div className="card p-3">
         <div className="text-xs uppercase tracking-wider text-accent font-bold">Community Partner</div>
         <div className="flex gap-2 mt-2">
           <button
@@ -471,7 +471,7 @@ function QapOddsSubScreen({
 
       <button
         onClick={onCancel}
-        className="w-full bg-panel border border-line py-2 rounded text-sm"
+        className="w-full btn-secondary py-2 text-sm"
       >
         Cancel — back to stack (no time cost)
       </button>

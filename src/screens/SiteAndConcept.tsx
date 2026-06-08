@@ -48,7 +48,7 @@ export function SiteAndConcept() {
         ← Back
       </button>
       <Header />
-      <h2 className="text-2xl mt-6 mb-4">Site &amp; Concept</h2>
+      <h2 className="text-3xl mt-6 mb-4">Site &amp; Concept</h2>
       <div className="grid grid-cols-[1.2fr_1fr] gap-4">
         <div>
           {/* Neighborhood picker */}
@@ -145,14 +145,14 @@ export function SiteAndConcept() {
           <button
             onClick={advancePhase}
             disabled={!canAdvance}
-            className="w-full bg-accent text-white py-3 rounded-lg font-bold disabled:opacity-40 hover:opacity-90"
+            className="w-full btn-primary py-3 disabled:opacity-40"
           >
             Lock in &amp; continue →
           </button>
         </div>
 
         {/* Live preview */}
-        <div className="bg-panel border border-line rounded-lg p-4">
+        <div className="card p-4">
           <div className="text-xs uppercase tracking-wider text-accent font-bold mb-2">Live preview</div>
           {n ? (
             <>

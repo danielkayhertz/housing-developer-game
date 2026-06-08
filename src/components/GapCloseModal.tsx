@@ -76,7 +76,7 @@ export function GapCloseModal({ context, onClose }: GapCloseModalProps) {
         </div>
       </div>
 
-      <div className="bg-panel border border-line rounded-lg p-3 mb-3">
+      <div className="card p-3 mb-3">
         <div className="text-xs uppercase tracking-wider text-accent font-bold">
           Adjust <TooltipTerm term="AMI">AMI</TooltipTerm> mix
         </div>
@@ -136,7 +136,7 @@ export function GapCloseModal({ context, onClose }: GapCloseModalProps) {
       <button
         onClick={onClose}
         disabled={!canClose}
-        className="w-full bg-accent text-white py-3 rounded-lg font-bold disabled:opacity-40"
+        className="w-full btn-primary py-3 disabled:opacity-40"
       >
         {canClose
           ? (context === 'cof' ? 'Gap closed — committee can vote →' : 'Gap closed — on to entitlement →')

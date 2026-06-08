@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useGameStore } from '../game/state';
 import { computeTdcFromState, getEffectiveUnits, weightedAvgAmi } from '../game/proForma';
 import { formatElapsed } from '../util/formatElapsed';
@@ -27,6 +28,7 @@ export function Close() {
     closed,
     amiBreakdown: proForma.amiBreakdown,
   });
+  const animatedScore = useCountUp(score);
 
   const failureMessage =
     outcome === 'shelved-stack' ? 'The stack never closed. Cost escalation pushed the gap past what could be filled, and the project was shelved.' :
@@ -38,9 +40,14 @@ export function Close() {
   return (
     <JargonScreenScope>
     <div className="max-w-3xl mx-auto p-6">
-      <div className="bg-panel border border-line rounded-xl p-4 mb-4 text-center">
+      <div className="card-stamp p-4 mb-4 text-center relative">
+        {closed && (
+          <div className="stamp-in absolute top-2 right-2 border-2 border-equity text-equity font-bold uppercase tracking-widest text-[11px] px-2 py-1 rounded">
+            Closed
+          </div>
+        )}
         <div className="text-4xl">{closed ? '🎉' : '🛑'}</div>
-        <h2 className="text-2xl mt-2 mb-1">{closed ? 'You closed.' : 'The project was shelved.'}</h2>
+        <h2 className="text-3xl mt-2 mb-1">{closed ? 'You closed.' : 'The project was shelved.'}</h2>
         <p className="text-muted">
           {closed
             ? `${n.name} ${project.buildingType} broke ground after ${formatElapsed(monthsElapsed)}. ${finalUnits} homes on the way.`
@@ -48,7 +55,7 @@ export function Close() {
         </p>
         {closed && (
           <div className="mt-3 inline-block bg-bg text-accent px-4 py-2 rounded-full font-bold">
-            Impact score: <b className="text-xl tabular">{score}</b>
+            Impact score: <b className="text-xl tabular">{animatedScore}</b>
           </div>
         )}
       </div>
@@ -112,14 +119,14 @@ export function Close() {
       <StakeholderPanel />
 
       <div className="grid grid-cols-2 gap-2">
-        <button onClick={reset} className="bg-accent text-white py-3 rounded-lg font-bold">
+        <button onClick={reset} className="btn-primary py-3">
           ↻ Try a different choice
         </button>
         <a
           href="https://housing.thewychefamily.com/"
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-panel border border-line py-3 rounded-lg font-bold text-center hover:border-accent"
+          className="btn-secondary py-3 text-center"
         >
           📖 Read about Chicago housing
         </a>
@@ -129,13 +136,48 @@ export function Close() {
   );
 }
 
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReduced(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  return reduced;
+}
+
+function useCountUp(target: number, duration = 900) {
+  const reduced = usePrefersReducedMotion();
+  const [value, setValue] = useState(reduced ? target : 0);
+  useEffect(() => {
+    if (reduced) {
+      setValue(target);
+      return;
+    }
+    let raf = 0;
+    const start = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(Math.round(target * eased));
+      if (t < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration, reduced]);
+  return value;
+}
+
 function StakeholderPanel() {
   const state = useGameStore((s) => s);
   const reactions = getReactions(state);
   if (reactions.length === 0) return null;
 
   return (
-    <div className="bg-panel border border-line rounded-xl p-4 mb-4">
+    <div className="card p-4 mb-4">
       <div className="text-xs uppercase tracking-wider text-accent font-bold mb-3">Reactions</div>
       <div className="space-y-2">
         {reactions.map((r, i) => {

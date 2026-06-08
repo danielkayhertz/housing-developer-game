@@ -20,7 +20,7 @@ export function GapResolution() {
         ← Back
       </button>
       <Header />
-      <h2 className="text-2xl mt-6 mb-2">Close the Gap</h2>
+      <h2 className="text-3xl mt-6 mb-2">Close the Gap</h2>
       <GapCloseModal context="phase-5" onClose={advancePhase} />
     </div>
     </JargonScreenScope>

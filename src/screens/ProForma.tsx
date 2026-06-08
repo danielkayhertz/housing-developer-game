@@ -88,14 +88,14 @@ export function ProForma() {
         ← Back
       </button>
       <Header />
-      <h2 className="text-2xl mt-6 mb-4">Pro Forma</h2>
+      <h2 className="text-3xl mt-6 mb-4">Pro Forma</h2>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="bg-gap text-white p-4 rounded-lg">
           <div className="text-xs uppercase tracking-wider opacity-80">Gap to close in the capital stack</div>
           <div className="text-3xl font-bold tabular">${(gap / 1_000_000).toFixed(1)}M</div>
           <div className="text-xs opacity-80 mt-1">{((gap / tdcTotal) * 100).toFixed(0)}% of TDC. Normal for affordable.</div>
         </div>
-        <div className="bg-panel border border-line rounded-lg p-3">
+        <div className="card p-3">
           <div className="text-xs uppercase tracking-wider text-accent font-bold">{characters.janelle.emoji} 9% <TooltipTerm term="LIHTC">LIHTC</TooltipTerm> — projected <TooltipTerm term="QAP">QAP</TooltipTerm> score</div>
           <div className="mt-2 flex justify-between items-baseline">
             <div className="text-3xl font-bold tabular">{projectedQapScore} <span className="text-muted text-base">/ 100</span></div>
@@ -117,7 +117,7 @@ export function ProForma() {
       <div className="grid grid-cols-2 gap-4">
         {/* LEFT — levers */}
         <div className="space-y-3">
-          <div className="bg-panel border border-line rounded-lg p-3">
+          <div className="card p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold">Lever 1 — Finishings &amp; design</div>
             <div className="flex gap-2 mt-2">
               {(['basic', 'standard', 'elevated'] as FinishLevel[]).map((f) => (
@@ -139,7 +139,7 @@ export function ProForma() {
             </p>
           </div>
 
-          <div className="bg-panel border border-line rounded-lg p-3">
+          <div className="card p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold">Lever 2 — Affordable <TooltipTerm term="AMI">AMI</TooltipTerm> breakdown</div>
             <div className="text-xs text-muted mt-1">
               Total affordable: {totalAffordable}{project.intent === 'mixed-income' ? ` · market: ${proForma.marketUnits ?? 0}` : ''} · target {project.units}
@@ -188,7 +188,7 @@ export function ProForma() {
             </p>
           </div>
 
-          <div className="bg-panel border border-line rounded-lg p-3">
+          <div className="card p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold">
               Lever 3 — Community Partner (<TooltipTerm term="CBO">CBO</TooltipTerm>)
             </div>
@@ -223,17 +223,17 @@ export function ProForma() {
             role={characters.marcus.role}
             body={<p>{marcusLines.intro}</p>}
             footer={
-              <div className="bg-panel border border-line rounded p-2 text-xs tabular">
+              <div className="card p-2 text-xs tabular">
                 <div className="text-muted uppercase tracking-wider mb-1"><TooltipTerm term="DSCR">DSCR</TooltipTerm> walk-through</div>
                 <div className="flex justify-between"><span>NOI (annual)</span><b>${(noi / 1000).toFixed(0)}k</b></div>
                 <div className="flex justify-between"><span>÷ Required DSCR ({dscrRequired.toFixed(2)})</span><b>${(cashForDebtService / 1000).toFixed(0)}k</b></div>
                 <div className="flex justify-between"><span>÷ Annual mortgage constant ({k.toFixed(4)})</span><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
                 <div className="border-t border-line mt-1 pt-1 flex justify-between"><b>Supportable loan</b><b>${(debt.amount / 1_000_000).toFixed(1)}M</b></div>
-                <div className="text-muted mt-2 italic">{marcusLines.walkthroughClosing(debt.amount, tdcTotal)}</div>
+                <div className="text-muted mt-2 italic font-sans">{marcusLines.walkthroughClosing(debt.amount, tdcTotal)}</div>
               </div>
             }
           />
-          <div className="bg-panel border border-line rounded-lg p-3">
+          <div className="card p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold"><TooltipTerm term="TDC">TDC</TooltipTerm> bottom-up</div>
             <div className="text-sm mt-2 space-y-1 tabular">
               <div className="flex justify-between">
@@ -275,7 +275,7 @@ export function ProForma() {
             </div>
           </div>
 
-          <div className="bg-panel border border-line rounded-lg p-3">
+          <div className="card p-3">
             <div className="text-xs uppercase tracking-wider text-accent font-bold"><TooltipTerm term="NOI">NOI</TooltipTerm> &amp; supportable debt</div>
             <div className="text-sm mt-2 space-y-1 tabular">
               <div className="flex justify-between"><span>NOI (annual)</span><b>${(noi / 1000).toFixed(0)}k</b></div>
@@ -286,7 +286,7 @@ export function ProForma() {
           <button
             onClick={onAdvance}
             disabled={!eligible || totalUnitsAllocated !== project.units}
-            className="w-full bg-accent text-white py-3 rounded-lg font-bold disabled:opacity-40"
+            className="w-full btn-primary py-3 disabled:opacity-40"
           >
             {totalUnitsAllocated !== project.units ? `Distribute all ${project.units} units` : 'On to the capital stack →'}
           </button>

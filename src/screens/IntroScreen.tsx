@@ -21,7 +21,7 @@ export function IntroScreen() {
       </p>
       <button
         onClick={advancePhase}
-        className="bg-accent text-white px-6 py-3 rounded-lg font-bold hover:opacity-90"
+        className="btn-primary px-6 py-3"
       >
         Start a project →
       </button>

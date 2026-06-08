@@ -48,7 +48,7 @@ export function SourceCard({ source, status, awardedAmount, complexityWarning, s
       )}
       {status === 'available' && onApply && (
         <button
-          className="w-full mt-1 bg-accent text-white text-[11px] py-1 rounded hover:opacity-90"
+          className="w-full mt-1 btn-primary text-[11px] py-1"
           onClick={onApply}
         >
           Apply →
