@@ -77,6 +77,18 @@ export const davidLines = {
   gapResolutionExhausted: "We've tried a bunch of different things, but this project isn't penciling. Start over.",
 };
 
+export const sfhLines = {
+  bankerRule:
+    "Here's how I'll size this. My construction loan is the lesser of 80% of your total construction cost or 70% of your projected sales price. Whatever that doesn't cover, you fill with your own equity — and you've got $2 million to put in.",
+  alderZoning: "This would require a zoning change. It's probably not worth it.",
+  aroNote:
+    "One more thing — above ten units the ARO kicks in. Twenty percent of your homes have to be sold affordable, at 80% AMI.",
+  dohNoSubsidy:
+    "Your construction costs are higher than the anticipated sales price. You need public subsidy, but DOH doesn't have an open application for that right now.",
+  permitFlavor:
+    "The affordable homes you set out to build? Those are someone else's project now.",
+};
+
 export const carlosLines = {
   greeting: "Look — we've lost too many longtime residents already. Show me you're serious about depth. Shallow won't fly here.",
   bonusFired: "Twenty percent at 30% AMI. That's the depth we need. I can carry this to my council colleagues.",

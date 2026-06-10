@@ -7,6 +7,7 @@ export function GapResolution() {
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
   const neighborhood = useGameStore((s) => s.project.neighborhood);
+  const openSfh = useGameStore((s) => s.openSfh);
 
   if (!neighborhood) return null;
 
@@ -22,6 +23,12 @@ export function GapResolution() {
       <Header />
       <h2 className="text-3xl mt-6 mb-2">Close the Gap</h2>
       <GapCloseModal context="phase-5" onClose={advancePhase} />
+      <button
+        onClick={openSfh}
+        className="w-full mt-3 btn-secondary py-2"
+      >
+        🏚️ Give up and build single-family homes
+      </button>
     </div>
     </JargonScreenScope>
   );

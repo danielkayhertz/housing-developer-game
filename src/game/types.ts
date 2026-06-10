@@ -106,6 +106,8 @@ export interface GameState {
   monthsElapsed: number;
   costEscalation: number; // accrued dollars added to TDC
 
+  sfhOpen: boolean; // single-family "give up" modal visibility
+
   project: {
     neighborhood: NeighborhoodId | null;
     units: number;

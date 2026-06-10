@@ -7,9 +7,11 @@ import { GapResolution } from './screens/GapResolution';
 import { Entitlement } from './screens/Entitlement';
 import { Close } from './screens/Close';
 import { RecapCard } from './components/RecapCard';
+import { SingleFamilyModal } from './components/SingleFamilyModal';
 
 export default function App() {
   const phase = useGameStore((s) => s.phase);
+  const sfhOpen = useGameStore((s) => s.sfhOpen);
 
   return (
     <div className="min-h-screen bg-bg text-ink">
@@ -23,6 +25,7 @@ export default function App() {
         {phase === 7 && <Close />}
       </div>
       <RecapCard />
+      <SingleFamilyModal key={sfhOpen ? 'sfh-open' : 'sfh-closed'} />
     </div>
   );
 }
