@@ -27,6 +27,7 @@ const initialState: GameState = {
   phase: 1,
   monthsElapsed: 0,
   costEscalation: 0,
+  sfhOpen: false,
   project: {
     neighborhood: null,
     units: 50, // v3: midrise default 50
@@ -70,6 +71,8 @@ const initialState: GameState = {
 
 interface StoreActions {
   reset: () => void;
+  openSfh: () => void;
+  closeSfh: () => void;
   advancePhase: () => void;
   selectNeighborhood: (id: NeighborhoodId) => void;
   setUnits: (n: number) => void;
@@ -98,6 +101,9 @@ export const useGameStore = create<GameState & StoreActions>((set, get) => ({
   ...initialState,
 
   reset: () => set({ ...initialState }),
+
+  openSfh: () => set({ sfhOpen: true }),
+  closeSfh: () => set({ sfhOpen: false }),
 
   advancePhase: () => {
     const s = get();
