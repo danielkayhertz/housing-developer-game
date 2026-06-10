@@ -110,10 +110,10 @@ deal. The module therefore has exactly two endings:
 | Deal | TDC | Sales | Loan (binds) | Equity | Profit | Ending |
 |---|---|---|---|---|---|---|
 | Jeff. Park, 1u | $500k | $1.3M | $400k (constr.) | $100k | +$800k | Permit |
-| Jeff. Park, 15u | $4.5M | $10.25M (2 aff.) | $3.6M (constr.) | $900k | +$5.75M | Permit (zoning+ARO) |
+| Jeff. Park, 15u | $4.5M | $9.75M (3 aff.) | $3.6M (constr.) | $900k | +$5.25M | Permit (zoning+ARO) |
 | Albany Park, 5u | $1.75M | $4.0M | $1.4M (constr.) | $350k | +$2.25M | Permit |
 | Englewood, 1u | $500k | $400k | — | — | −$100k | DOH dead-end |
-| Englewood, 15u | $4.5M | $4.075M (2 aff.) | — | — | −$425k | DOH dead-end |
+| Englewood, 15u | $4.5M | $4.05M (3 aff.) | — | — | −$450k | DOH dead-end |
 
 ## Modal flow
 
