@@ -7,6 +7,7 @@ import { GapResolution } from './screens/GapResolution';
 import { Entitlement } from './screens/Entitlement';
 import { Close } from './screens/Close';
 import { RecapCard } from './components/RecapCard';
+import { SingleFamilyModal } from './components/SingleFamilyModal';
 
 export default function App() {
   const phase = useGameStore((s) => s.phase);
@@ -23,6 +24,7 @@ export default function App() {
         {phase === 7 && <Close />}
       </div>
       <RecapCard />
+      <SingleFamilyModal />
     </div>
   );
 }

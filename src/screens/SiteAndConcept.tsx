@@ -18,6 +18,7 @@ export function SiteAndConcept() {
   const setIntent = useGameStore((s) => s.setIntent);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
+  const openSfh = useGameStore((s) => s.openSfh);
 
   const n = project.neighborhood ? getNeighborhood(project.neighborhood) : null;
   const tdcEstimate = project.neighborhood
@@ -148,6 +149,13 @@ export function SiteAndConcept() {
             className="w-full btn-primary py-3 disabled:opacity-40"
           >
             Lock in &amp; continue →
+          </button>
+          <button
+            onClick={openSfh}
+            disabled={!project.neighborhood}
+            className="w-full mt-2 btn-secondary py-2 disabled:opacity-40"
+          >
+            🏚️ Give up and build single-family homes
           </button>
         </div>
 

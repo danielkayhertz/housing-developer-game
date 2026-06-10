@@ -31,6 +31,7 @@ export function CapitalStack() {
   const tickMonths = useGameStore((s) => s.tickMonths);
   const advancePhase = useGameStore((s) => s.advancePhase);
   const retreatPhase = useGameStore((s) => s.retreatPhase);
+  const openSfh = useGameStore((s) => s.openSfh);
   const [showLihtcDecision, setShowLihtcDecision] = useState(true);
   const [reviseMode, setReviseMode] = useState<'none' | 'cut-costs' | 'qap-odds'>('none');
 
@@ -302,6 +303,12 @@ export function CapitalStack() {
         {canAdvance
           ? 'Stack closed — on to entitlement →'
           : `Resolve the remaining $${(gap / 1_000_000).toFixed(1)}M gap →`}
+      </button>
+      <button
+        onClick={openSfh}
+        className="w-full mt-2 btn-secondary py-2"
+      >
+        🏚️ Give up and build single-family homes
       </button>
     </div>
     </JargonScreenScope>
