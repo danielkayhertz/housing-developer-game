@@ -124,7 +124,7 @@ export function Close() {
           ↻ Try a different choice
         </button>
         <a
-          href="https://housing.thewychefamily.com/"
+          href="https://chihousingguide.org"
           target="_blank"
           rel="noopener noreferrer"
           className="btn-secondary py-3 text-center"
