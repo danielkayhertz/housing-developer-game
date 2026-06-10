@@ -99,18 +99,22 @@ buildable deals; retained for display), `profit`, `needsSubsidy`,
 Across every neighborhood and unit count, the most equity any project needs
 (`totalTDC − loan`) tops out around $1.7M — below the $2M budget. So a residual
 "gap you can't close" never occurs for a buildable (`totalTDC ≤ salesRevenue`)
-deal. The module therefore has exactly two endings:
+deal. Permits are granted only when the project both pencils **and** stays
+by-right (≤ 5 units). The module therefore has these endings:
 
 1. **`needsSubsidy` (TDC > sales)** → DOH dead-end. Occurs for *all* of
    Englewood and nowhere else.
-2. **TDC ≤ sales** → gap closes with equity → apply for permits → profit.
+2. **`requiresZoning` (more than 5 units)** → permits blocked (button greyed
+   out); a zoning change is required and isn't pursued.
+3. **TDC ≤ sales and ≤ 5 units** → gap closes with equity → apply for permits
+   → profit.
 
 ### Worked sanity checks
 
 | Deal | TDC | Sales | Loan (binds) | Equity | Profit | Ending |
 |---|---|---|---|---|---|---|
 | Jeff. Park, 1u | $500k | $1.3M | $400k (constr.) | $100k | +$800k | Permit |
-| Jeff. Park, 15u | $4.5M | $9.75M (3 aff.) | $3.6M (constr.) | $900k | +$5.25M | Permit (zoning+ARO) |
+| Jeff. Park, 15u | $4.5M | $9.75M (3 aff.) | $3.6M (constr.) | $900k | +$5.25M | Blocked (zoning) |
 | Albany Park, 5u | $1.75M | $4.0M | $1.4M (constr.) | $350k | +$2.25M | Permit |
 | Englewood, 1u | $500k | $400k | — | — | −$100k | DOH dead-end |
 | Englewood, 15u | $4.5M | $4.05M (3 aff.) | — | — | −$450k | DOH dead-end |
@@ -135,7 +139,9 @@ deal. The module therefore has exactly two endings:
      construction costs are higher than the anticipated sales price. You need
      public subsidy, but DOH doesn't have an open application for that right
      now."*
-   - else → **"Apply for permits →"** button.
+   - if `requiresZoning` (more than 5 units) → footer button disabled (greyed
+     out); the alder's zoning warning already explains why.
+   - otherwise → enabled **"Apply for permits →"** button.
 
 A **Cancel / ✕** dismisses the modal and returns the player to where they were.
 

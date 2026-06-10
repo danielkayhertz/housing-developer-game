@@ -185,7 +185,7 @@ export function SingleFamilyModal() {
 
         <button
           onClick={() => setView('permit')}
-          disabled={deal.needsSubsidy}
+          disabled={deal.needsSubsidy || deal.requiresZoning}
           className="w-full btn-primary py-3 disabled:opacity-40"
         >
           Apply for permits →

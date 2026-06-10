@@ -45,6 +45,15 @@ describe('SingleFamilyModal', () => {
     expect(screen.getByRole('button', { name: /apply for permits/i })).toBeDisabled();
   });
 
+  it('disables the permit button above 5 units (zoning change required)', () => {
+    openWith('jefferson-park');
+    render(<SingleFamilyModal />);
+    const btn = screen.getByRole('button', { name: /apply for permits/i });
+    expect(btn).not.toBeDisabled();
+    fireEvent.change(screen.getByLabelText(/number of homes/i), { target: { value: '6' } });
+    expect(btn).toBeDisabled();
+  });
+
   it('Jefferson Park buildable deal grants the permit and shows profit', () => {
     openWith('jefferson-park');
     render(<SingleFamilyModal />);
