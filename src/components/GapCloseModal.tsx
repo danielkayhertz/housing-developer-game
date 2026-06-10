@@ -4,7 +4,7 @@ import { gapActions, GapActionKey } from '../data/gapResolution';
 import { CharacterBubble } from './CharacterBubble';
 import { TooltipTerm } from './TooltipTerm';
 import { LiveGapRow } from './LiveGapRow';
-import { ashaLines, davidLines } from '../data/characters';
+import { ashaLines, davidLines, getNeighborhoodAlderId } from '../data/characters';
 import { GAP_ADVANCE_THRESHOLD, MIN_UNITS_FLOOR, type AmiBand } from '../game/types';
 
 interface GapCloseModalProps {
@@ -65,7 +65,7 @@ export function GapCloseModal({ context, onClose }: GapCloseModalProps) {
   return (
     <>
       <div className="mb-3">
-        <CharacterBubble characterId="asha" line={ashaLine} />
+        <CharacterBubble characterId={getNeighborhoodAlderId(state.project.neighborhood)} line={ashaLine} />
       </div>
 
       <div className="bg-gap text-white rounded-lg p-4 mb-3">

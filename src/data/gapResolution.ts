@@ -18,7 +18,7 @@ export const gapActions: GapActionMeta[] = [
     effectLabel: '+9 mo · −15 alder · +$1M closer',
     monthsCost: 9,
     repeatable: true,
-    disabledMsg: 'Asha is out of political capital',
+    disabledMsg: 'Your alder is out of political capital',
   },
   {
     key: 'redesignSmaller',

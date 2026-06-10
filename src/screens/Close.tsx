@@ -18,6 +18,7 @@ export function Close() {
 
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
+  const alderFirst = n.alderName.split(' ')[0];
   const closed = outcome === 'closed';
   const finalUnits = getEffectiveUnits(state);
 
@@ -32,9 +33,9 @@ export function Close() {
 
   const failureMessage =
     outcome === 'shelved-stack' ? 'The stack never closed. Cost escalation pushed the gap past what could be filled, and the project was shelved.' :
-    outcome === 'shelved-finance' ? "Committee on Finance failed. Reyes and Cunningham teamed up; Asha couldn't hold the room. The coalition broke and the project was tabled." :
-    outcome === 'shelved-alder' ? 'Asha quietly told you she couldn\'t push it forward. The site was eventually sold to a market-rate developer.' :
-    outcome === 'shelved-community' ? 'The community engagement collapsed at the meeting. The alder withdrew support and the project died.' :
+    outcome === 'shelved-finance' ? `${alderFirst}'s goodwill ran out before the project reached a vote. In Chicago, nothing advances without the local alder carrying it — and without that support, ${alderFirst} pulled the ordinance.` :
+    outcome === 'shelved-alder' ? `${alderFirst} quietly told you they couldn't push it forward. The site was eventually sold to a market-rate developer.` :
+    outcome === 'shelved-community' ? `Community support fell apart. With the block club organized against the project, ${alderFirst} wouldn't carry it — and pulled the ordinance before it reached a vote.` :
     '';
 
   return (

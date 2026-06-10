@@ -203,13 +203,13 @@ function failureReactions(state: GameState): Reaction[] {
           voice: characters.powell.name,
           affiliation: characters.powell.role,
           emoji: characters.powell.emoji,
-          line: "I told you it was too expensive. The city can't keep throwing subsidies at projects that don't pencil.",
+          line: "Once the local alder stopped fighting for it, the rest took care of itself. You lose your sponsor, you lose the project — that's how this Council works.",
         },
         {
           voice: 'Housing Advocate',
           affiliation: 'Chicago Housing Coalition',
           emoji: '✊',
-          line: "This is why pre-development needs deeper subsidy. Without it, projects like this don't survive political resistance.",
+          line: "Projects like this live or die on the alder relationship. Without that support locked in early, the work never survives the first real pushback.",
         },
       ];
     case 'shelved-alder':

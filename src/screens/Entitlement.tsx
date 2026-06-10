@@ -48,7 +48,7 @@ function durationFor(step: number, choice: StepChoiceKey): number {
 const STEP_NAMES = ['', 'Pre-app intake', 'Community meeting', 'Committee on Zoning', 'Committee on Finance'];
 
 const BASE_STEP1_CHOICES: { key: StepChoiceKey; title: string; description: string; consequences: string }[] = [
-  { key: 'preapp-quiet', title: 'Quiet alder meeting', description: 'Just you and Asha. Low-key, no public attention yet.', consequences: '+2 alder · ±0 community' },
+  { key: 'preapp-quiet', title: 'Quiet alder meeting', description: 'Just you and the alder. Low-key, no public attention yet.', consequences: '+2 alder · ±0 community' },
   { key: 'preapp-formal-cbo', title: 'Formal w/ CBO partner', description: 'Bring a community development partner to the first conversation.', consequences: '+5 alder · +6 community' },
   { key: 'preapp-public', title: 'Public pre-launch w/ press', description: 'Announce intentions broadly. Bold; reads as committed.', consequences: '−10 alder · −5 community' },
 ];
@@ -116,6 +116,7 @@ export function Entitlement() {
 
   if (!project.neighborhood) return null;
   const n = getNeighborhood(project.neighborhood);
+  const alderFirst = n.alderName.split(' ')[0];
   const path = resolveEntitlementPath({
     buildingType: project.buildingType,
     units: project.units,
@@ -297,7 +298,7 @@ export function Entitlement() {
               </div>
               {hasTif && (
                 <div className="bg-panel border-l-2 border-gap p-2 text-xs">
-                  <b>Ald. Reyes:</b> "{financeAttackLines.tifCorrupt}"
+                  <b>Ald. Reyes:</b> "{financeAttackLines.tifCorrupt(n.name)}"
                 </div>
               )}
               {hasHedBond && (
@@ -355,7 +356,7 @@ export function Entitlement() {
 
           <div className="mt-3">
             <CharacterBubble
-              characterId="asha"
+              characterId={getNeighborhoodAlderId(n.id)}
               line={
                 currentStep === 1 ? 'Ready when you are. How do you want to start this?' :
                 currentStep === 2 ? "The room will be skeptical. How are we going to lead this meeting?" :
@@ -393,7 +394,7 @@ export function Entitlement() {
       {allStepsComplete && outcome === 'in-progress' && (
         <div className="bg-bg p-4 rounded-lg text-sm">
           <b>Council vote (narrative):</b><br/>
-          <i className="text-muted">On a Wednesday in March, the City Council passed the ordinance 41–9. Asha posted on Instagram from the floor.</i>
+          <i className="text-muted">On a Wednesday in March, the City Council passed the ordinance 41–9. {alderFirst} posted on Instagram from the floor.</i>
           <button
             onClick={onComplete}
             className="block w-full mt-4 btn-primary py-3"

@@ -55,10 +55,10 @@ export const ashaLines = {
   closingMid: "Good work getting this over the finish line. Not perfect, but real affordable homes.",
   closingLow: "It's done. I'm glad for the units. Our relationship will need some rebuilding.",
   closingShelvedStack: "I'm sorry. The stack just never came together. Sometimes the numbers win.",
-  closingShelvedFinance: "I lost the room. Cunningham and Reyes made their play and I couldn't hold the coalition. I'm so sorry.",
+  closingShelvedFinance: "I couldn't put my name on this one. The goodwill we needed just wasn't there at the end — and in my ward, nothing moves that I won't carry. I'm sorry.",
   closingShelvedAlder: "I couldn't make this work in my ward. I know that's not what you wanted to hear.",
   shelvedAlder: "I couldn't make this work in my ward. I know that's not what you wanted to hear.",
-  closingShelvedCommunity: "The community engagement fell apart. Without the block club, I couldn't keep moving forward.",
+  closingShelvedCommunity: "The neighborhood never came around, and I won't get out ahead of my own community. Without the block club behind it, I couldn't keep this moving forward.",
 };
 
 export const janelleLines = {
@@ -109,7 +109,8 @@ export const nailaLines = {
 export const financeAttackLines = {
   tooExpensive: (perUnit: number) =>
     `$${(perUnit / 1000).toFixed(0)}k per unit. We could buy existing buildings for half that.`,
-  tifCorrupt: 'That\'s exactly the pattern we promised to stop. Englewood TIF is drained dry as it is.',
+  tifCorrupt: (neighborhoodName: string) =>
+    `That's exactly the pattern we promised to stop. The ${neighborhoodName} TIF is drained dry as it is.`,
   hedWardJealousy: 'Why is HED money going to a ward that\'s already getting TIF? My residents would like a turn.',
 };
 
@@ -179,7 +180,7 @@ export const recapNarratives: Record<string, RecapEntry> = {
   'lihtcRevise-loss': { category: 'janelle', line: "Even with the revisions the round stayed out of reach this cycle. The reworked application is stronger for next time, but that's another twelve months gone." },
 
   // CBO partner first-time
-  'cboFirstTime': { category: 'asha', line: "Bringing the CBO on board took six months of conversations, MOU drafting, and joint planning. It was the right call." },
+  'cboFirstTime': { category: 'alder', line: "Bringing the CBO on board took six months of conversations, MOU drafting, and joint planning. It was the right call." },
 
   // Cut-costs sub-screen exit
   'cutCostsExit': { category: 'david', line: "Re-pricing the value-engineering pass took three months. The bank's underwriting moved sideways while you worked." },
