@@ -28,15 +28,15 @@ describe('computeSfhDeal — buildable high-cost deals', () => {
     expect(d.aroTriggered).toBe(false);
   });
 
-  it('Jefferson Park 15 units: ARO 2 affordable, $5.75M profit', () => {
+  it('Jefferson Park 15 units: ARO 3 affordable, $5.25M profit', () => {
     const d = computeSfhDeal('jefferson-park', 15);
-    expect(d.aroAffordableCount).toBe(2);
-    expect(d.marketUnits).toBe(13);
+    expect(d.aroAffordableCount).toBe(3);
+    expect(d.marketUnits).toBe(12);
     expect(d.totalTDC).toBe(4_500_000);
-    // 13 × $750k + 2 × $250k = $9.75M + $0.5M = $10.25M
-    expect(d.salesRevenue).toBe(10_250_000);
+    // 12 × $750k + 3 × $250k = $9.0M + $0.75M = $9.75M
+    expect(d.salesRevenue).toBe(9_750_000);
     expect(d.loan).toBe(3_600_000);
-    expect(d.profit).toBe(5_750_000);
+    expect(d.profit).toBe(5_250_000);
     expect(d.requiresZoning).toBe(true);
     expect(d.aroTriggered).toBe(true);
     expect(d.needsSubsidy).toBe(false);
@@ -63,12 +63,12 @@ describe('computeSfhDeal — Englewood always dead-ends', () => {
     expect(d.loanBinding).toBe('sales');
   });
 
-  it('15 units: ARO 2 affordable, still needsSubsidy', () => {
+  it('15 units: ARO 3 affordable, still needsSubsidy', () => {
     const d = computeSfhDeal('englewood', 15);
-    expect(d.aroAffordableCount).toBe(2);
+    expect(d.aroAffordableCount).toBe(3);
     expect(d.totalTDC).toBe(4_500_000);
-    // 13 × $275k + 2 × $250k = $3.575M + $0.5M = $4.075M
-    expect(d.salesRevenue).toBe(4_075_000);
+    // 12 × $275k + 3 × $250k = $3.3M + $0.75M = $4.05M
+    expect(d.salesRevenue).toBe(4_050_000);
     expect(d.needsSubsidy).toBe(true);
   });
 });

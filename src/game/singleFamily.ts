@@ -26,9 +26,8 @@ export interface SfhDeal {
 }
 
 export function aroAffordableCount(units: number): number {
-  if (units <= 10) return 0;
-  if (units <= 15) return 2;
-  return Math.floor(0.2 * units);
+  // ARO requires 20% affordable above 10 units, rounded down: 11–14 → 2, 15 → 3.
+  return units > 10 ? Math.floor(units / 5) : 0;
 }
 
 export function computeSfhDeal(neighborhood: NeighborhoodId, units: number): SfhDeal {
