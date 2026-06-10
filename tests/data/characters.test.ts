@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { carlosLines, frankLines, nailaLines, davidLines, characters, getNeighborhoodAlderId } from '../../src/data/characters';
+import { carlosLines, frankLines, nailaLines, davidLines, characters, getNeighborhoodAlderId, sfhLines } from '../../src/data/characters';
 
 describe('v3 character lines', () => {
   it('Carlos Reyes has all required slots', () => {
@@ -70,5 +70,17 @@ describe('getNeighborhoodAlderId', () => {
 describe('v5 — David Park complexity-penalty rationale', () => {
   it('capitalStackIntro contains the compliance/legal explanation', () => {
     expect(davidLines.capitalStackIntro).toContain('compliance and legal paperwork');
+  });
+});
+
+describe('single-family pivot lines', () => {
+  it('has all required SFH dialogue slots', () => {
+    for (const key of ['bankerRule', 'alderZoning', 'aroNote', 'dohNoSubsidy', 'permitFlavor'] as const) {
+      expect(sfhLines[key], `sfhLines.${key}`).toBeTruthy();
+    }
+  });
+
+  it('DOH dead-end line names the subsidy gap', () => {
+    expect(sfhLines.dohNoSubsidy).toMatch(/public subsidy/i);
   });
 });
