@@ -11,6 +11,7 @@ import { SingleFamilyModal } from './components/SingleFamilyModal';
 
 export default function App() {
   const phase = useGameStore((s) => s.phase);
+  const sfhOpen = useGameStore((s) => s.sfhOpen);
 
   return (
     <div className="min-h-screen bg-bg text-ink">
@@ -24,7 +25,7 @@ export default function App() {
         {phase === 7 && <Close />}
       </div>
       <RecapCard />
-      <SingleFamilyModal />
+      <SingleFamilyModal key={sfhOpen ? 'sfh-open' : 'sfh-closed'} />
     </div>
   );
 }

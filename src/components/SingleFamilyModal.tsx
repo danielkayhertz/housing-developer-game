@@ -74,15 +74,13 @@ export function SingleFamilyModal() {
   const deal = computeSfhDeal(neighborhood, units);
   const alderId = getNeighborhoodAlderId(neighborhood);
 
+  // App.tsx keys this component on sfhOpen, so it remounts fresh on each open;
+  // closing therefore only needs to flip the store flag.
   function handleClose() {
-    setUnits(1);
-    setView('form');
     closeSfh();
   }
 
   function handleReset() {
-    setUnits(1);
-    setView('form');
     reset();
   }
 
@@ -139,7 +137,7 @@ export function SingleFamilyModal() {
             min={SFH_MIN_UNITS}
             max={SFH_MAX_UNITS}
             value={units}
-            onChange={(e) => setUnits(parseInt(e.target.value))}
+            onChange={(e) => setUnits(parseInt(e.target.value, 10))}
             className="w-full mt-2"
           />
           <div className="flex justify-between text-xs text-muted tabular">
