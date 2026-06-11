@@ -30,3 +30,25 @@ describe('SourceCard onRemove (v4 item 8)', () => {
     expect(screen.queryByRole('button', { name: /remove|×/i })).toBeNull();
   });
 });
+
+describe('SourceCard applyVia hint', () => {
+  it('renders the applyVia hint and no Apply button when redirected', () => {
+    render(
+      <SourceCard
+        source={getSource('9-lihtc')}
+        status="available"
+        applyVia="↑ Submit via the QAP card above"
+      />
+    );
+    expect(screen.getByText(/Submit via the QAP card above/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /apply/i })).toBeNull();
+  });
+
+  it('still shows the Apply button for normal available sources', () => {
+    const onApply = vi.fn();
+    render(
+      <SourceCard source={getSource('doh-loan')} status="available" onApply={onApply} />
+    );
+    expect(screen.getByRole('button', { name: /apply/i })).toBeInTheDocument();
+  });
+});

@@ -9,6 +9,7 @@ interface SourceCardProps {
   awardedAmount?: number;
   complexityWarning?: boolean;
   scalingNote?: string;
+  applyVia?: string;
   onApply?: () => void;
   onRemove?: () => void;
 }
@@ -21,7 +22,7 @@ const STATUS_STYLES: Record<Status, { badgeClass: string; cardClass: string; lab
   secured:   { badgeClass: 'bg-debt',    cardClass: 'border-debt', label: 'SECURED' },
 };
 
-export function SourceCard({ source, status, awardedAmount, complexityWarning, scalingNote, onApply, onRemove }: SourceCardProps) {
+export function SourceCard({ source, status, awardedAmount, complexityWarning, scalingNote, applyVia, onApply, onRemove }: SourceCardProps) {
   const s = STATUS_STYLES[status];
   return (
     <div className={`bg-panel border-2 ${s.cardClass} rounded-lg p-2 text-xs relative`}>
@@ -45,6 +46,9 @@ export function SourceCard({ source, status, awardedAmount, complexityWarning, s
       )}
       {complexityWarning && (
         <div className="mt-1 text-caution text-[11px]">⚠ +complexity penalty</div>
+      )}
+      {status === 'available' && applyVia && (
+        <div className="mt-1 text-accent text-[11px] font-semibold">{applyVia}</div>
       )}
       {status === 'available' && onApply && (
         <button

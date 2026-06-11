@@ -269,6 +269,9 @@ export function CapitalStack() {
             src.id !== '9-lihtc' &&
             src.id !== '4-lihtc-bonds' &&
             src.id !== 'bank-loan';
+          // The two LIHTC credits are obtained through the QAP submission card
+          // above, not via a per-source Apply button.
+          const isCreditCard = src.id === '9-lihtc' || src.id === '4-lihtc-bonds';
           return (
             <SourceCard
               key={src.id}
@@ -277,7 +280,8 @@ export function CapitalStack() {
               awardedAmount={amt}
               complexityWarning={complexityWarning}
               scalingNote={scalingNote}
-              onApply={() => onApply(src.id)}
+              applyVia={isCreditCard ? '↑ Submit via the QAP card above' : undefined}
+              onApply={isCreditCard ? undefined : () => onApply(src.id)}
               onRemove={canRemove ? () => removeSource(src.id) : undefined}
             />
           );
