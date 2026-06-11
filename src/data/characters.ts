@@ -80,6 +80,8 @@ export const davidLines = {
 export const sfhLines = {
   bankerRule:
     "Here's how I'll size this. My construction loan is the lesser of 80% of your total construction cost or 70% of your projected sales price. Whatever that doesn't cover, you fill with your own equity — and you've got $2 million to put in.",
+  alderByRight:
+    "Basically everywhere allows one single-family home per lot without a zoning change, and you've got five lots.",
   alderZoning: "This would require a zoning change. It's probably not worth it.",
   aroNote:
     "One more thing — above ten units the ARO kicks in. Twenty percent of your homes have to be sold affordable, at 80% AMI.",

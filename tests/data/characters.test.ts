@@ -75,7 +75,7 @@ describe('v5 — David Park complexity-penalty rationale', () => {
 
 describe('single-family pivot lines', () => {
   it('has all required SFH dialogue slots', () => {
-    for (const key of ['bankerRule', 'alderZoning', 'aroNote', 'dohNoSubsidy', 'permitFlavor'] as const) {
+    for (const key of ['bankerRule', 'alderByRight', 'alderZoning', 'aroNote', 'dohNoSubsidy', 'permitFlavor'] as const) {
       expect(sfhLines[key], `sfhLines.${key}`).toBeTruthy();
     }
   });

@@ -62,4 +62,28 @@ describe('SingleFamilyModal', () => {
     expect(screen.getByText(/120 days/i)).toBeInTheDocument();
     expect(screen.getByText(/\$0\.80M/)).toBeInTheDocument();
   });
+
+  it('shows the TDC and sales math breakdowns', () => {
+    openWith('jefferson-park');
+    render(<SingleFamilyModal />);
+    fireEvent.change(screen.getByLabelText(/number of homes/i), { target: { value: '4' } });
+    expect(screen.getByText('$350k × 4')).toBeInTheDocument(); // TDC: 4 × $350k
+    expect(screen.getByText('$900k × 4')).toBeInTheDocument(); // sales: 4 × $900k
+  });
+
+  it('always shows the alder, with the by-right line at 5 units or fewer', () => {
+    openWith('jefferson-park');
+    render(<SingleFamilyModal />);
+    expect(screen.getByText(/one single-family home per lot/i)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/number of homes/i), { target: { value: '6' } });
+    expect(screen.getByText(/would require a zoning change/i)).toBeInTheDocument();
+  });
+
+  it('permit page offers only "Play again", with no Close button', () => {
+    openWith('jefferson-park');
+    render(<SingleFamilyModal />);
+    fireEvent.click(screen.getByRole('button', { name: /apply for permits/i }));
+    expect(screen.getByRole('button', { name: /play again/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /close/i })).toBeNull();
+  });
 });

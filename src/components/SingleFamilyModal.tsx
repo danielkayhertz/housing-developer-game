@@ -14,6 +14,15 @@ function fmtM(n: number): string {
   return `$${(n / 1_000_000).toFixed(2)}M`;
 }
 
+// Compact per-unit price, e.g. 350000 -> "$350k", 1300000 -> "$1.3M", 1000000 -> "$1M".
+function perUnit(n: number): string {
+  if (n >= 1_000_000) {
+    const m = n / 1_000_000;
+    return `$${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M`;
+  }
+  return `$${n / 1000}k`;
+}
+
 function Overlay({ children }: { children: ReactNode }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -96,14 +105,9 @@ export function SingleFamilyModal() {
             walked away with <b className="text-equity">{fmtM(deal.profit)}</b>.
           </p>
           <p className="text-xs italic text-muted mt-3">{sfhLines.permitFlavor}</p>
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            <button onClick={handleReset} className="btn-primary py-3">
-              ↻ Try a different choice
-            </button>
-            <button onClick={handleClose} className="btn-secondary py-3">
-              Close
-            </button>
-          </div>
+          <button onClick={handleReset} className="w-full btn-primary py-3 mt-4">
+            ↻ Play again
+          </button>
         </div>
       </Overlay>
     );
@@ -146,11 +150,12 @@ export function SingleFamilyModal() {
           </div>
         </div>
 
-        {deal.requiresZoning && (
-          <div className="mb-3">
-            <CharacterBubble characterId={alderId} line={sfhLines.alderZoning} />
-          </div>
-        )}
+        <div className="mb-3">
+          <CharacterBubble
+            characterId={alderId}
+            line={deal.requiresZoning ? sfhLines.alderZoning : sfhLines.alderByRight}
+          />
+        </div>
 
         {deal.aroTriggered && (
           <div className="mb-3">
@@ -159,8 +164,20 @@ export function SingleFamilyModal() {
         )}
 
         <div className="card p-3 mb-3 text-sm tabular space-y-1">
-          <Row label="Total development cost" value={fmtM(deal.totalTDC)} />
-          <Row label="Projected sales" value={fmtM(deal.salesRevenue)} />
+          <Row
+            label="Total development cost"
+            note={`${perUnit(deal.tdcPerUnit)} × ${deal.units}`}
+            value={fmtM(deal.totalTDC)}
+          />
+          <Row
+            label="Projected sales"
+            note={
+              deal.aroAffordableCount > 0
+                ? `${perUnit(deal.marketPricePerUnit)} × ${deal.marketUnits} + $250k × ${deal.aroAffordableCount}`
+                : `${perUnit(deal.marketPricePerUnit)} × ${deal.units}`
+            }
+            value={fmtM(deal.salesRevenue)}
+          />
           <Row
             label={`Construction loan (${deal.loanBinding === 'construction' ? '80% of cost' : '70% of sales'})`}
             value={fmtM(deal.loan)}
@@ -195,11 +212,14 @@ export function SingleFamilyModal() {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
     <div className="flex justify-between">
       <span className="text-muted">{label}</span>
-      <span className="text-ink">{value}</span>
+      <span>
+        {note && <span className="text-muted mr-2">{note}</span>}
+        <span className="text-ink">{value}</span>
+      </span>
     </div>
   );
 }
